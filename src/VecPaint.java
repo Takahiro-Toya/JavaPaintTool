@@ -1,9 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.border.Border;
 import javax.tools.Tool;
 
-public class VecPaint extends JFrame{
+public class VecPaint extends JFrame implements ActionListener {
     private int screenWidth;
     private int screenHeight;
 
@@ -19,6 +21,13 @@ public class VecPaint extends JFrame{
     private JPanel pnlTools;
     private JPanel pnlColours;
     private JPanel pnlBottom;
+
+    //Button variables
+    private JButton btnPlot;
+    private JButton btnLine;
+    private JButton btnRectangle;
+    private JButton btnEllipse;
+    private JButton btnPolygon;
 
     private VecPaint(){
         super("VecPaint tool");
@@ -40,6 +49,29 @@ public class VecPaint extends JFrame{
         JPanel newPanel = new JPanel();
         newPanel.setBackground(c);
         return newPanel;
+    }
+
+    /**
+     * create button
+     */
+    private JButton createButton(String str) {
+        JButton newButton = new JButton(str);
+        newButton.addActionListener( this);
+        return newButton;
+    }
+
+    /**
+     * add grid layout to the button panel
+     */
+    private void layoutButtonPanel() {
+        GridLayout layout = new GridLayout(5, 1);
+        pnlTools.setLayout(layout);
+
+        pnlTools.add(btnPlot);
+        pnlTools.add(btnLine);
+        pnlTools.add(btnRectangle);
+        pnlTools.add(btnEllipse);
+        pnlTools.add(btnPolygon);
     }
 
     /**
@@ -66,9 +98,18 @@ public class VecPaint extends JFrame{
         getContentPane().add(pnlColours, BorderLayout.EAST);
         getContentPane().add(pnlBottom, BorderLayout.SOUTH);
 
-        pnlTools.setPreferredSize(new Dimension(screenWidth / 24, screenHeight));
+        pnlTools.setPreferredSize(new Dimension(screenWidth / 20, screenHeight));
         pnlColours.setPreferredSize(new Dimension(screenWidth / 24, screenHeight));
-        pnlBottom.setPreferredSize(new Dimension(screenWidth, screenHeight / 26));
+        pnlBottom.setPreferredSize(new Dimension(screenWidth, 20));
+
+        // buttons
+        btnPlot = createButton("Plot");
+        btnLine = createButton("Line");
+        btnRectangle = createButton("Rectangle");
+        btnEllipse = createButton("Ellipse");
+        btnPolygon = createButton("Polygon");
+
+        layoutButtonPanel();
 
         // pack up
         setPreferredSize(new Dimension(screenWidth / 2, screenHeight / 2));
@@ -84,4 +125,8 @@ public class VecPaint extends JFrame{
         vectorTool.createVecGUI();
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+    }
 }
