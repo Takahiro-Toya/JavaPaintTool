@@ -3,15 +3,14 @@ import javax.tools.Tool;
 import java.awt.*;
 
 public class VecPaint extends JFrame{
+    private int screenWidth;
+    private int screenHeight;
 
     private JMenuBar menuBar = new JMenuBar();
     private JMenu fileMenu = new JMenu("File");
     private JMenuItem fileMenuItemSave = new JMenuItem("Save");
     private JMenuItem fileMenuItemNew = new JMenuItem("New");
     private JMenuItem fileMenuItemOpen = new JMenuItem("Open");
-
-    private int screenWidth;
-    private int screenHeight;
 
     private VecPaint(){
         super("VecPaint tool");
