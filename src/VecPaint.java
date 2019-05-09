@@ -2,10 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.tools.Tool;
 
 public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     private int screenWidth;
@@ -14,6 +12,7 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     //Menu bar variables
     private JMenuBar menuBar = new JMenuBar();
     private JMenu fileMenu = new JMenu("File");
+    private JMenu undo = new JMenu("Undo");
     private JMenuItem fileMenuItemSave = new JMenuItem("Save");
     private JMenuItem fileMenuItemNew = new JMenuItem("New");
     private JMenuItem fileMenuItemOpen = new JMenuItem("Open");
@@ -38,7 +37,6 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     private JPanel black;
     private JPanel magenta;
 
-
     //Button variables
     private JButton btnPlot;
     private JButton btnLine;
@@ -46,9 +44,9 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     private JButton btnEllipse;
     private JButton btnPolygon;
     private JButton btnColourPicker;
+    private JButton btnClear;
 
-    //Colour chooser variable
-    private JColorChooser colourChooser;
+    private Color chosenColour = Color.WHITE;
 
     private VecPaint(){
         super("VecPaint tool");
@@ -73,33 +71,45 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     }
 
     /**
-     * create square colour panel
-     */
-    private JPanel createSquarePanel(Color c, int size) {
-        JPanel newPanel = new JPanel();
-        newPanel.setBackground(c);
-        newPanel.setPreferredSize(new Dimension(size, size));
-        return newPanel;
-    }
-
-    /**
      * create button
      */
-    private JButton createButton(String str) {
+    private JButton createToolButton(String str) {
         JButton newButton = new JButton(str);
         newButton.addActionListener( this);
         return newButton;
     }
 
     /**
-     *  create colour chooser
+     * create colour chooser button
      */
-    private JColorChooser createColourChooser() {
-        JColorChooser newColourChooser = new JColorChooser();
-        newColourChooser.setPreviewPanel(new JPanel());
-        newColourChooser.getSelectionModel().addChangeListener(this);
-        newColourChooser.setBorder(BorderFactory.createTitledBorder("Colour"));
-        return newColourChooser;
+    private JButton createColourChooserButton() {
+        JButton newButton = new JButton("More Colours");
+
+        newButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                chosenColour = JColorChooser.showDialog(null, "Select Colour", chosenColour);
+                if (chosenColour == null) {
+                    chosenColour = Color.WHITE;
+                }
+
+                pnlCanvas.setBackground(chosenColour);
+            }
+        });
+        return newButton;
+    }
+
+    /**
+     * create clear button
+     */
+    private JButton createClearButton() {
+        JButton newButton = new JButton("Clear");
+
+        newButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pnlCanvas.setBackground(Color.WHITE);
+            }
+        });
+        return newButton;
     }
 
     /**
@@ -126,20 +136,23 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         pnlColours.add(pnlColourPicker);
     }
 
+    /**
+     * add grid layout to the quick colour panel
+     */
     private void layoutQuickColourPanel() {
         GridLayout layout = new GridLayout(5, 2);
         pnlQuickColours.setLayout(layout);
 
-        red = createSquarePanel(Color.RED, 10);
-        blue = createSquarePanel(Color.BLUE, 10);
-        green = createSquarePanel(Color.GREEN, 10);
-        orange = createSquarePanel(Color.ORANGE, 10);
-        yellow = createSquarePanel(Color.YELLOW, 10);
-        pink = createSquarePanel(Color.PINK, 10);
-        cyan = createSquarePanel(Color.CYAN, 10);
-        gray = createSquarePanel(Color.GRAY, 10);
-        black = createSquarePanel(Color.BLACK, 10);
-        magenta = createSquarePanel(Color.MAGENTA, 10);
+        red = createPanel(Color.RED);
+        blue = createPanel(Color.BLUE);
+        green = createPanel(Color.GREEN);
+        orange = createPanel(Color.ORANGE);
+        yellow = createPanel(Color.YELLOW);
+        pink = createPanel(Color.PINK);
+        cyan = createPanel(Color.CYAN);
+        gray = createPanel(Color.GRAY);
+        black = createPanel(Color.BLACK);
+        magenta = createPanel(Color.MAGENTA);
 
         pnlQuickColours.add(red);
         pnlQuickColours.add(blue);
@@ -154,6 +167,14 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     }
 
     /**
+     * add flow layout to the colour picker panel
+     */
+    private void layoutColourPickerPanel() {
+        pnlColourPicker.add(btnColourPicker);
+        pnlColourPicker.add(btnClear);
+    }
+
+    /**
      * create GUI components
      */
     private void createVecGUI(){
@@ -164,6 +185,7 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         fileMenu.add(fileMenuItemNew);
         fileMenu.add(fileMenuItemOpen);
         menuBar.add(fileMenu);
+        menuBar.add(undo);
         setJMenuBar(menuBar);
 
         // panels
@@ -181,24 +203,28 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         getContentPane().add(pnlBottom, BorderLayout.SOUTH);
 
         pnlTools.setPreferredSize(new Dimension(screenWidth / 16, screenHeight));
-        pnlColours.setPreferredSize(new Dimension(screenWidth / 16, screenHeight));
-        pnlQuickColours.setPreferredSize(new Dimension(screenWidth / 18, 250));
-        pnlColourPicker.setPreferredSize(new Dimension(screenWidth / 18, 100));
+        pnlColours.setPreferredSize(new Dimension(screenWidth / 14, screenHeight));
+        pnlQuickColours.setPreferredSize(new Dimension(screenWidth / 16, 250));
+        pnlColourPicker.setPreferredSize(new Dimension(screenWidth / 16, 100));
         pnlBottom.setPreferredSize(new Dimension(screenWidth, 20));
 
         // buttons
-        btnPlot = createButton("Plot");
-        btnLine = createButton("Line");
-        btnRectangle = createButton("Rectangle");
-        btnEllipse = createButton("Ellipse");
-        btnPolygon = createButton("Polygon");
+        btnPlot = createToolButton("Plot");
+        btnLine = createToolButton("Line");
+        btnRectangle = createToolButton("Rectangle");
+        btnEllipse = createToolButton("Ellipse");
+        btnPolygon = createToolButton("Polygon");
 
-        // colour chooser
-        colourChooser = createColourChooser();
+        // clear button
+        btnClear = createClearButton();
+
+        // colour chooser button
+        btnColourPicker = createColourChooserButton();
 
         layoutToolsPanel();
         layoutColourPanel();
         layoutQuickColourPanel();
+        layoutColourPickerPanel();
 
         // pack up
         setPreferredSize(new Dimension(screenWidth / 2, screenHeight / 2));
