@@ -6,11 +6,15 @@ public class VecPaint extends JFrame{
     private int screenWidth;
     private int screenHeight;
 
+    //Menu bar variables
     private JMenuBar menuBar = new JMenuBar();
     private JMenu fileMenu = new JMenu("File");
     private JMenuItem fileMenuItemSave = new JMenuItem("Save");
     private JMenuItem fileMenuItemNew = new JMenuItem("New");
     private JMenuItem fileMenuItemOpen = new JMenuItem("Open");
+
+    //Panel variables
+    private JPanel dummyPanel;
 
     private VecPaint(){
         super("VecPaint tool");
@@ -26,6 +30,15 @@ public class VecPaint extends JFrame{
     }
 
     /**
+     * create panel
+     */
+    private JPanel createPanel(Color c) {
+        JPanel newPanel = new JPanel();
+        newPanel.setBackground(c);
+        return newPanel;
+    }
+
+    /**
      * create GUI components
      */
     private void createVecGUI(){
@@ -38,8 +51,8 @@ public class VecPaint extends JFrame{
         setJMenuBar(menuBar);
 
         // dummy panel
-        JPanel panel = new JPanel();
-        super.getContentPane().add(panel);
+        dummyPanel = createPanel(Color.WHITE);
+        super.getContentPane().add(dummyPanel);
 
         // pack up
         super.setPreferredSize(new Dimension(screenWidth / 2, screenHeight / 2));
