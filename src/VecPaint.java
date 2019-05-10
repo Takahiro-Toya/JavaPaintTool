@@ -76,6 +76,10 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     private VecPaint(){
         super("VecPaint tool");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getScreenSize();
+        setBounds((screenWidth - screenWidth / 2) / 2, (screenHeight - screenHeight / 2) / 2, screenWidth / 2, screenHeight /2);
+        setPreferredSize(new Dimension(screenWidth / 2, screenHeight / 2));
+        setLayout(new BorderLayout());
     }
 
     /**
@@ -269,7 +273,6 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
      * create GUI components
      */
     private void createVecGUI(){
-        setLayout(new BorderLayout());
 
         // menu bar items
         fileMenu.add(fileMenuItemSave);
