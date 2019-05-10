@@ -4,8 +4,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.tools.Tool;
 
 public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     private int screenWidth;
@@ -14,13 +17,30 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     private int prevX, prevY;
     private Graphics drawingArea;
     private boolean mouseIsDragging;
+    private File vecFile;
     //Menu bar variables
+    public enum MenuNames{
+         File("File"), Undo("Undo"), Save("Save"), New("New"), Open("Open");
+         private final String name;
+         private MenuNames(String s){
+            name = s;
+         }
+    }
+    public enum ToolNames{
+        Tools("Tools"), Plot("Plot"), Line("Line"), Rectangle("Rectangle"),
+        Ellipse("Ellipse"), Polygon("Polygon");
+        private final String name;
+        private ToolNames(String s){
+            name = s;
+        }
+    }
+
     private JMenuBar menuBar = new JMenuBar();
-    private JMenu fileMenu = new JMenu("File");
-    private JMenu undo = new JMenu("Undo");
-    private JMenuItem fileMenuItemSave = new JMenuItem("Save");
-    private JMenuItem fileMenuItemNew = new JMenuItem("New");
-    private JMenuItem fileMenuItemOpen = new JMenuItem("Open");
+    private JMenu fileMenu = new JMenu(MenuNames.File.name);
+    private JMenu undo = new JMenu(MenuNames.Undo.name);
+    private JMenuItem fileMenuItemSave = new JMenuItem(MenuNames.Save.name);
+    private JMenuItem fileMenuItemNew = new JMenuItem(MenuNames.New.name);
+    private JMenuItem fileMenuItemOpen = new JMenuItem(MenuNames.Open.name);
 
     //Panel variables
     private JPanel pnlCanvas;
@@ -97,7 +117,7 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
                     chosenColour = Color.WHITE;
                 }
 
-                pnlCanvas.setBackground(chosenColour);
+                pnlColourPicker.setBackground(chosenColour);
             }
         });
         return newButton;
@@ -123,7 +143,7 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     private void layoutToolsPanel() {
         GridLayout layout = new GridLayout(5, 1);
         pnlTools.setLayout(layout);
-        pnlTools.setBorder(BorderFactory.createTitledBorder("Tools"));
+        pnlTools.setBorder(BorderFactory.createTitledBorder(ToolNames.Tools.name));
 
         pnlTools.add(btnPlot);
         pnlTools.add(btnLine);
@@ -169,11 +189,12 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         pnlQuickColours.add(btnBlack);
         pnlQuickColours.add(btnMagenta);
 
-        ActionListener colorListener = new ActionListener() {
+        ActionListener colourListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                  JButton button = (JButton)e.getSource();
                  chosenColour = button.getBackground();
+                 pnlColourPicker.setBackground(chosenColour);
             }
         };
 
@@ -188,16 +209,17 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         btnBlack.setOpaque(true);btnBlack.setBorderPainted(false);
         btnMagenta.setOpaque(true);btnMagenta.setBorderPainted(false);
 
-        btnRed.addActionListener(colorListener);
-        btnBlue.addActionListener(colorListener);
-        btnGreen.addActionListener(colorListener);
-        btnOrange.addActionListener(colorListener);
-        btnYellow.addActionListener(colorListener);
-        btnPink.addActionListener(colorListener);
-        btnCyan.addActionListener(colorListener);
-        btnGray.addActionListener(colorListener);
-        btnBlack.addActionListener(colorListener);
-        btnMagenta.addActionListener(colorListener);
+        btnRed.addActionListener(colourListener);
+        btnBlue.addActionListener(colourListener);
+        btnGreen.addActionListener(colourListener);
+        btnOrange.addActionListener(colourListener);
+        btnYellow.addActionListener(colourListener);
+        btnPink.addActionListener(colourListener);
+        btnCyan.addActionListener(colourListener);
+        btnGray.addActionListener(colourListener);
+        btnBlack.addActionListener(colourListener);
+        btnMagenta.addActionListener(colourListener);
+
 
 
     }
@@ -211,6 +233,39 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     }
 
     /**
+     * add actions to file menu
+     */
+    private void addFileMenuFunc(){
+        fileMenuItemOpen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser chooser = new JFileChooser();
+                if (chooser.showOpenDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
+                    vecFile = chooser.getSelectedFile();
+
+                }
+            }
+        });
+
+        fileMenuItemSave.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser chooser = new JFileChooser();
+                if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
+                    vecFile = chooser.getSelectedFile();
+                }
+            }
+        });
+
+        fileMenuItemNew.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+    }
+
+    /**
      * create GUI components
      */
     private void createVecGUI(){
@@ -220,6 +275,7 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         fileMenu.add(fileMenuItemSave);
         fileMenu.add(fileMenuItemNew);
         fileMenu.add(fileMenuItemOpen);
+        addFileMenuFunc();
         menuBar.add(fileMenu);
         menuBar.add(undo);
         setJMenuBar(menuBar);
@@ -231,7 +287,7 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         pnlBottom = createPanel(Color.LIGHT_GRAY);
 
         pnlQuickColours = createPanel(Color.WHITE);
-        pnlColourPicker = createPanel(Color.PINK);
+        pnlColourPicker = createPanel(chosenColour);
 
         getContentPane().add(pnlCanvas, BorderLayout.CENTER);
         getContentPane().add(pnlTools, BorderLayout.WEST);
@@ -245,11 +301,11 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         pnlBottom.setPreferredSize(new Dimension(screenWidth, 20));
 
         // buttons
-        btnPlot = createToolButton("Plot");
-        btnLine = createToolButton("Line");
-        btnRectangle = createToolButton("Rectangle");
-        btnEllipse = createToolButton("Ellipse");
-        btnPolygon = createToolButton("Polygon");
+        btnPlot = createToolButton(ToolNames.Plot.name);
+        btnLine = createToolButton(ToolNames.Line.name);
+        btnRectangle = createToolButton(ToolNames.Rectangle.name);
+        btnEllipse = createToolButton(ToolNames.Ellipse.name);
+        btnPolygon = createToolButton(ToolNames.Polygon.name);
 
         // clear button
         btnClear = createClearButton();
