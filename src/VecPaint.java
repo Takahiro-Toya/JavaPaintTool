@@ -10,25 +10,12 @@ import java.awt.image.BufferedImage;
 public class VecPaint extends JFrame implements ActionListener, ChangeListener {
 
     //Menu bar variables
-    public enum MenuNames{
-         File("File"), Undo("Undo"), Save("Save"), New("New"), Open("Open");
-         private final String name;
-         private MenuNames(String s){
-            name = s;
-         }
-    }
-
     private int screenWidth;
     private int screenHeight;
 
     private File vecFile;
 
     private JMenuBar menuBar = new JMenuBar();
-    private JMenu fileMenu = new JMenu(MenuNames.File.name);
-    private JMenu undo = new JMenu(MenuNames.Undo.name);
-    private JMenuItem fileMenuItemSave = new JMenuItem(MenuNames.Save.name);
-    private JMenuItem fileMenuItemNew = new JMenuItem(MenuNames.New.name);
-    private JMenuItem fileMenuItemOpen = new JMenuItem(MenuNames.Open.name);
 
     //Panel variables
     private JPanel pnlCanvas;
@@ -66,53 +53,13 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         return newPanel;
     }
 
-
-
-    /**
-     * add actions to file menu
-     */
-    private void addFileMenuFunc(){
-        fileMenuItemOpen.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                if (chooser.showOpenDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
-                    vecFile = chooser.getSelectedFile();
-
-                }
-            }
-        });
-
-        fileMenuItemSave.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
-                    vecFile = chooser.getSelectedFile();
-                }
-            }
-        });
-
-        fileMenuItemNew.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
-    }
-
     /**
      * create GUI components
      */
     private void createVecGUI(){
-
-        // menu bar items
-        fileMenu.add(fileMenuItemSave);
-        fileMenu.add(fileMenuItemNew);
-        fileMenu.add(fileMenuItemOpen);
-        addFileMenuFunc();
-        menuBar.add(fileMenu);
-        menuBar.add(undo);
+// create menu bar
+        VecFileManager manager = new VecFileManager(null);
+        menuBar = manager.createJmenu();
         setJMenuBar(menuBar);
 
 //        pnlCanvas = createPanel(Color.WHITE);
