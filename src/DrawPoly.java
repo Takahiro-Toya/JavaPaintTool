@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
  * This class provides JPanel to draw a temporary line,
  * and when the user finished drawing (released mouse) the line is drawn on the Buffered Image
  */
-public class DrawPoly extends JPanel implements MouseListener, MouseMotionListener, DrawShape{
+public class DrawPoly extends JPanel implements DrawShape, CanvasSubject{
 
     private BufferedImage imagePanel;
 
@@ -31,8 +31,9 @@ public class DrawPoly extends JPanel implements MouseListener, MouseMotionListen
      * @param imagePanel to display drawn image
      */
     public DrawPoly (BufferedImage imagePanel){
-        this.addMouseListener(this);
-        this.addMouseMotionListener(this);
+        PolyMouseListener mouse = new PolyMouseListener();
+        this.addMouseListener(mouse);
+        this.addMouseMotionListener(mouse);
         this.imagePanel = imagePanel;
     }
 
@@ -65,83 +66,88 @@ public class DrawPoly extends JPanel implements MouseListener, MouseMotionListen
         }
     }
 
-    /**
-     * When mouse is pressed, start drawing a rectangle, so set the start location
-     */
-    public void mousePressed(MouseEvent e) {
-        if (edges == 0){
-            sx = e.getX();
-            sy = e.getY();
-            tpx = sx;
-            tpy = sy;
-            edges++;
-        } else {
+    private class PolyMouseListener extends MouseAdapter {
+        /**
+         * When mouse is pressed, start drawing a rectangle, so set the start location
+         */
+        public void mousePressed(MouseEvent e) {
+            if (edges == 0) {
+                sx = e.getX();
+                sy = e.getY();
+                tpx = sx;
+                tpy = sy;
+                edges++;
+            } else {
+                ex = e.getX();
+                ey = e.getY();
+                drawOnImagePanel(tpx, tpy, ex, ey);
+                drawTempLine = false;
+                repaint();
+                tpx = ex;
+                tpy = ey;
+                edges++;
+            }
+        }
+
+        /**
+         * When mouse is being moved (not dragged!), a temporary line is drawn
+         * between preveously clicked location to current mouse location
+         */
+        public void mouseMoved(MouseEvent e) {
+            if (!(edges == 0)) {
+                ex = e.getX();
+                ey = e.getY();
+                drawTempLine = true;
+                repaint();
+            }
+        }
+
+        /**
+         * When mouse click is released, a line is drawn on the BufferedImage
+         */
+        public void mouseReleased(MouseEvent e) {
+            drawTempLine = false;
+            repaint();
+        }
+
+
+        /**
+         * Only when double click is made, then finish drawing polygon, and connects start to end point
+         */
+        public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 2) {
+                ex = e.getX();
+                ey = e.getY();
+                drawTempLine = false;
+                edges = 0;
+                drawOnImagePanel(ex, ey, sx, sy);
+
+            }
+        }
+
+        /**
+         * When mouse is being dragged, continuously updates tpx, tpy and ex, ey.
+         * So, it produces like a free shape
+         * This is still a polygon : A polygon with lots of very short straight lines
+         */
+        public void mouseDragged(MouseEvent e) {
             ex = e.getX();
             ey = e.getY();
             drawOnImagePanel(tpx, tpy, ex, ey);
-            drawTempLine = false;
             repaint();
             tpx = ex;
             tpy = ey;
-            edges++;
+        }
+
+        // those methods are not used, just need to implements here
+        public void mouseEntered(MouseEvent evt) {
+        }
+
+        public void mouseExited(MouseEvent evt) {
         }
     }
-
-    /**
-     * When mouse is being moved (not dragged!), a temporary line is drawn
-     * between preveously clicked location to current mouse location
-     */
-    public void mouseMoved(MouseEvent e) {
-        if (!(edges == 0)) {
-            ex = e.getX();
-            ey = e.getY();
-            drawTempLine = true;
-            repaint();
-        }
-    }
-
-    /**
-     * When mouse click is released, a line is drawn on the BufferedImage
-     */
-    public void mouseReleased(MouseEvent e) {
-        drawTempLine = false;
-        repaint();
-    }
-
-
-    /**
-     * Only when double click is made, then finish drawing polygon, and connects start to end point
-     */
-    public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2){
-            ex = e.getX();
-            ey = e.getY();
-            drawTempLine = false;
-            edges = 0;
-            drawOnImagePanel(ex, ey, sx, sy);
-
-        }
-    }
-
-    /**
-     * When mouse is being dragged, continuously updates tpx, tpy and ex, ey.
-     * So, it produces like a free shape
-     * This is still a polygon : A polygon with lots of very short straight lines
-     */
-    public void mouseDragged(MouseEvent e) {
-        ex = e.getX();
-        ey = e.getY();
-        drawOnImagePanel(tpx, tpy, ex, ey);
-        repaint();
-        tpx = ex;
-        tpy = ey;
-    }
-
-    // those methods are not used, just need to implements here
-    public void mouseEntered(MouseEvent evt) { }
-    public void mouseExited(MouseEvent evt) { }
-
     public void writeVecFile(){}
+    public void setColour(){}
     public Point getStartPoint(){
         return new Point(sx, sy);
     }

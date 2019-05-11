@@ -1,23 +1,14 @@
-import javax.crypto.Cipher;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.tools.Tool;
+import java.awt.image.BufferedImage;
 
 public class VecPaint extends JFrame implements ActionListener, ChangeListener {
-    private int screenWidth;
-    private int screenHeight;
 
-    private int prevX, prevY;
-    private Graphics drawingArea;
-    private boolean mouseIsDragging;
-    private File vecFile;
     //Menu bar variables
     public enum MenuNames{
          File("File"), Undo("Undo"), Save("Save"), New("New"), Open("Open");
@@ -26,14 +17,11 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
             name = s;
          }
     }
-    public enum ToolNames{
-        Tools("Tools"), Plot("Plot"), Line("Line"), Rectangle("Rectangle"),
-        Ellipse("Ellipse"), Polygon("Polygon");
-        private final String name;
-        private ToolNames(String s){
-            name = s;
-        }
-    }
+
+    private int screenWidth;
+    private int screenHeight;
+
+    private File vecFile;
 
     private JMenuBar menuBar = new JMenuBar();
     private JMenu fileMenu = new JMenu(MenuNames.File.name);
@@ -46,30 +34,9 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
     private JPanel pnlCanvas;
     private JPanel pnlTools;
     private JPanel pnlColours;
-    private JPanel pnlQuickColours;
-    private JPanel pnlColourPicker;
     private JPanel pnlBottom;
 
-    //initialise quick colour select buttons;
-    private JButton btnRed = new JButton();
-    private JButton btnBlue = new JButton();
-    private JButton btnGreen = new JButton();
-    private JButton btnOrange = new JButton();
-    private JButton btnYellow = new JButton();
-    private JButton btnPink = new JButton();
-    private JButton btnCyan = new JButton();
-    private JButton btnGray = new JButton();
-    private JButton btnBlack = new JButton();
-    private JButton btnMagenta = new JButton();
-
-    //Button variables
-    private JButton btnPlot;
-    private JButton btnLine;
-    private JButton btnRectangle;
-    private JButton btnEllipse;
-    private JButton btnPolygon;
-    private JButton btnColourPicker;
-    private JButton btnClear;
+    private BufferedImage imagePanel;
 
     private Color chosenColour;
 
@@ -99,142 +66,7 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         return newPanel;
     }
 
-    /**
-     * create button
-     */
-    private JButton createToolButton(String str) {
-        JButton newButton = new JButton(str);
-        newButton.addActionListener( this);
-        return newButton;
-    }
 
-    /**
-     * create colour chooser button
-     */
-    private JButton createColourChooserButton() {
-        JButton newButton = new JButton("More Colours");
-
-        newButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                chosenColour = JColorChooser.showDialog(null, "Select Colour", chosenColour);
-                if (chosenColour == null) {
-                    chosenColour = Color.WHITE;
-                }
-
-                pnlColourPicker.setBackground(chosenColour);
-            }
-        });
-        return newButton;
-    }
-
-    /**
-     * create clear button
-     */
-    private JButton createClearButton() {
-        JButton newButton = new JButton("Clear");
-
-        newButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                pnlCanvas.setBackground(Color.WHITE);
-            }
-        });
-        return newButton;
-    }
-
-    /**
-     * add grid layout to the tools panel
-     */
-    private void layoutToolsPanel() {
-        GridLayout layout = new GridLayout(5, 1);
-        pnlTools.setLayout(layout);
-        pnlTools.setBorder(BorderFactory.createTitledBorder(ToolNames.Tools.name));
-
-        pnlTools.add(btnPlot);
-        pnlTools.add(btnLine);
-        pnlTools.add(btnRectangle);
-        pnlTools.add(btnEllipse);
-        pnlTools.add(btnPolygon);
-    }
-
-    /**
-     * add grid layout to the colour panel
-     */
-    private void layoutColourPanel() {
-        pnlColours.setBorder(BorderFactory.createTitledBorder("Colours"));
-        pnlColours.add(pnlQuickColours);
-        pnlColours.add(pnlColourPicker);
-    }
-
-    /**
-     * add grid layout to the quick colour panel
-     */
-    private void layoutQuickColourPanel() {
-        GridLayout layout = new GridLayout(5, 2);
-        pnlQuickColours.setLayout(layout);
-        btnRed.setBackground(Color.red);
-        btnBlue.setBackground(Color.blue);
-        btnGreen.setBackground(Color.green);
-        btnOrange.setBackground(Color.orange);
-        btnYellow.setBackground(Color.yellow);
-        btnPink.setBackground(Color.pink);
-        btnCyan.setBackground(Color.cyan);
-        btnGray.setBackground(Color.gray);
-        btnBlack.setBackground(Color.black);
-        btnMagenta.setBackground(Color.magenta);
-
-        pnlQuickColours.add(btnRed);
-        pnlQuickColours.add(btnBlue);
-        pnlQuickColours.add(btnGreen);
-        pnlQuickColours.add(btnOrange);
-        pnlQuickColours.add(btnYellow);
-        pnlQuickColours.add(btnPink);
-        pnlQuickColours.add(btnCyan);
-        pnlQuickColours.add(btnGray);
-        pnlQuickColours.add(btnBlack);
-        pnlQuickColours.add(btnMagenta);
-
-        ActionListener colourListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                 JButton button = (JButton)e.getSource();
-                 chosenColour = button.getBackground();
-                 pnlColourPicker.setBackground(chosenColour);
-            }
-        };
-
-        btnRed.setOpaque(true);btnRed.setBorderPainted(false);
-        btnBlue.setOpaque(true);btnBlue.setBorderPainted(false);
-        btnGreen.setOpaque(true);btnGreen.setBorderPainted(false);
-        btnOrange.setOpaque(true);btnOrange.setBorderPainted(false);
-        btnYellow.setOpaque(true);btnYellow.setBorderPainted(false);
-        btnPink.setOpaque(true);btnPink.setBorderPainted(false);
-        btnCyan.setOpaque(true);btnCyan.setBorderPainted(false);
-        btnGray.setOpaque(true);btnGray.setBorderPainted(false);
-        btnBlack.setOpaque(true);btnBlack.setBorderPainted(false);
-        btnMagenta.setOpaque(true);btnMagenta.setBorderPainted(false);
-
-        btnRed.addActionListener(colourListener);
-        btnBlue.addActionListener(colourListener);
-        btnGreen.addActionListener(colourListener);
-        btnOrange.addActionListener(colourListener);
-        btnYellow.addActionListener(colourListener);
-        btnPink.addActionListener(colourListener);
-        btnCyan.addActionListener(colourListener);
-        btnGray.addActionListener(colourListener);
-        btnBlack.addActionListener(colourListener);
-        btnMagenta.addActionListener(colourListener);
-
-
-
-    }
-
-    /**
-     * add flow layout to the colour picker panel
-     */
-    private void layoutColourPickerPanel() {
-        pnlColourPicker.add(btnColourPicker);
-        pnlColourPicker.add(btnClear);
-    }
 
     /**
      * add actions to file menu
@@ -283,64 +115,37 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         menuBar.add(undo);
         setJMenuBar(menuBar);
 
-        // panels
-        pnlCanvas = createPanel(Color.WHITE);
-        pnlTools = createPanel(Color.LIGHT_GRAY);
-        pnlColours = createPanel(Color.LIGHT_GRAY);
+//        pnlCanvas = createPanel(Color.WHITE);
+        pnlTools = new ToolPanel();
+        pnlColours = new ColorPanel();
         pnlBottom = createPanel(Color.LIGHT_GRAY);
 
-        pnlQuickColours = createPanel(Color.WHITE);
-        pnlColourPicker = createPanel(chosenColour);
+        imagePanel = new BufferedImage((int)(getHeight() * 0.9), (int)(getHeight() * 0.9), BufferedImage.TYPE_INT_ARGB);
+//        pnlCanvas = new DrawLine(imagePanel);
+//        pnlCanvas = new DrawEllip(imagePanel);
+//        pnlCanvas = new DrawPoly(imagePanel);
+        pnlCanvas = new DrawRect(imagePanel);
+//        pnlCanvas = new DrawPlot(imagePanel);
+//        pnlCanvas.setPreferredSize(new Dimension((int)(getHeight() * 0.9), (int)(getHeight() * 0.9)));
 
         getContentPane().add(pnlCanvas, BorderLayout.CENTER);
+
+        pnlTools.setPreferredSize(new Dimension((int)(getWidth() * 0.18), getHeight()));
         getContentPane().add(pnlTools, BorderLayout.WEST);
+
+        pnlColours.setPreferredSize(new Dimension((int)(getWidth() * 0.18), getHeight()));
         getContentPane().add(pnlColours, BorderLayout.EAST);
+
         getContentPane().add(pnlBottom, BorderLayout.SOUTH);
-
-        pnlTools.setPreferredSize(new Dimension(screenWidth / 16, screenHeight));
-        pnlColours.setPreferredSize(new Dimension(screenWidth / 14, screenHeight));
-        pnlQuickColours.setPreferredSize(new Dimension(screenWidth / 16, 250));
-        pnlColourPicker.setPreferredSize(new Dimension(screenWidth / 16, 100));
         pnlBottom.setPreferredSize(new Dimension(screenWidth, 20));
-
-        // buttons
-        btnPlot = createToolButton(ToolNames.Plot.name);
-        btnLine = createToolButton(ToolNames.Line.name);
-        btnRectangle = createToolButton(ToolNames.Rectangle.name);
-        btnEllipse = createToolButton(ToolNames.Ellipse.name);
-        btnPolygon = createToolButton(ToolNames.Polygon.name);
-
-        // clear button
-        btnClear = createClearButton();
-
-        // colour chooser button
-        btnColourPicker = createColourChooserButton();
-
-        layoutToolsPanel();
-        layoutColourPanel();
-        layoutQuickColourPanel();
-        layoutColourPickerPanel();
-
-        // pack up
-        setPreferredSize(new Dimension(screenWidth / 2, screenHeight / 2));
 
         pack();
         repaint();
         setVisible(true);
     }
 
-    private void setDrawingArea(){
-        drawingArea = getGraphics();
-    }
 
-    public void mousePressed(MouseEvent evt) {
-        int mouseX = evt.getX();
-        int mouseY = evt.getY();
-        if (mouseIsDragging){
-            return;
-        }
 
-    }
 
     public static void main(String[] args){
         VecPaint vectorTool = new VecPaint();

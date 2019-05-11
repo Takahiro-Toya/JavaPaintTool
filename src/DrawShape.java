@@ -4,8 +4,11 @@ public interface DrawShape {
 
     void writeVecFile();
 
+    void setColour();
+
     Point getStartPoint();
 
     Point getEndPoint();
+
 
 }

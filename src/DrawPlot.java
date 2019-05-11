@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
  * This class provides JPanel to draw a temporary line,
  * and when the user finished drawing (released mouse) the line is drawn on the Buffered Image
  */
-public class DrawLine extends JPanel implements DrawShape, CanvasSubject {
+public class DrawPlot extends JPanel implements DrawShape, CanvasSubject {
 
     private BufferedImage imagePanel;
 
@@ -23,8 +23,8 @@ public class DrawLine extends JPanel implements DrawShape, CanvasSubject {
      * constructor
      * @param imagePanel to display drawn image
      */
-    public DrawLine(BufferedImage imagePanel){
-        LineMouseListener mouse = new LineMouseListener();
+    public DrawPlot(BufferedImage imagePanel){
+        PlotMouseListener mouse = new PlotMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
         this.imagePanel = imagePanel;
@@ -39,17 +39,15 @@ public class DrawLine extends JPanel implements DrawShape, CanvasSubject {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(imagePanel, 0, 0, this);
+        g.setColor(LINE_COLOR);
+        g.drawLine(sx, sy, sx, sy);
 
-        if (drawTempLine) {
-            g.setColor(LINE_COLOR);
-            g.drawLine(sx, sy, ex, ey);
-        }
     }
 
     /**
      * Mouse Listener
      */
-    private class LineMouseListener extends MouseAdapter {
+    private class PlotMouseListener extends MouseAdapter {
         /**
          * When mouse is pressed, start drawing a rectangle, so set the start location
          */
@@ -59,37 +57,20 @@ public class DrawLine extends JPanel implements DrawShape, CanvasSubject {
             sy = e.getY();
         }
 
-        /**
-         * While mouse is being dragged, temporary line is shown
-         * every time repaint the JPanel (this object)
-         */
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            ex = e.getX();
-            ey = e.getY();
-            drawTempLine = true;
-            repaint();
-        }
-
-        /**
-         * When mouse click is released, the rectangle is drawn on the BufferedImage
-         */
-        @Override
         public void mouseReleased(MouseEvent e) {
-            ex = e.getX();
-            ey = e.getY();
             Graphics2D g2 = imagePanel.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(Color.BLUE);
             g2.setStroke(new BasicStroke(5f));
-            g2.drawLine(sx, sy, ex, ey);
+            g2.drawLine(sx, sy, sx, sy);
             g2.dispose();
-            drawTempLine = false;
             repaint();
         }
 
-
         // those methods are not used, just need to implements here
+        public void mouseDragged(MouseEvent e) {
+        }
+
         public void mouseEntered(MouseEvent evt) {
         }
 
