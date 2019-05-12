@@ -2,8 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
 /**
@@ -11,7 +9,7 @@ import java.awt.image.BufferedImage;
  * This class provides JPanel to draw a temporary line,
  * and when the user finished drawing (released mouse) the line is drawn on the Buffered Image
  */
-public class DrawPoly extends JPanel implements DrawShape, CanvasSubject{
+public class DrawPoly extends JPanel implements DrawShape {
 
     private BufferedImage imagePanel;
 
@@ -24,7 +22,7 @@ public class DrawPoly extends JPanel implements DrawShape, CanvasSubject{
 
     private int edges = 0;
     private boolean drawTempLine = false;
-    private Color LINE_COLOR;
+    private Color lineColor = Color.black;
 
     /**
      * constructor
@@ -43,7 +41,7 @@ public class DrawPoly extends JPanel implements DrawShape, CanvasSubject{
     private void drawOnImagePanel(int x1, int y1, int x2, int y2){
         Graphics2D g2 = imagePanel.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(Color.BLUE);
+        g2.setColor(lineColor);
         g2.setStroke(new BasicStroke(5f));
         g2.drawLine(x1, y1, x2, y2);
         g2.dispose();
@@ -61,7 +59,7 @@ public class DrawPoly extends JPanel implements DrawShape, CanvasSubject{
         g.drawImage(imagePanel, 0, 0, this);
 
         if (drawTempLine) {
-            g.setColor(LINE_COLOR);
+            g.setColor(lineColor);
             g.drawLine(tpx, tpy, ex, ey);
         }
     }
@@ -147,7 +145,9 @@ public class DrawPoly extends JPanel implements DrawShape, CanvasSubject{
         }
     }
     public void writeVecFile(){}
-    public void setColour(){}
+    public void setColour(Color color){
+        lineColor = color;
+    }
     public Point getStartPoint(){
         return new Point(sx, sy);
     }

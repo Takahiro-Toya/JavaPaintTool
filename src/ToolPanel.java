@@ -4,9 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class ToolPanel extends JPanel {
+public class ToolPanel extends JPanel implements Subject {
 
+    private String className = "ToolPanel"
+;
     private String currentMode;
+
+    private ArrayList<Observer> observers = new ArrayList<>();
 
     private ArrayList<JButton> toolBtns =  new ArrayList<>();
 
@@ -39,18 +43,28 @@ public class ToolPanel extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     JButton clickedBtn = (JButton)e.getSource();
                     currentMode = clickedBtn.getText();
+                    notifyObservers();
                 }
             });
             toolBtns.add(btn);
         }
     }
 
+    public void attachObservers(Observer observer){
+        observers.add(observer);
+    }
+
+    public void notifyObservers(){
+        for (int i = 0; i < observers.size(); i++){
+            observers.get(i).update(className);
+        }
+    }
 
     /**
      * Return current drawing mode
      * @return current drawing mode
      */
-    private String getCurrentMode(){
+    public String getCurrentMode(){
         return currentMode;
     }
 }

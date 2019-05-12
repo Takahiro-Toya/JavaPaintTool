@@ -2,8 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
 /**
@@ -11,7 +9,7 @@ import java.awt.image.BufferedImage;
  * This class provides JPanel to draw a temporary ellipse,
  * and when the user finished drawing (released mouse) the ellipse is drawn on the Buffered Image
  */
-public class DrawEllip extends JPanel implements DrawShape, CanvasSubject {
+public class DrawEllip extends JPanel implements DrawShape {
 
     private BufferedImage imagePanel;
 
@@ -20,7 +18,7 @@ public class DrawEllip extends JPanel implements DrawShape, CanvasSubject {
     private int ex;
     private int ey;
     private boolean drawTempLine = false;
-    private Color LINE_COLOR;
+    private Color lineColor = Color.black;
 
     public DrawEllip(BufferedImage imagePanel){
         EllipMouseListener mouse = new EllipMouseListener();
@@ -44,7 +42,7 @@ public class DrawEllip extends JPanel implements DrawShape, CanvasSubject {
 
             int width = ex - sx;
             int height = ey - sy;
-            g.setColor(LINE_COLOR);
+            g.setColor(lineColor);
             if (width >= 0 && height >= 0){
                 g.drawOval(sx, sy, width, height);
             } else if (width >= 0 && height < 0){
@@ -89,7 +87,7 @@ public class DrawEllip extends JPanel implements DrawShape, CanvasSubject {
 
             Graphics2D g2 = imagePanel.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(Color.BLUE);
+            g2.setColor(lineColor);
             g2.setStroke(new BasicStroke(5f));
             if (width >= 0 && height >= 0) {
                 g2.drawOval(sx, sy, width, height);
@@ -121,7 +119,9 @@ public class DrawEllip extends JPanel implements DrawShape, CanvasSubject {
 
     }
     public void writeVecFile(){}
-    public void setColour(){}
+    public void setColour(Color color){
+        lineColor = color;
+    }
     public Point getStartPoint(){
         return new Point(sx, sy);
     }

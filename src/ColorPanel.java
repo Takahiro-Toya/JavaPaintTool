@@ -4,7 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class ColorPanel extends JPanel {
+public class ColorPanel extends JPanel implements Subject {
+
+    private String className = "ColorPanel";
+
+    private ArrayList<Observer> observers  = new ArrayList<>();
 
     private JPanel pnlQuickColours;
     private JPanel pnlColourPicker;
@@ -71,6 +75,7 @@ public class ColorPanel extends JPanel {
                     JButton button = (JButton)e.getSource();
                     chosenColour = button.getBackground();
                     pnlColourPicker.setBackground(chosenColour);
+                    notifyObservers();
                 }
             });
             quickColourBtns.add(btn);
@@ -83,6 +88,17 @@ public class ColorPanel extends JPanel {
     private void layoutQuickColourPanel() {
         GridLayout layout = new GridLayout(5, 2);
         pnlQuickColours.setLayout(layout);
+    }
+
+
+    public void attachObservers(Observer observer){
+        observers.add(observer);
+    }
+
+    public void notifyObservers(){
+        for (int i = 0; i < observers.size(); i++){
+            observers.get(i).update(className);
+        }
     }
 
     /**

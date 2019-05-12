@@ -7,7 +7,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.image.BufferedImage;
 
-public class VecPaint extends JFrame implements ActionListener, ChangeListener {
+public class VecPaint extends JFrame implements ActionListener, ChangeListener, Observer {
 
     //Menu bar variables
     private int screenWidth;
@@ -19,13 +19,17 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
 
     //Panel variables
     private JPanel pnlCanvas;
-    private JPanel pnlTools;
-    private JPanel pnlColours;
+    private ToolPanel pnlTools;
+    private ColorPanel pnlColours;
     private JPanel pnlBottom;
+
+    private Color widgetBgColor = Color.LIGHT_GRAY;
+    private Color canvasBgColor = Color.white;
 
     private BufferedImage imagePanel;
 
-    private Color chosenColour;
+    private String currentMode;
+    private Color currentColour;
 
     private VecPaint(){
         super("VecPaint tool");
@@ -44,14 +48,65 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
     }
 
-    /**
-     * create panel
-     */
-    private JPanel createPanel(Color c) {
-        JPanel newPanel = new JPanel();
-        newPanel.setBackground(c);
-        return newPanel;
+    public void update(String className){
+        if (className == "ToolPanel"){
+            currentMode = pnlTools.getCurrentMode();
+            if(currentMode == "Line"){
+                getContentPane().remove(pnlCanvas);
+                pnlCanvas = new DrawLine(imagePanel);
+                canvasChanged();
+                ((DrawLine)pnlCanvas).setColour(currentColour);
+            } else if (currentMode == "Plot"){
+                pnlCanvas = new DrawPlot(imagePanel);
+                canvasChanged();
+                ((DrawPlot)pnlCanvas).setColour(currentColour);
+            } else if (currentMode == "Rectangle") {
+                getContentPane().remove(pnlCanvas);
+                pnlCanvas = new DrawRect(imagePanel);
+                canvasChanged();
+                ((DrawRect)pnlCanvas).setColour(currentColour);
+            } else if (currentMode == "Polygon"){
+                getContentPane().remove(pnlCanvas);
+                pnlCanvas = new DrawPoly(imagePanel);
+                canvasChanged();
+                ((DrawPoly)pnlCanvas).setColour(currentColour);
+            } else if (currentMode == "Ellipse"){
+                getContentPane().remove(pnlCanvas);
+                pnlCanvas = new DrawEllip(imagePanel);
+                canvasChanged();
+                ((DrawEllip)pnlCanvas).setColour(currentColour);
+            } else {
+                getContentPane().remove(pnlCanvas);
+                pnlCanvas = new DrawLine(imagePanel);
+                canvasChanged();
+            }
+
+        } else if (className == "ColorPanel"){
+            currentColour = pnlColours.getChosenColour();
+            if(currentMode == "Line"){
+                ((DrawLine)pnlCanvas).setColour(currentColour);
+            } else if (currentMode == "Plot"){
+                ((DrawPlot)pnlCanvas).setColour(currentColour);
+            } else if (currentMode == "Rectangle") {
+                ((DrawRect)pnlCanvas).setColour(currentColour);
+            } else if (currentMode == "Polygon"){
+                ((DrawPoly)pnlCanvas).setColour(currentColour);
+            } else if (currentMode == "Ellipse"){
+                ((DrawEllip)pnlCanvas).setColour(currentColour);
+            } else {
+                ((DrawPlot)pnlCanvas).setColour(currentColour);
+            }
+        }
     }
+
+    private void canvasChanged(){
+
+        pnlCanvas.setBackground(canvasBgColor);
+        getContentPane().add(pnlCanvas, BorderLayout.CENTER);
+        setVisible(true);
+    }
+
+
 
     /**
      * create GUI components
@@ -62,25 +117,23 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener {
         menuBar = manager.createJmenu();
         setJMenuBar(menuBar);
 
-//        pnlCanvas = createPanel(Color.WHITE);
         pnlTools = new ToolPanel();
         pnlColours = new ColorPanel();
-        pnlBottom = createPanel(Color.LIGHT_GRAY);
+        pnlBottom = new JPanel();
+        pnlBottom.setBackground(widgetBgColor);
 
         imagePanel = new BufferedImage((int)(getHeight() * 0.9), (int)(getHeight() * 0.9), BufferedImage.TYPE_INT_ARGB);
-//        pnlCanvas = new DrawLine(imagePanel);
-//        pnlCanvas = new DrawEllip(imagePanel);
-//        pnlCanvas = new DrawPoly(imagePanel);
-        pnlCanvas = new DrawRect(imagePanel);
-//        pnlCanvas = new DrawPlot(imagePanel);
-//        pnlCanvas.setPreferredSize(new Dimension((int)(getHeight() * 0.9), (int)(getHeight() * 0.9)));
-
+        pnlCanvas = new DrawPlot(imagePanel);
+        pnlCanvas.setPreferredSize(new Dimension((int)(getHeight() * 0.9), (int)(getHeight() * 0.9)));
+        pnlCanvas.setBackground(canvasBgColor);
         getContentPane().add(pnlCanvas, BorderLayout.CENTER);
 
         pnlTools.setPreferredSize(new Dimension((int)(getWidth() * 0.18), getHeight()));
+        pnlTools.attachObservers(this);
         getContentPane().add(pnlTools, BorderLayout.WEST);
 
         pnlColours.setPreferredSize(new Dimension((int)(getWidth() * 0.18), getHeight()));
+        pnlColours.attachObservers(this);
         getContentPane().add(pnlColours, BorderLayout.EAST);
 
         getContentPane().add(pnlBottom, BorderLayout.SOUTH);

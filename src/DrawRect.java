@@ -2,8 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
 /**
@@ -11,7 +9,7 @@ import java.awt.image.BufferedImage;
  * This class provides JPanel to draw a temporary rectangle,
  * and when the user finished drawing (released mouse) the rectangle is drawn on the Buffered Image
  */
-public class DrawRect extends JPanel implements DrawShape, CanvasSubject {
+public class DrawRect extends JPanel implements DrawShape {
 
     private BufferedImage imagePanel; // used to display drawn images (shapes)
 
@@ -20,7 +18,7 @@ public class DrawRect extends JPanel implements DrawShape, CanvasSubject {
     private int ex;
     private int ey;
     private boolean drawTempRect = false;
-    private Color LINE_COLOR;
+    private Color lineColor = Color.black;
 
     /**
      * constructor
@@ -48,7 +46,7 @@ public class DrawRect extends JPanel implements DrawShape, CanvasSubject {
         if (drawTempRect) {
             int width = ex - sx;
             int height = ey - sy;
-            g.setColor(LINE_COLOR);
+            g.setColor(lineColor);
             if (width >= 0 && height >= 0){
                 g.drawRect(sx, sy, width, height);
             } else if (width >= 0 && height < 0){
@@ -92,7 +90,7 @@ public class DrawRect extends JPanel implements DrawShape, CanvasSubject {
             int height = ey - sy;
             Graphics2D g2d = imagePanel.createGraphics();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setColor(Color.BLUE);
+            g2d.setColor(lineColor);
             g2d.setStroke(new BasicStroke(5f));
             if (width >= 0 && height >= 0) {
                 g2d.drawRect(sx, sy, width, height);
@@ -124,7 +122,9 @@ public class DrawRect extends JPanel implements DrawShape, CanvasSubject {
     }
 
     public void writeVecFile(){}
-    public void setColour(){}
+    public void setColour(Color color){
+        lineColor = color;
+    }
     public Point getStartPoint(){
         return new Point(sx, sy);
     }

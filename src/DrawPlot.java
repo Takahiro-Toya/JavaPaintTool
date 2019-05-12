@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
  * This class provides JPanel to draw a temporary line,
  * and when the user finished drawing (released mouse) the line is drawn on the Buffered Image
  */
-public class DrawPlot extends JPanel implements DrawShape, CanvasSubject {
+public class DrawPlot extends JPanel implements DrawShape {
 
     private BufferedImage imagePanel;
 
@@ -16,8 +16,7 @@ public class DrawPlot extends JPanel implements DrawShape, CanvasSubject {
     private int sy = 0;
     private int ex = 0;
     private int ey = 0;
-    private boolean drawTempLine = false;
-    private Color LINE_COLOR;
+    private Color lineColor = Color.black;
 
     /**
      * constructor
@@ -39,7 +38,7 @@ public class DrawPlot extends JPanel implements DrawShape, CanvasSubject {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(imagePanel, 0, 0, this);
-        g.setColor(LINE_COLOR);
+        g.setColor(lineColor);
         g.drawLine(sx, sy, sx, sy);
 
     }
@@ -60,7 +59,7 @@ public class DrawPlot extends JPanel implements DrawShape, CanvasSubject {
         public void mouseReleased(MouseEvent e) {
             Graphics2D g2 = imagePanel.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(Color.BLUE);
+            g2.setColor(lineColor);
             g2.setStroke(new BasicStroke(5f));
             g2.drawLine(sx, sy, sx, sy);
             g2.dispose();
@@ -84,7 +83,9 @@ public class DrawPlot extends JPanel implements DrawShape, CanvasSubject {
         }
     }
     public void writeVecFile(){}
-    public void setColour(){}
+    public void setColour(Color color){
+        lineColor = color;
+    }
     public Point getStartPoint(){ return new Point(sx, sy); }
     public Point getEndPoint(){ return new Point(ex, ey); }
 
