@@ -57,11 +57,9 @@ public class VecFileManager extends JMenuItem {
         newManager.addActionListener(getNewListener());
         openManager.addActionListener(getOpenListener());
 
-
         menu.add(saveManager);
         menu.add(newManager);
         menu.add(openManager);
-
 
         bar.add(menu);
         bar.add(undoManager);
@@ -79,6 +77,7 @@ public class VecFileManager extends JMenuItem {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser chooser = new JFileChooser();
                 chooser.addChoosableFileFilter(new FileFilter() {
+                    // set the default saving file extension to .vec
                     @Override
                     public boolean accept(File f) {
                         if (f.getName().endsWith(".vec")){
@@ -138,21 +137,27 @@ public class VecFileManager extends JMenuItem {
             public void actionPerformed(ActionEvent e) {
                 if (chooser.showOpenDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
                     vecFile = chooser.getSelectedFile();
-                    try {
-                        InputStreamReader reader = new InputStreamReader(new FileInputStream(vecFile));
-                        BufferedReader br = new BufferedReader(reader);
-                        String text = null;
-                        while ((text = br.readLine()) != null){
-                            Openlist.add(text);
-                        }
-                        // test
-                        System.out.println(Openlist);
-                        // test
-                        br.close();
-                        reader.close();
+                    // load this file if is is a .vec file
+                    if (vecFile.getName().toLowerCase().endsWith(".vec")) {
+                        try {
+                            InputStreamReader reader = new InputStreamReader(new FileInputStream(vecFile));
+                            BufferedReader br = new BufferedReader(reader);
+                            String text = null;
+                            while ((text = br.readLine()) != null) {
+                                Openlist.add(text);
+                            }
+                            // test
+                            System.out.println(Openlist);
+                            // test
+                            br.close();
+                            reader.close();
 
-                    } catch (Exception e1) {
-                       e1.printStackTrace();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                        // else, show a message that tells the users the forate is not supported
+                    }else{
+                        JOptionPane.showMessageDialog(null, "File format not supported");
                     }
                 }
             }
