@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 
 /**
@@ -12,21 +13,23 @@ public class DrawPlot extends JPanel implements DrawShape {
 
     private BufferedImage imagePanel;
 
-    private int sx = 0;
-    private int sy = 0;
-    private int ex = 0;
-    private int ey = 0;
-    private Color lineColor = Color.black;
+    private double sx = 0;
+    private double sy = 0;
+    private double ex = 0;
+    private double ey = 0;
+    private Color lineColor;
+    private float plotSize = 2f;
 
     /**
      * constructor
      * @param imagePanel to display drawn image
      */
-    public DrawPlot(BufferedImage imagePanel){
+    public DrawPlot(BufferedImage imagePanel, Color c){
         PlotMouseListener mouse = new PlotMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
         this.imagePanel = imagePanel;
+        lineColor = c;
     }
 
     /**
@@ -37,11 +40,20 @@ public class DrawPlot extends JPanel implements DrawShape {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(imagePanel, 0, 0, this);
-        g.setColor(lineColor);
-        g.drawLine(sx, sy, sx, sy);
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.drawImage(imagePanel, 0, 0, this);
+        g2d.setColor(lineColor);
+        g2d.draw(new Line2D.Double(sx, sy, sx, sy));
 
     }
+
+
+
+    public void writeVecFile(){}
+    public void setLineColour(Color color){
+        lineColor = color;
+    }
+
 
     /**
      * Mouse Listener
@@ -60,8 +72,8 @@ public class DrawPlot extends JPanel implements DrawShape {
             Graphics2D g2 = imagePanel.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(lineColor);
-            g2.setStroke(new BasicStroke(5f));
-            g2.drawLine(sx, sy, sx, sy);
+            g2.setStroke(new BasicStroke(plotSize));
+            g2.draw(new Line2D.Double(sx, sy, sx, sy));
             g2.dispose();
             repaint();
         }
@@ -82,12 +94,6 @@ public class DrawPlot extends JPanel implements DrawShape {
         public void mouseMoved(MouseEvent evt) {
         }
     }
-    public void writeVecFile(){}
-    public void setColour(Color color){
-        lineColor = color;
-    }
-    public Point getStartPoint(){ return new Point(sx, sy); }
-    public Point getEndPoint(){ return new Point(ex, ey); }
 
 
 }

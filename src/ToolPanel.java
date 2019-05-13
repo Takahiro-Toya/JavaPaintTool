@@ -6,9 +6,11 @@ import java.util.ArrayList;
 
 public class ToolPanel extends JPanel implements Subject {
 
-    private String className = "ToolPanel"
-;
-    private String currentMode;
+    private String className = "ToolPanel";
+
+    private String currentMode = "Plot";
+
+    private boolean fill = false;
 
     private ArrayList<Observer> observers = new ArrayList<>();
 
@@ -16,17 +18,21 @@ public class ToolPanel extends JPanel implements Subject {
 
     private String[] toolBtnTexts = {"Plot", "Line", "Rectangle", "Ellipse", "Polygon"};
 
+    private JButton btnFill = new JButton("Fill on");
+
     /**
      * Constructor
      */
     public ToolPanel(){
         setBorder(BorderFactory.createTitledBorder("Tools"));
-        setLayout(new GridLayout(5, 1));
+        setLayout(new GridLayout(toolBtnTexts.length + 1, 1));
         setBackground(Color.LIGHT_GRAY);
         createToolBtns();
         for (int i = 0; i < toolBtns.size(); i++){
             add(toolBtns.get(i));
         }
+        createFillButton();
+        add(btnFill);
     }
 
 
@@ -50,6 +56,21 @@ public class ToolPanel extends JPanel implements Subject {
         }
     }
 
+    private void createFillButton(){
+        btnFill.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fill = !fill;
+                if (fill){
+                    btnFill.setText("Fill Off");
+                } else {
+                    btnFill.setText("Fill On");
+                }
+                notifyObservers();
+            }
+        });
+    }
+
     public void attachObservers(Observer observer){
         observers.add(observer);
     }
@@ -67,5 +88,7 @@ public class ToolPanel extends JPanel implements Subject {
     public String getCurrentMode(){
         return currentMode;
     }
+
+    public boolean getFillMode(){return fill;}
 }
 

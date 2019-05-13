@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -9,28 +10,67 @@ import java.awt.image.BufferedImage;
  * This class provides JPanel to draw a temporary rectangle,
  * and when the user finished drawing (released mouse) the rectangle is drawn on the Buffered Image
  */
-public class DrawRect extends JPanel implements DrawShape {
+public class DrawRect extends JPanel implements DrawShape, FillShape {
 
     private BufferedImage imagePanel; // used to display drawn images (shapes)
 
-    private int sx;
-    private int sy;
-    private int ex;
-    private int ey;
+    private double sx;
+    private double sy;
+    private double ex;
+    private double ey;
     private boolean drawTempRect = false;
-    private Color lineColor = Color.black;
+    private Color lineColor;
+    private Color fillColor;
+    private float lineWidth = 2f;
+    private boolean fill = false;
 
     /**
      * constructor
      * @param imagePanel to display drawn image
      */
-    public DrawRect(BufferedImage imagePanel){
+    public DrawRect(BufferedImage imagePanel, Color lc, Color fc){
         RectMouseListener mouse = new RectMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
         this.imagePanel = imagePanel;
+        lineColor = lc;
+        fillColor = fc;
     }
 
+    public void setLineColour(Color c){
+        lineColor = c;
+    }
+
+    public void setFillColour(Color c){
+        fillColor = c;
+    }
+
+    public void setFill(boolean bool){
+        fill = bool;
+    }
+
+    private void drawRect(Graphics2D g2d){
+        Rectangle2D rect;
+        double width = ex - sx;
+        double height = ey - sy;
+        g2d.setColor(fillColor);
+        if (width >= 0 && height >= 0) {
+            rect = new Rectangle2D.Double(sx, sy, width, height);
+
+        } else if (width >= 0 && height < 0) {
+            rect = new Rectangle2D.Double(sx, ey, width, Math.abs(height));
+
+        } else if (width < 0 && height >= 0) {
+            rect = new Rectangle2D.Double(ex, sy, Math.abs(width), height);
+
+        } else {
+            rect = new Rectangle2D.Double(ex, ey, Math.abs(width), Math.abs(height));
+
+        }
+        if (fill) {g2d.fill(rect);}
+        g2d.setColor(lineColor);
+        g2d.draw(rect);
+    }
 
     /**
      * Override paintComponent so that when user made changes on the application window,
@@ -40,22 +80,11 @@ public class DrawRect extends JPanel implements DrawShape {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        g.drawImage(imagePanel, 0, 0, this);
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.drawImage(imagePanel, 0, 0, this);
 
         if (drawTempRect) {
-            int width = ex - sx;
-            int height = ey - sy;
-            g.setColor(lineColor);
-            if (width >= 0 && height >= 0){
-                g.drawRect(sx, sy, width, height);
-            } else if (width >= 0 && height < 0){
-                g.drawRect(sx, ey, width, Math.abs(height));
-            } else if (width  < 0 && height >= 0){
-                g.drawRect(ex, sy, Math.abs(width), height);
-            } else {
-                g.drawRect(ex, ey, Math.abs(width), Math.abs(height));
-            }
+            drawRect(g2d);
         }
     }
 
@@ -86,21 +115,10 @@ public class DrawRect extends JPanel implements DrawShape {
         public void mouseReleased(MouseEvent e) {
             ex = e.getX();
             ey = e.getY();
-            int width = ex - sx;
-            int height = ey - sy;
             Graphics2D g2d = imagePanel.createGraphics();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setColor(lineColor);
-            g2d.setStroke(new BasicStroke(5f));
-            if (width >= 0 && height >= 0) {
-                g2d.drawRect(sx, sy, width, height);
-            } else if (width >= 0 && height < 0) {
-                g2d.drawRect(sx, ey, width, Math.abs(height));
-            } else if (width < 0 && height >= 0) {
-                g2d.drawRect(ex, sy, Math.abs(width), height);
-            } else {
-                g2d.drawRect(ex, ey, Math.abs(width), Math.abs(height));
-            }
+            g2d.setStroke(new BasicStroke(lineWidth));
+            drawRect(g2d);
             g2d.dispose();
             drawTempRect = false;
             repaint();
@@ -122,14 +140,5 @@ public class DrawRect extends JPanel implements DrawShape {
     }
 
     public void writeVecFile(){}
-    public void setColour(Color color){
-        lineColor = color;
-    }
-    public Point getStartPoint(){
-        return new Point(sx, sy);
-    }
-    public Point getEndPoint(){
-        return new Point(ex, ey);
-    }
 
 }
