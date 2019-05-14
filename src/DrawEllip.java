@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
  * This class provides JPanel to draw a temporary ellipse,
  * and when the user finished drawing (released mouse) the ellipse is drawn on the Buffered Image
  */
-public class DrawEllip extends JPanel implements DrawShape, FillShape {
+public class DrawEllip extends JPanel implements DrawShape, FillShape{
 
     private BufferedImage imagePanel;
 
@@ -75,6 +75,7 @@ public class DrawEllip extends JPanel implements DrawShape, FillShape {
             drawEllipse(g2d);
         }
     }
+
 
     public void setLineColour(Color c){
         lineColor = c;

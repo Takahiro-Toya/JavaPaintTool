@@ -13,9 +13,9 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener, 
     private int screenWidth;
     private int screenHeight;
 
-    private File vecFile;
-
     private JMenuBar menuBar = new JMenuBar();
+
+    private static String content = "";
 
     //Panel variables
     private JPanel pnlCanvas;
@@ -32,7 +32,7 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener, 
     private Color lineColour = Color.BLACK;
     private Color fillColour = Color.WHITE;
 
-    private VecPaint(){
+    public VecPaint(){
         super("VecPaint tool");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getScreenSize();
@@ -73,6 +73,7 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener, 
                 getContentPane().remove(pnlCanvas);
                 pnlCanvas = new DrawEllip(imagePanel, lineColour, fillColour);
                 ((DrawEllip)pnlCanvas).setFill(pnlTools.getFillMode());
+
             } else {
                 getContentPane().remove(pnlCanvas);
                 pnlCanvas = new DrawLine(imagePanel, lineColour);
@@ -101,7 +102,6 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener, 
                 ((DrawPlot)pnlCanvas).setLineColour(lineColour);
             }
         }
-
         canvasChanged();
     }
 
@@ -111,15 +111,13 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener, 
         setVisible(true);
     }
 
-
-
     /**
      * create GUI components
      */
     private void createVecGUI(){
         // create menu bar
         VecFileManager manager = new VecFileManager(null);
-        menuBar = manager.createJmenu();
+        menuBar = manager.createJmenu(content);
         setJMenuBar(menuBar);
 
         pnlTools = new ToolPanel();
@@ -147,6 +145,14 @@ public class VecPaint extends JFrame implements ActionListener, ChangeListener, 
         pack();
         repaint();
         setVisible(true);
+    }
+
+    public String getContent(){
+        return content;
+    }
+
+    public void setContent(String str){
+        content = str;
     }
 
 

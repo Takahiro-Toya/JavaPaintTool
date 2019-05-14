@@ -10,14 +10,14 @@ import java.awt.image.BufferedImage;
  * This class provides JPanel to draw a temporary rectangle,
  * and when the user finished drawing (released mouse) the rectangle is drawn on the Buffered Image
  */
-public class DrawRect extends JPanel implements DrawShape, FillShape {
+public class DrawRect extends JPanel implements DrawShape, FillShape, WriteFile{
 
     private BufferedImage imagePanel; // used to display drawn images (shapes)
 
-    private double sx;
-    private double sy;
-    private double ex;
-    private double ey;
+    private double sx = 0;
+    private double sy = 0;
+    private double ex = 0;
+    private double ey = 0;
     private boolean drawTempRect = false;
     private Color lineColor;
     private Color fillColor;
@@ -88,6 +88,19 @@ public class DrawRect extends JPanel implements DrawShape, FillShape {
         }
     }
 
+    /**
+     * Write the information into the content in main class
+     * @param str the vairable of content
+     * @return return the updated content
+     */
+    @Override
+    public String writeIn(String str) {
+        VecPaint vec = new VecPaint();
+        str = str + "RECTANGLE " + sx + " " + sy + " " + ex + " " + ey +  "\n";
+        vec.setContent(str);
+        return str;
+    }
+
     private class RectMouseListener extends MouseAdapter {
 
         /**
@@ -105,6 +118,7 @@ public class DrawRect extends JPanel implements DrawShape, FillShape {
         public void mouseDragged(MouseEvent e) {
             ex = e.getX();
             ey = e.getY();
+
             drawTempRect = true;
             repaint();
         }
@@ -116,12 +130,14 @@ public class DrawRect extends JPanel implements DrawShape, FillShape {
             ex = e.getX();
             ey = e.getY();
             Graphics2D g2d = imagePanel.createGraphics();
+            VecPaint vecPaint = new VecPaint();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setStroke(new BasicStroke(lineWidth));
             drawRect(g2d);
             g2d.dispose();
             drawTempRect = false;
             repaint();
+            vecPaint.setContent(writeIn(vecPaint.getContent()));
         }
 
         // those methods are not used, just need to implements here

@@ -22,6 +22,7 @@ public class VecFileManager extends JMenuItem {
     private File vecFile;
     private ArrayList Savelist = new ArrayList();
     private ArrayList Openlist = new ArrayList();
+    private String content;
 
 
     /**
@@ -43,7 +44,7 @@ public class VecFileManager extends JMenuItem {
      * Create a Jmenu bar and add all the component into it
      * @return return the completed menu bar
      */
-    public JMenuBar createJmenu(){
+    public JMenuBar createJmenu(String str){
         JMenuBar bar = new JMenuBar();
 
         JMenu menu = new JMenu(MenuNames.File.name);
@@ -76,6 +77,7 @@ public class VecFileManager extends JMenuItem {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser chooser = new JFileChooser();
+                VecPaint vec = new VecPaint();
                 chooser.addChoosableFileFilter(new FileFilter() {
                     // set the default saving file extension to .vec
                     @Override
@@ -102,7 +104,7 @@ public class VecFileManager extends JMenuItem {
                         fos.close();
                         FileWriter fileWriter = new FileWriter(vecFile);
                         ////
-                        fileWriter.write("\n");
+                        fileWriter.write(vec.getContent());
                         fileWriter.close();
                         String name = chooser.getName(vecFile);
 
@@ -142,7 +144,7 @@ public class VecFileManager extends JMenuItem {
                         try {
                             InputStreamReader reader = new InputStreamReader(new FileInputStream(vecFile));
                             BufferedReader br = new BufferedReader(reader);
-                            String text = null;
+                            String text;
                             while ((text = br.readLine()) != null) {
                                 Openlist.add(text);
                             }
@@ -164,6 +166,7 @@ public class VecFileManager extends JMenuItem {
         };
         return listener;
     }
+
 
 
 }

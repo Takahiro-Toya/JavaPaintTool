@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * This class provides JPanel to draw a temporary line,
  * and when the user finished drawing (released mouse) the line is drawn on the Buffered Image
  */
-public class DrawPoly extends JPanel implements DrawShape, FillShape {
+public class DrawPoly extends JPanel implements DrawShape, FillShape, WriteFile {
 
     private BufferedImage imagePanel;
 
@@ -95,6 +95,19 @@ public class DrawPoly extends JPanel implements DrawShape, FillShape {
             g2d.setColor(lineColour);
             g2d.draw(new Line2D.Double(tpx, tpy, ex, ey));
         }
+    }
+
+    /**
+     * Write the information into the content in main class
+     * @param str the vairable of content
+     * @return return the updated content
+     */
+    @Override
+    public String writeIn(String str) {
+        VecPaint vec = new VecPaint();
+        str = str + "POLYGON " + sx + " " + sy + " " + tpx + " " + tpy + " " + ex + " " + ey + " " +  "\n";
+        vec.setContent(str);
+        return str;
     }
 
     public void writeVecFile(){}
