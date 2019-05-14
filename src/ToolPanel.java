@@ -6,8 +6,6 @@ import java.util.ArrayList;
 
 public class ToolPanel extends JPanel implements Subject {
 
-    private String className = "ToolPanel";
-
     private VecPaint.Mode currentMode = VecPaint.Mode.PLOT;
 
     private boolean fill = false;

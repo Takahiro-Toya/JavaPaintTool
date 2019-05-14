@@ -23,9 +23,11 @@ public class VecPaint extends JFrame implements Observer {
     private ToolPanel pnlTools;
     private ColorPanel pnlColours;
     private JPanel pnlBottom;
+    private JLayeredPane layer;
 
     private Color widgetBgColor = Color.LIGHT_GRAY;
-    private Color canvasBgColor = Color.white;
+    private Color layerBgColor = Color.DARK_GRAY;
+    private Color canvasBgColor = Color.WHITE;
 
     private ArrayList<ShapeInfo> shapes = new ArrayList<>();
 
@@ -36,6 +38,10 @@ public class VecPaint extends JFrame implements Observer {
     private Color fillColour = Color.WHITE;
     private boolean fill = false;
     private float lineWidth = 2f;
+
+    private double sideToolTabArea = 0.2;
+    private int bottomHeight = 20;
+    private double canvasArea = 0.8;
 
 
     public VecPaint(){
@@ -50,15 +56,16 @@ public class VecPaint extends JFrame implements Observer {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
-                // for square canvas
-                if (pnlCanvas.getHeight() > pnlCanvas.getWidth()){
-                    imagePanel = new BufferedImage((int)(getWidth() * 0.6), (int)(getWidth() * 0.6), BufferedImage.TYPE_INT_ARGB);
-                } else {
-                imagePanel = new BufferedImage((int)(getHeight() * 0.9), (int)(getHeight() * 0.9), BufferedImage.TYPE_INT_ARGB);
-                }
-                getContentPane().remove(pnlCanvas);
-                imagePanelResized();
+                int edge = keepSquare();
+                imagePanel = new BufferedImage((int)(edge * canvasArea), (int)(edge * canvasArea), BufferedImage.TYPE_INT_ARGB);
+                layer.removeAll();
                 switchMode();
+                pnlCanvas.setBounds((int)((layer.getWidth() - edge * canvasArea) / 2), (int)((layer.getHeight() - edge * canvasArea) / 2),
+                        (int)(edge * canvasArea), (int)(edge * canvasArea));
+
+                imagePanelResized();
+                layer.add(pnlCanvas);
+
             }
         });
 
@@ -72,15 +79,34 @@ public class VecPaint extends JFrame implements Observer {
         screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
     }
 
+    private int keepSquare(){
+        int width = getWidth() - (int)(getWidth() * sideToolTabArea * 2);
+        int height = getHeight() - menuBar.getHeight() - bottomHeight;
+        int edge;
+        // for square canvas
+        if (height > width){
+            edge = width;
+        } else {
+            edge = height;
+        }
+
+        return edge;
+    }
+
     public void update(){
 
         currentMode = pnlTools.getCurrentMode();
         lineColour = pnlColours.getLineColour();
         fillColour = pnlColours.getFillColour();
         fill = pnlTools.getFillMode();
-        getContentPane().remove(pnlCanvas);
 
+        int edge = keepSquare();
+
+        layer.removeAll();
         switchMode();
+        pnlCanvas.setBounds((int)((layer.getWidth() - edge * canvasArea) / 2), (int)((layer.getHeight() - edge * canvasArea) / 2),
+                (int)(edge * canvasArea), (int)(edge * canvasArea));
+        layer.add(pnlCanvas);
     }
 
     private void switchMode(){
@@ -103,12 +129,13 @@ public class VecPaint extends JFrame implements Observer {
                 break;
         }
         pnlCanvas.setBackground(canvasBgColor);
-        getContentPane().add(pnlCanvas, BorderLayout.CENTER);
+        layer.setOpaque(true);
         setVisible(true);
     }
 
     public void updateShapes(ShapeInfo shape){
         shapes.add(shape);
+        System.out.println(shape.getPoint());
     }
 
     public void imagePanelResized(){
@@ -142,24 +169,29 @@ public class VecPaint extends JFrame implements Observer {
         pnlTools = new ToolPanel();
         pnlColours = new ColorPanel();
         pnlBottom = new JPanel();
+        layer = new JLayeredPane();
+        layer.setBackground(Color.darkGray);
+        int width = getWidth() - (int)(getWidth() * sideToolTabArea * 2);
+        int height = getHeight() - menuBar.getHeight() - bottomHeight;
+        imagePanel = new BufferedImage((int)(width * canvasArea), (int)(height * canvasArea), BufferedImage.TYPE_INT_ARGB);
 
-        imagePanel = new BufferedImage((int)(getHeight() * 0.9), (int)(getHeight() * 0.9), BufferedImage.TYPE_INT_ARGB);
         pnlCanvas = new DrawPlot(imagePanel, lineColour, this);
-        pnlCanvas.setPreferredSize(new Dimension((int)(getHeight() * 0.9), (int)(getHeight() * 0.9)));
         pnlCanvas.setBackground(canvasBgColor);
-        getContentPane().add(pnlCanvas, BorderLayout.CENTER);
+        layer.setBackground(layerBgColor);
+        layer.setOpaque(true);
+        getContentPane().add(layer, BorderLayout.CENTER);
 
-        pnlTools.setPreferredSize(new Dimension((int)(getWidth() * 0.2), getHeight()));
+        pnlTools.setPreferredSize(new Dimension((int)(getWidth() * sideToolTabArea), getHeight()));
         pnlTools.attachObservers(this);
         getContentPane().add(pnlTools, BorderLayout.WEST);
 
-        pnlColours.setPreferredSize(new Dimension((int)(getWidth() * 0.2), getHeight()));
+        pnlColours.setPreferredSize(new Dimension((int)(getWidth() * sideToolTabArea), getHeight()));
         pnlColours.attachObservers(this);
         getContentPane().add(pnlColours, BorderLayout.EAST);
 
         pnlBottom.setBackground(widgetBgColor);
         getContentPane().add(pnlBottom, BorderLayout.SOUTH);
-        pnlBottom.setPreferredSize(new Dimension(screenWidth, 20));
+        pnlBottom.setPreferredSize(new Dimension(screenWidth, bottomHeight));
 
         pack();
         repaint();
