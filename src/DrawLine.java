@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Line2D;
@@ -6,30 +5,28 @@ import java.awt.image.BufferedImage;
 
 /**
  * Class to draw a line
- * This class provides JPanel to draw a temporary line,
- * and when the user finished drawing (released mouse) the line is drawn on the Buffered Image
+ * Defines behaviour when mouse is clicked, dragged etc... when drawing mode is LINE
  */
-public class DrawLine extends JPanel implements DrawShape {
+public class DrawLine extends DrawShape {
 
-    private BufferedImage imagePanel;
+
 
     private double sx = 0;
     private double sy = 0;
     private double ex = 0;
     private double ey = 0;
     private boolean drawTempLine = false;
-    private float lineWidth = 2f;
     private Color lineColor;
 
     /**
      * constructor
      * @param imagePanel to display drawn image
      */
-    public DrawLine(BufferedImage imagePanel, Color c){
+    public DrawLine(BufferedImage imagePanel, Color c, Observer o){
+        super(imagePanel, c, o);
         LineMouseListener mouse = new LineMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
-        this.imagePanel = imagePanel;
         lineColor = c;
     }
 
@@ -42,7 +39,7 @@ public class DrawLine extends JPanel implements DrawShape {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
-        g2d.drawImage(imagePanel, 0, 0, this);
+        g2d.drawImage(getImagePanel(), 0, 0, this);
 
         if (drawTempLine) {
             g2d.setColor(lineColor);
@@ -50,10 +47,6 @@ public class DrawLine extends JPanel implements DrawShape {
         }
     }
 
-    public void writeVecFile(){}
-    public void setLineColour(Color color){
-        lineColor = color;
-    }
 
     /**
      * Mouse Listener
@@ -64,8 +57,8 @@ public class DrawLine extends JPanel implements DrawShape {
          */
         @Override
         public void mousePressed(MouseEvent e) {
-            sx = e.getX();
-            sy = e.getY();
+            sx = e.getPoint().getX();
+            sy = e.getPoint().getY();
         }
 
         /**
@@ -74,8 +67,8 @@ public class DrawLine extends JPanel implements DrawShape {
          */
         @Override
         public void mouseDragged(MouseEvent e) {
-            ex = e.getX();
-            ey = e.getY();
+            ex = e.getPoint().getX();
+            ey = e.getPoint().getY();
             drawTempLine = true;
             repaint();
         }
@@ -85,15 +78,18 @@ public class DrawLine extends JPanel implements DrawShape {
          */
         @Override
         public void mouseReleased(MouseEvent e) {
-            ex = e.getX();
-            ey = e.getY();
-            Graphics2D g2 = imagePanel.createGraphics();
+            ex = e.getPoint().getX();
+            ey = e.getPoint().getY();
+            Graphics2D g2 = getImagePanel().createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(lineColor);
-            g2.setStroke(new BasicStroke(lineWidth));
+            g2.setStroke(new BasicStroke(getLineWidth()));
+            Line lineVec = new Line(sx / getImagePanel().getWidth(), sy / getImagePanel().getHeight(),
+                    ex / getImagePanel().getWidth(), ey /  getImagePanel().getHeight(), lineColor);
             g2.draw(new Line2D.Double(sx, sy, ex, ey));
             g2.dispose();
             drawTempLine = false;
+            paintUpdated(lineVec);
             repaint();
         }
 

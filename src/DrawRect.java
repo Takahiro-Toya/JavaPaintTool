@@ -10,66 +10,62 @@ import java.awt.image.BufferedImage;
  * This class provides JPanel to draw a temporary rectangle,
  * and when the user finished drawing (released mouse) the rectangle is drawn on the Buffered Image
  */
-public class DrawRect extends JPanel implements DrawShape, FillShape, WriteFile{
+public class DrawRect extends DrawShape {
 
-    private BufferedImage imagePanel; // used to display drawn images (shapes)
-
-    private double sx = 0;
-    private double sy = 0;
-    private double ex = 0;
-    private double ey = 0;
+    private double sx;
+    private double sy;
+    private double ex;
+    private double ey;
     private boolean drawTempRect = false;
-    private Color lineColor;
     private Color fillColor;
-    private float lineWidth = 2f;
-    private boolean fill = false;
+    private boolean fill;
+
 
     /**
      * constructor
      * @param imagePanel to display drawn image
      */
-    public DrawRect(BufferedImage imagePanel, Color lc, Color fc){
+    public DrawRect(BufferedImage imagePanel, Color lc, Color fc, boolean fill, Observer o){
+        super(imagePanel, lc, o);
         RectMouseListener mouse = new RectMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
-        this.imagePanel = imagePanel;
-        lineColor = lc;
         fillColor = fc;
+        this.fill = fill;
     }
 
-    public void setLineColour(Color c){
-        lineColor = c;
-    }
-
-    public void setFillColour(Color c){
-        fillColor = c;
-    }
-
-    public void setFill(boolean bool){
-        fill = bool;
-    }
 
     private void drawRect(Graphics2D g2d){
         Rectangle2D rect;
+        Rectangle rectVec;
+        int imageWidth = getImagePanel().getWidth();
+        int imageHeight = getImagePanel().getHeight();
         double width = ex - sx;
         double height = ey - sy;
         g2d.setColor(fillColor);
         if (width >= 0 && height >= 0) {
             rect = new Rectangle2D.Double(sx, sy, width, height);
-
+            rectVec = new Rectangle(sx / imageWidth, sy / imageHeight, width / imageWidth,
+                    height / imageHeight, getLineColour(), fillColor, fill);
         } else if (width >= 0 && height < 0) {
             rect = new Rectangle2D.Double(sx, ey, width, Math.abs(height));
-
+            rectVec = new Rectangle(sx / imageWidth, ey / imageHeight,
+                    width / imageWidth, Math.abs(height) / imageHeight, getLineColour(), fillColor, fill);
         } else if (width < 0 && height >= 0) {
             rect = new Rectangle2D.Double(ex, sy, Math.abs(width), height);
-
+            rectVec = new Rectangle(ex / imageWidth, sy / imageHeight,
+                    Math.abs(width) / imageWidth, height /imageHeight, getLineColour(), fillColor, fill);
         } else {
             rect = new Rectangle2D.Double(ex, ey, Math.abs(width), Math.abs(height));
-
+            rectVec = new Rectangle(ex / imageWidth, ey / imageHeight,
+                    Math.abs(width)/ imageWidth, Math.abs(height) / imageHeight, getLineColour(), fillColor, fill);
         }
         if (fill) {g2d.fill(rect);}
-        g2d.setColor(lineColor);
+        g2d.setColor(getLineColour());
         g2d.draw(rect);
+        if (!drawTempRect) {
+            paintUpdated(rectVec);
+        }
     }
 
     /**
@@ -81,24 +77,11 @@ public class DrawRect extends JPanel implements DrawShape, FillShape, WriteFile{
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
-        g2d.drawImage(imagePanel, 0, 0, this);
+        g2d.drawImage(getImagePanel(), 0, 0, this);
 
         if (drawTempRect) {
             drawRect(g2d);
         }
-    }
-
-    /**
-     * Write the information into the content in main class
-     * @param str the vairable of content
-     * @return return the updated content
-     */
-    @Override
-    public String writeIn(String str) {
-        VecPaint vec = new VecPaint();
-        str = str + "RECTANGLE " + sx + " " + sy + " " + ex + " " + ey +  "\n";
-        vec.setContent(str);
-        return str;
     }
 
     private class RectMouseListener extends MouseAdapter {
@@ -107,8 +90,8 @@ public class DrawRect extends JPanel implements DrawShape, FillShape, WriteFile{
          * When mouse is pressed, start drawing a rectangle, so set the start location
          */
         public void mousePressed(MouseEvent e) {
-            sx = e.getX();
-            sy = e.getY();
+            sx = e.getPoint().getX();
+            sy = e.getPoint().getY();
         }
 
         /**
@@ -116,9 +99,8 @@ public class DrawRect extends JPanel implements DrawShape, FillShape, WriteFile{
          * every time repaint the JPanel (this object)
          */
         public void mouseDragged(MouseEvent e) {
-            ex = e.getX();
-            ey = e.getY();
-
+            ex = e.getPoint().getX();
+            ey = e.getPoint().getY();
             drawTempRect = true;
             repaint();
         }
@@ -127,17 +109,15 @@ public class DrawRect extends JPanel implements DrawShape, FillShape, WriteFile{
          * When mouse click is released, the rectangle is drawn on the BufferedImage
          */
         public void mouseReleased(MouseEvent e) {
-            ex = e.getX();
-            ey = e.getY();
-            Graphics2D g2d = imagePanel.createGraphics();
-            VecPaint vecPaint = new VecPaint();
+            ex = e.getPoint().getX();
+            ey = e.getPoint().getY();
+            drawTempRect = false;
+            Graphics2D g2d = getImagePanel().createGraphics();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setStroke(new BasicStroke(lineWidth));
+            g2d.setStroke(new BasicStroke(getLineWidth()));
             drawRect(g2d);
             g2d.dispose();
-            drawTempRect = false;
             repaint();
-            vecPaint.setContent(writeIn(vecPaint.getContent()));
         }
 
         // those methods are not used, just need to implements here
@@ -154,7 +134,5 @@ public class DrawRect extends JPanel implements DrawShape, FillShape, WriteFile{
         }
 
     }
-
-    public void writeVecFile(){}
 
 }

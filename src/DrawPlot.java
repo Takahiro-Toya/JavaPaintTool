@@ -9,27 +9,20 @@ import java.awt.image.BufferedImage;
  * This class provides JPanel to draw a temporary line,
  * and when the user finished drawing (released mouse) the line is drawn on the Buffered Image
  */
-public class DrawPlot extends JPanel implements DrawShape {
-
-    private BufferedImage imagePanel;
+public class DrawPlot extends DrawShape {
 
     private double sx = 0;
     private double sy = 0;
-    private double ex = 0;
-    private double ey = 0;
-    private Color lineColor;
-    private float plotSize = 2f;
 
     /**
      * constructor
      * @param imagePanel to display drawn image
      */
-    public DrawPlot(BufferedImage imagePanel, Color c){
+    public DrawPlot(BufferedImage imagePanel, Color c, Observer o){
+        super(imagePanel, c, o);
         PlotMouseListener mouse = new PlotMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
-        this.imagePanel = imagePanel;
-        lineColor = c;
     }
 
     /**
@@ -41,19 +34,11 @@ public class DrawPlot extends JPanel implements DrawShape {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
-        g2d.drawImage(imagePanel, 0, 0, this);
-        g2d.setColor(lineColor);
+        g2d.drawImage(getImagePanel(), 0, 0, this);
+        g2d.setColor(getLineColour());
         g2d.draw(new Line2D.Double(sx, sy, sx, sy));
 
     }
-
-
-
-    public void writeVecFile(){}
-    public void setLineColour(Color color){
-        lineColor = color;
-    }
-
 
     /**
      * Mouse Listener
@@ -64,18 +49,21 @@ public class DrawPlot extends JPanel implements DrawShape {
          */
         @Override
         public void mousePressed(MouseEvent e) {
-            sx = e.getX();
-            sy = e.getY();
+            sx = e.getPoint().getX();
+            sy = e.getPoint().getY();
         }
 
         public void mouseReleased(MouseEvent e) {
-            Graphics2D g2 = imagePanel.createGraphics();
+            Graphics2D g2 = getImagePanel().createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(lineColor);
-            g2.setStroke(new BasicStroke(plotSize));
-            g2.draw(new Line2D.Double(sx, sy, sx, sy));
+            g2.setColor(getLineColour());
+            g2.setStroke(new BasicStroke(getLineWidth()));
+            Line2D plot = new Line2D.Double(sx, sy, sx, sy);
+            Plot plotVec = new Plot(sx / getImagePanel().getWidth(), sy / getImagePanel().getHeight(), getLineColour());
+            g2.draw(plot);
             g2.dispose();
             repaint();
+            paintUpdated(plotVec);
         }
 
         // those methods are not used, just need to implements here

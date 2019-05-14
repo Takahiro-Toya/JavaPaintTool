@@ -44,7 +44,7 @@ public class VecFileManager extends JMenuItem {
      * Create a Jmenu bar and add all the component into it
      * @return return the completed menu bar
      */
-    public JMenuBar createJmenu(String str){
+    public JMenuBar createJmenu(){
         JMenuBar bar = new JMenuBar();
 
         JMenu menu = new JMenu(MenuNames.File.name);

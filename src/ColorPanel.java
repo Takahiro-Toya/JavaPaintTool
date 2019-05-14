@@ -23,7 +23,7 @@ public class ColorPanel extends JPanel implements Subject {
     private String colourChooseMode = "Line";
 
     private Color[] quickColours = {Color.red, Color.blue, Color.green, Color.orange, Color.yellow,
-                                    Color.pink, Color.cyan, Color.gray, Color.black, Color.magenta};
+            Color.pink, Color.cyan, Color.gray, Color.black, Color.magenta};
 
     private ArrayList<JButton> quickColourBtns =  new ArrayList<>();
 
@@ -156,7 +156,7 @@ public class ColorPanel extends JPanel implements Subject {
 
     public void notifyObservers(){
         for (int i = 0; i < observers.size(); i++){
-            observers.get(i).update(className);
+            observers.get(i).update();
         }
     }
 
@@ -169,14 +169,6 @@ public class ColorPanel extends JPanel implements Subject {
     }
 
     public Color getFillColour() { return fillColour;}
-
-    public static void main(String args[]){
-        ColorPanel cp = new ColorPanel();
-        JFrame frame = new JFrame();
-        frame.getContentPane().add(cp);
-        frame.pack();
-        frame.setVisible(true);
-    }
 
 }
 

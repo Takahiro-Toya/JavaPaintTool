@@ -11,9 +11,7 @@ import java.util.ArrayList;
  * This class provides JPanel to draw a temporary line,
  * and when the user finished drawing (released mouse) the line is drawn on the Buffered Image
  */
-public class DrawPoly extends JPanel implements DrawShape, FillShape, WriteFile {
-
-    private BufferedImage imagePanel;
+public class DrawPoly extends DrawShape {
 
     private double sx;
     private double sy;
@@ -27,12 +25,8 @@ public class DrawPoly extends JPanel implements DrawShape, FillShape, WriteFile 
     private ArrayList<Double> yVertices = new ArrayList<>();
 
     private boolean drawTempLine = false;
-    private boolean fill = false;
-
-    private Color lineColour;
+    private boolean fill;
     private Color fillColour;
-
-    private float lineWidth = 2f;
 
 
 
@@ -40,30 +34,30 @@ public class DrawPoly extends JPanel implements DrawShape, FillShape, WriteFile 
      * constructor
      * @param imagePanel to display drawn image
      */
-    public DrawPoly (BufferedImage imagePanel, Color lineColour, Color fillColour){
+    public DrawPoly (BufferedImage imagePanel, Color lineColour, Color fillColour, boolean fill, Observer o){
+        super(imagePanel, lineColour, o);
         PolyMouseListener mouse = new PolyMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
-        this.imagePanel = imagePanel;
-        this.lineColour = lineColour;
         this.fillColour = fillColour;
+        this.fill = fill;
     }
 
     /**
      * Draw image on the image Panel
      */
     private void drawOnImagePanel(double x1, double y1, double x2, double y2){
-        Graphics2D g2 = imagePanel.createGraphics();
+        Graphics2D g2 = getImagePanel().createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(lineColour);
-        g2.setStroke(new BasicStroke(lineWidth));
+        g2.setColor(getLineColour());
+        g2.setStroke(new BasicStroke(getLineWidth()));
         g2.draw(new Line2D.Double(x1, y1, x2, y2));
         g2.dispose();
     }
 
     private void drawPolygon(){
-        Graphics2D g2d = imagePanel.createGraphics();
-        g2d.setStroke(new BasicStroke((lineWidth)));
+        Graphics2D g2d = getImagePanel().createGraphics();
+        g2d.setStroke(new BasicStroke((getLineWidth())));
         int[] xp = new int[xVertices.size()];
         int[] yp = new int[yVertices.size()];
         if(fill){
@@ -74,11 +68,21 @@ public class DrawPoly extends JPanel implements DrawShape, FillShape, WriteFile 
             }
             g2d.fillPolygon(xp, yp, xp.length);
         }
-        g2d.setColor(lineColour);
+        g2d.setColor(getLineColour());
         g2d.drawPolygon(xp, yp, xp.length);
         xVertices.clear();
         yVertices.clear();
+    }
 
+
+    public void setFillColour(Color c) { fillColour = c;}
+
+    public void setFill(boolean bool){
+        fill = bool;
+    }
+
+    public void paintUpdated(ShapeInfo shape){
+        ((VecPaint)getObserver()).updateShapes(shape);
     }
 
     /**
@@ -90,71 +94,52 @@ public class DrawPoly extends JPanel implements DrawShape, FillShape, WriteFile 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
-        g2d.drawImage(imagePanel, 0, 0, this);
+        g2d.drawImage(getImagePanel(), 0, 0, this);
         if (drawTempLine) {
-            g2d.setColor(lineColour);
+            g2d.setColor(getLineColour());
             g2d.draw(new Line2D.Double(tpx, tpy, ex, ey));
         }
     }
 
-    /**
-     * Write the information into the content in main class
-     * @param str the vairable of content
-     * @return return the updated content
-     */
-    @Override
-    public String writeIn(String str) {
-        VecPaint vec = new VecPaint();
-        str = str + "POLYGON " + sx + " " + sy + " " + tpx + " " + tpy + " " + ex + " " + ey + " " +  "\n";
-        vec.setContent(str);
-        return str;
-    }
 
-    public void writeVecFile(){}
-
-    public void setLineColour(Color c){lineColour = c;}
-
-    public void setFillColour(Color c) { fillColour = c;}
-
-    public void setFill(boolean bool){
-        fill = bool;
-    }
 
     private class PolyMouseListener extends MouseAdapter {
         /**
          * When mouse is pressed, start drawing a rectangle, so set the start location
          */
         public void mousePressed(MouseEvent e) {
-            if (edges == 0) {
-                sx = e.getX();
-                sy = e.getY();
-                xVertices.add(sx);
-                yVertices.add(sy);
-                tpx = sx;
-                tpy = sy;
-                edges++;
-            } else {
-                ex = e.getX();
-                ey = e.getY();
-                xVertices.add(ex);
-                yVertices.add(ey);
-                drawOnImagePanel(tpx, tpy, ex, ey);
-                drawTempLine = false;
-                repaint();
-                tpx = ex;
-                tpy = ey;
-                edges++;
+            if(e.getClickCount() != 2) {
+                if (edges == 0) {
+                    sx = e.getPoint().getX();
+                    sy = e.getPoint().getY();
+                    xVertices.add(sx);
+                    yVertices.add(sy);
+                    tpx = sx;
+                    tpy = sy;
+                    edges++;
+                } else {
+                    ex = e.getPoint().getX();
+                    ey = e.getPoint().getY();
+                    xVertices.add(ex);
+                    yVertices.add(ey);
+                    drawOnImagePanel(tpx, tpy, ex, ey);
+                    drawTempLine = false;
+                    repaint();
+                    tpx = ex;
+                    tpy = ey;
+                    edges++;
+                }
             }
         }
 
         /**
          * When mouse is being moved (not dragged!), a temporary line is drawn
-         * between preveously clicked location to current mouse location
+         * between previously clicked location to current mouse location
          */
         public void mouseMoved(MouseEvent e) {
             if (!(edges == 0)) {
-                ex = e.getX();
-                ey = e.getY();
+                ex = e.getPoint().getX();
+                ey = e.getPoint().getY();
                 drawTempLine = true;
                 repaint();
             }
@@ -174,14 +159,20 @@ public class DrawPoly extends JPanel implements DrawShape, FillShape, WriteFile 
          */
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
-                ex = e.getX();
-                ey = e.getY();
+                ex = e.getPoint().getX();
+                ey = e.getPoint().getY();
                 xVertices.add(ex);
                 yVertices.add(ey);
+
+                Polygon polygon = new Polygon(xVertices, yVertices, getLineColour(), fillColour, fill, getImagePanel().getWidth());
+                polygon.drawPoly(getImagePanel());
+                paintUpdated(polygon);
+                drawPolygon();
+
                 drawTempLine = false;
                 edges = 0;
-                drawOnImagePanel(ex, ey, sx, sy);
-                drawPolygon();
+                xVertices.clear();
+                yVertices.clear();
             }
         }
 
@@ -191,8 +182,8 @@ public class DrawPoly extends JPanel implements DrawShape, FillShape, WriteFile 
          * This is still a polygon : A polygon with lots of very short straight lines
          */
         public void mouseDragged(MouseEvent e) {
-            ex = e.getX();
-            ey = e.getY();
+            ex = e.getPoint().getX();
+            ey = e.getPoint().getY();
             xVertices.add(ex);
             yVertices.add(ey);
             drawOnImagePanel(tpx, tpy, ex, ey);
@@ -208,5 +199,4 @@ public class DrawPoly extends JPanel implements DrawShape, FillShape, WriteFile 
         public void mouseExited(MouseEvent evt) {
         }
     }
-
 }

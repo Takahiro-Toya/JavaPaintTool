@@ -8,7 +8,7 @@ public class ToolPanel extends JPanel implements Subject {
 
     private String className = "ToolPanel";
 
-    private String currentMode = "Plot";
+    private VecPaint.Mode currentMode = VecPaint.Mode.PLOT;
 
     private boolean fill = false;
 
@@ -48,7 +48,26 @@ public class ToolPanel extends JPanel implements Subject {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JButton clickedBtn = (JButton)e.getSource();
-                    currentMode = clickedBtn.getText();
+                    switch (clickedBtn.getText()){
+                        case "Plot":
+                            currentMode = VecPaint.Mode.PLOT;
+                            break;
+                        case "Line":
+                            currentMode = VecPaint.Mode.LINE;
+                            break;
+                        case "Rectangle":
+                            currentMode = VecPaint.Mode.RECTANGLE;
+
+                            break;
+                        case "Ellipse":
+                            currentMode = VecPaint.Mode.ELLIPSE;
+                            break;
+                        case "Polygon":
+                            currentMode = VecPaint.Mode.POLYGON;
+                            break;
+                        default:
+                            currentMode = VecPaint.Mode.PLOT;
+                    }
                     notifyObservers();
                 }
             });
@@ -77,7 +96,7 @@ public class ToolPanel extends JPanel implements Subject {
 
     public void notifyObservers(){
         for (int i = 0; i < observers.size(); i++){
-            observers.get(i).update(className);
+            observers.get(i).update();
         }
     }
 
@@ -85,7 +104,7 @@ public class ToolPanel extends JPanel implements Subject {
      * Return current drawing mode
      * @return current drawing mode
      */
-    public String getCurrentMode(){
+    public VecPaint.Mode getCurrentMode(){
         return currentMode;
     }
 
