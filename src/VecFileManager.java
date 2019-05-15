@@ -89,7 +89,6 @@ public class VecFileManager extends JMenuItem implements Subject {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser chooser = new JFileChooser();
-                VecPaint vec = new VecPaint();
                 chooser.addChoosableFileFilter(new FileFilter() {
                     // set the default saving file extension to .vec
                     @Override
@@ -224,6 +223,7 @@ public class VecFileManager extends JMenuItem implements Subject {
         boolean fill = false;
 
         for (String str: Openlist) {
+            System.out.println(str);
             if (str.startsWith("PEN")){
                 String string = "";
                 for (int a = str.indexOf('#'); a < str.length(); a++){
@@ -270,16 +270,20 @@ public class VecFileManager extends JMenuItem implements Subject {
                          fill = false;
                          break;
                      case "POLYGON":
-                        ArrayList<Double> px = new ArrayList<>();
-                        ArrayList<Double> py = new ArrayList<>();
+                        double[] px = new double[(file.length - 1) /2];
+                        double[] py = new double[(file.length - 1) / 2];
+
+                        int cy = 0;
+                        int cx = 0;
                         for (int a = 1; a < file.length - 1; a += 2){
-                            px.add(Double.valueOf(file[a]));
+                            px[cx] = Double.valueOf(file[a]);
+                            cx++;
                         }
                         for (int b = 2; b < file.length; b += 2){
-                            py.add(Double.valueOf(file[b]));
+                            py[cy] = Double.valueOf(file[b]);
+                            cy++;
                         }
-                        System.out.println("Size" + px.size());
-                        shapesToOpen.add(new Polygon(px, py, lineColour, fillColour, fill, 1));
+                        shapesToOpen.add(new Polygon(px, py, lineColour, fillColour, fill));
                         fill = false;
                         break;
                      default:
@@ -289,10 +293,7 @@ public class VecFileManager extends JMenuItem implements Subject {
             }
         }
 
-        System.out.println("Here");
-
         for(Observer o: observers){
-            System.out.println("Open now");
             o.update("OpenBtn");
         }
     }
@@ -339,7 +340,6 @@ public class VecFileManager extends JMenuItem implements Subject {
      * return undoShapeList
      */
     public ArrayList<ShapeInfo> getShapesToOpen() {
-        System.out.println(shapesToOpen.size());
         return shapesToOpen;
     }
 

@@ -100,7 +100,6 @@ public class VecPaint extends JFrame implements Observer {
     @Override
     public void update(String location){
         if (location == "ToolPanel" || location == "ColourPanel") {
-//            shapes = manager.getShapesList();
             currentMode = pnlTools.getCurrentMode();
             lineColour = pnlColours.getLineColour();
             fillColour = pnlColours.getFillColour();
@@ -120,7 +119,6 @@ public class VecPaint extends JFrame implements Observer {
             shapes = manager.getShapesToOpen();
             refreshCanvas();
         }
-
     }
 
     private void switchMode(){
@@ -150,7 +148,6 @@ public class VecPaint extends JFrame implements Observer {
     public void updateShapes(ShapeInfo shape){
         shapes.add(shape);
         refreshCanvas();
-        System.out.println(shapes.size());
     }
 
     private void imagePanelResized(){
@@ -216,10 +213,6 @@ public class VecPaint extends JFrame implements Observer {
         repaint();
         setVisible(true);
     }
-
-//    public static ArrayList<ShapeInfo> getShapesList(){
-//        return shapes;
-//    }
 
     public static void main(String[] args){
         VecPaint vectorTool = new VecPaint();

@@ -14,24 +14,23 @@ public class Polygon extends ShapeInfo {
     private double[] vecPointXs; // for vec file
     private double[] vecPointYs;
 
-    private Color fillColour;
-    private boolean fill;
-    private float lineWidth = 2f;
 
-    public Polygon(ArrayList<Double> xVertices, ArrayList<Double> yVertices, Color lineColour, Color fillColour, boolean fill, int size){
-        super(xVertices.get(0), yVertices.get(0), xVertices.get(xVertices.size() - 1), yVertices.get(yVertices.size() - 1), lineColour, fillColour, fill, VecPaint.Mode.POLYGON);
-        this.xVertices = new int[xVertices.size()];
-        this.yVertices = new int[yVertices.size()];
-        vecPointXs = new double[xVertices.size()];
-        vecPointYs = new double[yVertices.size()];
-        for(int i = 0; i < xVertices.size(); i++){
-            this.xVertices[i] = (xVertices.get(i)).intValue();
-            this.yVertices[i] = (yVertices.get(i)).intValue();
-            vecPointXs[i] = xVertices.get(i) / size;
-            vecPointYs[i] = yVertices.get(i) / size;
+    public Polygon(double[] xVertices, double[] yVertices, Color lineColour, Color fillColour, boolean fill){
+        super(xVertices[0], yVertices[0], xVertices[xVertices.length - 1], yVertices[yVertices.length - 1], lineColour, fillColour, fill, VecPaint.Mode.POLYGON);
+        vecPointXs = new double[xVertices.length];
+        vecPointXs = new double[yVertices.length];
+        vecPointXs = xVertices;
+        vecPointYs = yVertices;
+
+        this.xVertices = new int[xVertices.length];
+        this.yVertices = new int[yVertices.length];
+
+        for(int i = 0; i < xVertices.length; i++){
+            vecPointXs[i] = xVertices[i];
+            vecPointYs[i] = yVertices[i];
+            this.xVertices[i] = (int)xVertices[i];
+            this.yVertices[i] = (int)yVertices[i];
         }
-        this.fillColour = fillColour;
-        this.fill = fill;
     }
 
 //    public void drawPoly(BufferedImage imagePanel){

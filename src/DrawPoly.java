@@ -151,7 +151,13 @@ public class DrawPoly extends DrawShape {
          */
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
-                Polygon polygon = new Polygon(xVertices, yVertices, getLineColour(), fillColour, fill, getImagePanel().getWidth());
+                double[] xScaled = new double[xVertices.size()];
+                double[] yScaled = new double[yVertices.size()];
+                for(int i = 0; i < xVertices.size(); i++){
+                    xScaled[i] = xVertices.get(i) / getImagePanel().getWidth();
+                    yScaled[i] = yVertices.get(i) / getImagePanel().getHeight();
+                }
+                Polygon polygon = new Polygon(xScaled, yScaled, getLineColour(), fillColour, fill);
                 paintUpdated(polygon);
                 drawTempLine = false;
                 edges = 0;
