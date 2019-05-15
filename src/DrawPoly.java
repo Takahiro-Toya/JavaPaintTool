@@ -112,18 +112,20 @@ public class DrawPoly extends DrawShape {
                 edges++;
                 System.out.println(sx + " : " + sy);
             } else {
-
-                ex = e.getPoint().getX();
-                ey = e.getPoint().getY();
-                System.out.println(ex + " : " + ey + "HERE");
-                xVertices.add(ex);
-                yVertices.add(ey);
-                drawOnImagePanel(tpx, tpy, ex, ey);
-                drawTempLine = false;
-                repaint();
-                tpx = ex;
-                tpy = ey;
-                edges++;
+                if(e.getClickCount() != 2) {
+                    ex = e.getPoint().getX();
+                    ey = e.getPoint().getY();
+                    System.out.println(ex + " : " + ey + "HERE");
+                    xVertices.add(ex);
+                    yVertices.add(ey);
+                    System.out.println("List: " + xVertices);
+                    drawOnImagePanel(tpx, tpy, ex, ey);
+                    drawTempLine = false;
+                    repaint();
+                    tpx = ex;
+                    tpy = ey;
+                    edges++;
+                }
 
             }
 
@@ -156,8 +158,6 @@ public class DrawPoly extends DrawShape {
          */
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
-                System.out.println(ex + " : " + ey + "here");
-                System.out.println(xVertices);
                 Polygon polygon = new Polygon(xVertices, yVertices, getLineColour(), fillColour, fill, getImagePanel().getWidth());
                 polygon.drawPoly(getImagePanel());
                 paintUpdated(polygon);
