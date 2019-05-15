@@ -193,8 +193,8 @@ public class VecFileManager extends JMenuItem implements Subject {
             if (a == 0 || (temp.getLineColour() != shapesToSave.get(a - 1).getLineColour())){
                 content += "PEN " + String.format("#%02x%02x%02x", temp.getLineColour().getRed(), temp.getLineColour().getGreen(), temp.getLineColour().getBlue()).toUpperCase() + "\n";
             }
-            // detect if the fill colour has changed
-            if (a == 0 && temp.getFill() || (temp.getFill() && temp.getFillColour() != shapesToSave.get(a - 1).getFillColour() && temp.getFill())){
+            // detect if should fill
+            if (temp.getFill()){
                 content += "FILL " + String.format("#%02x%02x%02x", temp.getFillColour().getRed(), temp.getFillColour().getGreen(), temp.getFillColour().getBlue()).toUpperCase() + "\n";
             }
             // add the coordinates
