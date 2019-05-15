@@ -317,6 +317,7 @@ public class VecFileManager extends JMenuItem implements Subject {
             public void actionPerformed(ActionEvent e) {
                 shapesToSave.clear();
                 shapesToOpen.clear();
+                Openlist.clear();
                 notifyObservers("ClearBtn");
             }
         };
