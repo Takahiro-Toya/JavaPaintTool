@@ -21,4 +21,8 @@ public class Plot extends ShapeInfo {
         return arrayList;
     }
 
+    @Override
+    public String toString() {
+        return "PLOT " + getSx() + " " + getSy() + "\n";
+    }
 }

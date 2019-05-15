@@ -22,4 +22,9 @@ public class Line extends ShapeInfo {
         arrayList.add(getEy());
         return arrayList;
     }
+
+    @Override
+    public String toString() {
+        return "LINE " + getSx() + " " + getSy() + " " + getEx() + " " + getEy() + "\n";
+    }
 }

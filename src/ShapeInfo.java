@@ -59,5 +59,7 @@ public abstract class ShapeInfo {
 
     public abstract ArrayList<Double> getPoint();
 
+    public abstract String toString();
+
 }
 

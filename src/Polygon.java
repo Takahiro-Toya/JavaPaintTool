@@ -68,4 +68,16 @@ public class Polygon extends ShapeInfo {
         return arrayList;
     }
 
+    @Override
+    public String toString() {
+        String str = "POLYGON";
+        for (int a = 0; a < vecPointXs.length; a++) {
+            if (a != vecPointXs.length - 1){
+                str = str + " " + vecPointXs[a] + " " + vecPointYs[a];
+            }else {
+                str = str + " " + vecPointXs[a] + " " + vecPointYs[a] + "\n";
+            }
+        }
+        return str;
+    }
 }

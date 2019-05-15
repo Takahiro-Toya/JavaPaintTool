@@ -14,7 +14,6 @@ public class VecPaint extends JFrame implements Observer {
     private int screenWidth;
     private int screenHeight;
 
-    private static String content = "";
 
     private JMenuBar menuBar = new JMenuBar();
 
@@ -29,7 +28,7 @@ public class VecPaint extends JFrame implements Observer {
     private Color layerBgColor = Color.DARK_GRAY;
     private Color canvasBgColor = Color.WHITE;
 
-    private ArrayList<ShapeInfo> shapes = new ArrayList<>();
+    private static ArrayList<ShapeInfo> shapes = new ArrayList<>();
 
     private BufferedImage imagePanel;
 
@@ -197,12 +196,8 @@ public class VecPaint extends JFrame implements Observer {
         setVisible(true);
     }
 
-    public String getContent(){
-        return content;
-    }
-
-    public void setContent(String str){
-        content = str;
+    public static ArrayList<ShapeInfo> getShapesList(){
+        return shapes;
     }
 
 

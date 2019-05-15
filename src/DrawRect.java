@@ -111,6 +111,7 @@ public class DrawRect extends DrawShape {
         public void mouseReleased(MouseEvent e) {
             ex = e.getPoint().getX();
             ey = e.getPoint().getY();
+            VecPaint vec = new VecPaint();
             drawTempRect = false;
             Graphics2D g2d = getImagePanel().createGraphics();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -118,6 +119,7 @@ public class DrawRect extends DrawShape {
             drawRect(g2d);
             g2d.dispose();
             repaint();
+
         }
 
         // those methods are not used, just need to implements here

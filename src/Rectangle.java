@@ -24,4 +24,9 @@ public class Rectangle extends ShapeInfo{
         arrayList.add(getEy());
         return arrayList;
     }
+
+    @Override
+    public String toString() {
+        return "RECTANGLE " + getSx() + " " + getSy() + " " + getEx() + " " + getEy() + "\n";
+    }
 }

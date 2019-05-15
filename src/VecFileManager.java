@@ -22,7 +22,8 @@ public class VecFileManager extends JMenuItem {
     private File vecFile;
     private ArrayList Savelist = new ArrayList();
     private ArrayList Openlist = new ArrayList();
-    private String content;
+    private String content = "";
+
 
 
     /**
@@ -94,6 +95,7 @@ public class VecFileManager extends JMenuItem {
                     }
                 });
                 if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
+                    convertToString();
                     vecFile = chooser.getSelectedFile();
                     String path = vecFile.getPath();
                     try{
@@ -104,7 +106,7 @@ public class VecFileManager extends JMenuItem {
                         fos.close();
                         FileWriter fileWriter = new FileWriter(vecFile);
                         ////
-                        fileWriter.write(vec.getContent());
+                        fileWriter.write(content);
                         fileWriter.close();
                         String name = chooser.getName(vecFile);
 
@@ -165,6 +167,16 @@ public class VecFileManager extends JMenuItem {
             }
         };
         return listener;
+    }
+
+    private void convertToString(){
+        VecPaint vecPaint = new VecPaint();
+
+        for (ShapeInfo shape: vecPaint.getShapesList()) {
+            String hex = String.format("PEN #%02x%02x%02x", shape.getLineColour().getRed(), shape.getLineColour().getGreen(), shape.getLineColour().getBlue());
+            System.out.println(hex);
+            content = content + shape.toString();
+        }
     }
 
 

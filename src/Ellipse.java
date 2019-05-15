@@ -25,4 +25,10 @@ public class Ellipse extends ShapeInfo{
         arrayList.add(getEy());
         return arrayList;
     }
+
+    @Override
+    public String toString(){
+        return "ELLIPSE " + getSx() + " " + getSy() + " " + getEx() + " " + getEy() + "\n";
+    }
+
 }
