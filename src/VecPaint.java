@@ -135,10 +135,9 @@ public class VecPaint extends JFrame implements Observer {
 
     public void updateShapes(ShapeInfo shape){
         shapes.add(shape);
-        System.out.println(shape.getPoint());
     }
 
-    public void imagePanelResized(){
+    private void imagePanelResized(){
         Graphics2D g2d = imagePanel.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(lineWidth));

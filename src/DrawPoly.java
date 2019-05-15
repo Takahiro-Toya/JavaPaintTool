@@ -60,25 +60,18 @@ public class DrawPoly extends DrawShape {
         g2d.setStroke(new BasicStroke((getLineWidth())));
         int[] xp = new int[xVertices.size()];
         int[] yp = new int[yVertices.size()];
+        for(int i = 0; i < xVertices.size(); i++){
+            xp[i] = (xVertices.get(i)).intValue();
+            yp[i] = (yVertices.get(i)).intValue();
+        }
         if(fill){
             g2d.setColor(fillColour);
-            for(int i = 0; i < xVertices.size(); i++){
-                xp[i] = (xVertices.get(i)).intValue();
-                yp[i] = (yVertices.get(i)).intValue();
-            }
             g2d.fillPolygon(xp, yp, xp.length);
         }
         g2d.setColor(getLineColour());
         g2d.drawPolygon(xp, yp, xp.length);
         xVertices.clear();
         yVertices.clear();
-    }
-
-
-    public void setFillColour(Color c) { fillColour = c;}
-
-    public void setFill(boolean bool){
-        fill = bool;
     }
 
     public void paintUpdated(ShapeInfo shape){
@@ -108,28 +101,32 @@ public class DrawPoly extends DrawShape {
          * When mouse is pressed, start drawing a rectangle, so set the start location
          */
         public void mousePressed(MouseEvent e) {
-            if(e.getClickCount() != 2) {
-                if (edges == 0) {
-                    sx = e.getPoint().getX();
-                    sy = e.getPoint().getY();
-                    xVertices.add(sx);
-                    yVertices.add(sy);
-                    tpx = sx;
-                    tpy = sy;
-                    edges++;
-                } else {
-                    ex = e.getPoint().getX();
-                    ey = e.getPoint().getY();
-                    xVertices.add(ex);
-                    yVertices.add(ey);
-                    drawOnImagePanel(tpx, tpy, ex, ey);
-                    drawTempLine = false;
-                    repaint();
-                    tpx = ex;
-                    tpy = ey;
-                    edges++;
-                }
+
+            if (edges == 0) {
+                sx = e.getPoint().getX();
+                sy = e.getPoint().getY();
+                xVertices.add(sx);
+                yVertices.add(sy);
+                tpx = sx;
+                tpy = sy;
+                edges++;
+                System.out.println(sx + " : " + sy);
+            } else {
+
+                ex = e.getPoint().getX();
+                ey = e.getPoint().getY();
+                System.out.println(ex + " : " + ey + "HERE");
+                xVertices.add(ex);
+                yVertices.add(ey);
+                drawOnImagePanel(tpx, tpy, ex, ey);
+                drawTempLine = false;
+                repaint();
+                tpx = ex;
+                tpy = ey;
+                edges++;
+
             }
+
         }
 
         /**
@@ -159,20 +156,14 @@ public class DrawPoly extends DrawShape {
          */
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
-                ex = e.getPoint().getX();
-                ey = e.getPoint().getY();
-                xVertices.add(ex);
-                yVertices.add(ey);
-
+                System.out.println(ex + " : " + ey + "here");
+                System.out.println(xVertices);
                 Polygon polygon = new Polygon(xVertices, yVertices, getLineColour(), fillColour, fill, getImagePanel().getWidth());
                 polygon.drawPoly(getImagePanel());
                 paintUpdated(polygon);
                 drawPolygon();
-
                 drawTempLine = false;
                 edges = 0;
-                xVertices.clear();
-                yVertices.clear();
             }
         }
 
