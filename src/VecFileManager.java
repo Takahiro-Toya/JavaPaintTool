@@ -7,8 +7,10 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.DoubleToIntFunction;
 
-public class VecFileManager extends JMenuItem implements  Subject {
+public class VecFileManager extends JMenuItem implements Subject {
 
     /**
      * Enums names of every component of the menu bar
@@ -22,11 +24,14 @@ public class VecFileManager extends JMenuItem implements  Subject {
     }
     // Variables
     private File vecFile;
-    private ArrayList Savelist = new ArrayList();
-    private ArrayList Openlist = new ArrayList();
+    private ArrayList<String> Openlist = new ArrayList();
     private String content = "";
 
+
     private ArrayList<ShapeInfo> shapes = new ArrayList<>();
+
+    public static ArrayList<ShapeInfo> arrayList = new ArrayList<>();
+
 
     private ArrayList<Observer> observers = new ArrayList<>();
 
@@ -155,9 +160,7 @@ public class VecFileManager extends JMenuItem implements  Subject {
                             while ((text = br.readLine()) != null) {
                                 Openlist.add(text);
                             }
-                            // test
-                            System.out.println(Openlist);
-                            // test
+                            convertToShape();
                             br.close();
                             reader.close();
 
@@ -174,13 +177,108 @@ public class VecFileManager extends JMenuItem implements  Subject {
         return listener;
     }
 
+    /**
+     * convert the shapes to string and store them into a String called content
+     */
     private void convertToString(){
         VecPaint vecPaint = new VecPaint();
+        for (int a = 0; a < vecPaint.getShapesList().size(); a++){
+            ShapeInfo temp = vecPaint.getShapesList().get(a);
+            // detect if the line colour has changed
+            if (a == 0 || (temp.getLineColour() != vecPaint.getShapesList().get(a - 1).getLineColour())){
+                content += "PEN " + String.format("#%02x%02x%02x", temp.getLineColour().getRed(), temp.getLineColour().getGreen(), temp.getLineColour().getBlue()).toUpperCase() + "\n";
+            }
+            // detect if the fill colour has changed
+            if (a == 0 || (temp.getFillColour() != vecPaint.getShapesList().get(a - 1).getFillColour() && temp.getFill())){
+                content += "FILL " + String.format("#%02x%02x%02x", temp.getFillColour().getRed(), temp.getFillColour().getGreen(), temp.getFillColour().getBlue()).toUpperCase() + "\n";
+            }
+            // add the coordinates
+            content += vecPaint.getShapesList().get(a).toString();
+        }
+    }
 
-        for (ShapeInfo shape: vecPaint.getShapesList()) {
-            String hex = String.format("PEN #%02x%02x%02x", shape.getLineColour().getRed(), shape.getLineColour().getGreen(), shape.getLineColour().getBlue());
-            System.out.println(hex);
-            content = content + shape.toString();
+    /**
+     * convert a hex string to rgb color that can be recognised by java
+     * @param colorStr a string of hex
+     * @return color
+     */
+    private Color hexToRgb(String colorStr) {
+        return new Color(
+                Integer.valueOf( colorStr.substring( 1, 3 ), 16 ),
+                Integer.valueOf( colorStr.substring( 3, 5 ), 16 ),
+                Integer.valueOf( colorStr.substring( 5, 7 ), 16 ) );
+    }
+
+    /**
+     * convert the input string to objects
+     */
+    public void convertToShape(){
+        ShapeInfo info = null;
+        Color fillColour = null;
+        Color lineColour = null;
+        boolean fill = false;
+        VecPaint paint = new VecPaint();
+        for (String str: Openlist) {
+            if (str.startsWith("PEN")){
+                String string = "";
+                for (int a = str.indexOf('#'); a < str.length(); a++){
+                   string += str.charAt(a);
+                }
+                lineColour = hexToRgb(string);
+            }else if (str.startsWith("FILL")){
+                String string = "";
+                for (int a = str.indexOf('#'); a < str.length(); a++){
+                    string += str.charAt(a);
+                }
+                fill = true;
+                fillColour = hexToRgb(string);
+            }else{
+                 String[] file = str.split("\\s+");
+                 String shapeName = file[0];
+                 switch (shapeName){
+                     case "PLOT":
+                         double x = Double.valueOf(file[1]);
+                         double y = Double.valueOf(file[2]);
+                         arrayList.add(new Plot(x, y, lineColour));
+                         break;
+                     case "LINE":
+                         double lsx = Double.valueOf(file[1]);
+                         double lsy = Double.valueOf(file[2]);
+                         double lex = Double.valueOf(file[3]);
+                         double ley = Double.valueOf(file[4]);
+                         arrayList.add(new Line(lsx, lsy, lex, ley, lineColour));
+                         break;
+                     case "RECTANGLE":
+                         double tsx = Double.valueOf(file[1]);
+                         double tsy = Double.valueOf(file[2]);
+                         double tex = Double.valueOf(file[3]);
+                         double tey = Double.valueOf(file[4]);
+                         arrayList.add(new Rectangle(tsx, tsy, tex, tey, lineColour, fillColour, fill));
+                         break;
+                     case  "ELLIPSE":
+                         double esx = Double.valueOf(file[1]);
+                         double esy = Double.valueOf(file[2]);
+                         double eex = Double.valueOf(file[3]);
+                         double eey = Double.valueOf(file[4]);
+                         arrayList.add(new Ellipse(esx, esy, eex, eey, lineColour, fillColour, fill));
+                         break;
+                     case "POLYGON":
+                        ArrayList<Double> px = new ArrayList<>();
+                        ArrayList<Double> py = new ArrayList<>();
+                        for (int a = 1; a < file.length - 1; a += 2){
+                            px.add(Double.valueOf(file[a]));
+                        }
+                        for (int b = 2; b < file.length; b += 2){
+                            px.add(Double.valueOf(file[b]));
+                        }
+                        break;
+
+                 }
+
+            }
+        }
+        for (ShapeInfo shape:arrayList) {
+            paint.updateShapes(shape);
         }
     }
 

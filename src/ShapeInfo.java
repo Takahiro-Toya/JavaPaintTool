@@ -47,6 +47,12 @@ public abstract class ShapeInfo {
         return lineColour;
     }
 
+    public void setLineColour(Color colour){ lineColour = colour; }
+
+    public void setFillColour(Color colour){fillColour = colour; }
+
+    public void setFill(boolean fill){this.fill = fill;}
+
     public Color getFillColour(){
         return fillColour;
     }

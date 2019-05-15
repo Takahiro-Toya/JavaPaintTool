@@ -62,7 +62,7 @@ public class VecPaint extends JFrame implements Observer {
                 pnlCanvas.setBounds((int)((layer.getWidth() - edge * canvasArea) / 2), (int)((layer.getHeight() - edge * canvasArea) / 2),
                         (int)(edge * canvasArea), (int)(edge * canvasArea));
 
-                imagePanelResized();
+                refreshImagePane();
                 layer.add(pnlCanvas);
 
             }
@@ -138,7 +138,7 @@ public class VecPaint extends JFrame implements Observer {
         System.out.println("2. :" + shape.getPoint());
     }
 
-    private void imagePanelResized(){
+    private void  refreshImagePane(){
         Graphics2D g2d = imagePanel.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(lineWidth));
@@ -198,7 +198,7 @@ public class VecPaint extends JFrame implements Observer {
         setVisible(true);
     }
 
-    public static ArrayList<ShapeInfo> getShapesList(){
+    public ArrayList<ShapeInfo> getShapesList(){
         return shapes;
     }
 
