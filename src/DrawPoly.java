@@ -55,20 +55,20 @@ public class DrawPoly extends DrawShape {
         g2.dispose();
     }
 
-    private void drawPolygon(Polygon polygon){
-        Graphics2D g2d = getImagePanel().createGraphics();
-        g2d.setStroke(new BasicStroke((getLineWidth())));
-
-        if(fill){
-            g2d.setColor(fillColour);
-            g2d.fill(polygon.getShape(getImagePanel().getWidth()));
-        }
-
-        g2d.setColor(getLineColour());
-        g2d.draw(polygon.getShape(getImagePanel().getWidth()));
-        xVertices.clear();
-        yVertices.clear();
-    }
+//    private void drawPolygon(Polygon polygon){
+//        Graphics2D g2d = getImagePanel().createGraphics();
+//        g2d.setStroke(new BasicStroke((getLineWidth())));
+//
+//        if(fill){
+//            g2d.setColor(fillColour);
+//            g2d.fill(polygon.getShape(getImagePanel().getWidth()));
+//        }
+//
+//        g2d.setColor(getLineColour());
+//        g2d.draw(polygon.getShape(getImagePanel().getWidth()));
+//        xVertices.clear();
+//        yVertices.clear();
+//    }
 
     public void paintUpdated(ShapeInfo shape){
         ((VecPaint)getObserver()).updateShapes(shape);

@@ -274,8 +274,9 @@ public class VecFileManager extends JMenuItem implements Subject {
                             px.add(Double.valueOf(file[a]));
                         }
                         for (int b = 2; b < file.length; b += 2){
-                            px.add(Double.valueOf(file[b]));
+                            py.add(Double.valueOf(file[b]));
                         }
+                        System.out.println("Size" + px.size());
                         shapesToOpen.add(new Polygon(px, py, lineColour, fillColour, fill, 1));
                         break;
                      default:
@@ -311,6 +312,8 @@ public class VecFileManager extends JMenuItem implements Subject {
         ActionListener clearListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                shapesToSave.clear();
+                shapesToOpen.clear();
                 notifyObservers("ClearBtn");
             }
         };
