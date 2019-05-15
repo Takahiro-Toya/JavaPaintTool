@@ -2,5 +2,5 @@ public interface Subject {
 
     void attachObservers(Observer observer);
 
-    void notifyObservers();
+    void notifyObservers(String location);
 }

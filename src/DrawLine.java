@@ -80,14 +80,14 @@ public class DrawLine extends DrawShape {
         public void mouseReleased(MouseEvent e) {
             ex = e.getPoint().getX();
             ey = e.getPoint().getY();
-            Graphics2D g2 = getImagePanel().createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(lineColor);
-            g2.setStroke(new BasicStroke(getLineWidth()));
+//            Graphics2D g2 = getImagePanel().createGraphics();
+//            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//            g2.setColor(lineColor);
+//            g2.setStroke(new BasicStroke(getLineWidth()));
             Line lineVec = new Line(sx / getImagePanel().getWidth(), sy / getImagePanel().getHeight(),
                     ex / getImagePanel().getWidth(), ey /  getImagePanel().getHeight(), lineColor);
-            g2.draw(new Line2D.Double(sx, sy, ex, ey));
-            g2.dispose();
+//            g2.draw(new Line2D.Double(sx, sy, ex, ey));
+//            g2.dispose();
             drawTempLine = false;
             paintUpdated(lineVec);
             repaint();

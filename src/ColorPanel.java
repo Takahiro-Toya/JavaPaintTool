@@ -108,7 +108,7 @@ public class ColorPanel extends JPanel implements Subject {
                     }
                     fillColourPicked.setBackground(fillColour);
                 }
-                notifyObservers();
+                notifyObservers("ColourPanel");
             }
         });
     }
@@ -134,7 +134,7 @@ public class ColorPanel extends JPanel implements Subject {
                         fillColour = button.getBackground();
                         fillColourPicked.setBackground(fillColour);
                     }
-                    notifyObservers();
+                    notifyObservers("ColourPanel");
                 }
             });
             quickColourBtns.add(btn);
@@ -154,9 +154,9 @@ public class ColorPanel extends JPanel implements Subject {
         observers.add(observer);
     }
 
-    public void notifyObservers(){
+    public void notifyObservers(String location){
         for (int i = 0; i < observers.size(); i++){
-            observers.get(i).update();
+            observers.get(i).update(location);
         }
     }
 

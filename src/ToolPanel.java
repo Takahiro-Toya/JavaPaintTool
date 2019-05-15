@@ -66,7 +66,7 @@ public class ToolPanel extends JPanel implements Subject {
                         default:
                             currentMode = VecPaint.Mode.PLOT;
                     }
-                    notifyObservers();
+                    notifyObservers("ToolPanel");
                 }
             });
             toolBtns.add(btn);
@@ -83,7 +83,7 @@ public class ToolPanel extends JPanel implements Subject {
                 } else {
                     btnFill.setText("Fill On");
                 }
-                notifyObservers();
+                notifyObservers("ToolPanel");
             }
         });
     }
@@ -92,9 +92,9 @@ public class ToolPanel extends JPanel implements Subject {
         observers.add(observer);
     }
 
-    public void notifyObservers(){
+    public void notifyObservers(String location){
         for (int i = 0; i < observers.size(); i++){
-            observers.get(i).update();
+            observers.get(i).update(location);
         }
     }
 

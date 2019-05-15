@@ -55,21 +55,17 @@ public class DrawPoly extends DrawShape {
         g2.dispose();
     }
 
-    private void drawPolygon(){
+    private void drawPolygon(Polygon polygon){
         Graphics2D g2d = getImagePanel().createGraphics();
         g2d.setStroke(new BasicStroke((getLineWidth())));
-        int[] xp = new int[xVertices.size()];
-        int[] yp = new int[yVertices.size()];
-        for(int i = 0; i < xVertices.size(); i++){
-            xp[i] = (xVertices.get(i)).intValue();
-            yp[i] = (yVertices.get(i)).intValue();
-        }
+
         if(fill){
             g2d.setColor(fillColour);
-            g2d.fillPolygon(xp, yp, xp.length);
+            g2d.fill(polygon.getShape(getImagePanel().getWidth()));
         }
+
         g2d.setColor(getLineColour());
-        g2d.drawPolygon(xp, yp, xp.length);
+        g2d.draw(polygon.getShape(getImagePanel().getWidth()));
         xVertices.clear();
         yVertices.clear();
     }
@@ -110,15 +106,12 @@ public class DrawPoly extends DrawShape {
                 tpx = sx;
                 tpy = sy;
                 edges++;
-                System.out.println(sx + " : " + sy);
             } else {
                 if(e.getClickCount() != 2) {
                     ex = e.getPoint().getX();
                     ey = e.getPoint().getY();
-                    System.out.println(ex + " : " + ey + "HERE");
                     xVertices.add(ex);
                     yVertices.add(ey);
-                    System.out.println("List: " + xVertices);
                     drawOnImagePanel(tpx, tpy, ex, ey);
                     drawTempLine = false;
                     repaint();
@@ -159,9 +152,7 @@ public class DrawPoly extends DrawShape {
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
                 Polygon polygon = new Polygon(xVertices, yVertices, getLineColour(), fillColour, fill, getImagePanel().getWidth());
-                polygon.drawPoly(getImagePanel());
                 paintUpdated(polygon);
-                drawPolygon();
                 drawTempLine = false;
                 edges = 0;
             }

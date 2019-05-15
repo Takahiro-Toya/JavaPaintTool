@@ -34,17 +34,17 @@ public class Polygon extends ShapeInfo {
         this.fill = fill;
     }
 
-    public void drawPoly(BufferedImage imagePanel){
-        Graphics2D g2d = imagePanel.createGraphics();
-        g2d.setStroke(new BasicStroke((lineWidth)));
-        if(fill){
-            g2d.setColor(fillColour);
-            g2d.fillPolygon(xVertices, yVertices, xVertices.length);
-        }
-        g2d.setColor(getLineColour());
-        g2d.drawPolygon(xVertices, yVertices, xVertices.length);
-        g2d.drawLine((int)getEx(), (int)getEy(), (int)getSx(), (int)getSy());
-    }
+//    public void drawPoly(BufferedImage imagePanel){
+//        Graphics2D g2d = imagePanel.createGraphics();
+//        g2d.setStroke(new BasicStroke((lineWidth)));
+//        if(fill){
+//            g2d.setColor(fillColour);
+//            g2d.fillPolygon(xVertices, yVertices, xVertices.length);
+//        }
+//        g2d.setColor(getLineColour());
+//        g2d.drawPolygon(xVertices, yVertices, xVertices.length);
+//        g2d.drawLine((int)getEx(), (int)getEy(), (int)getSx(), (int)getSy());
+//    }
 
     @Override
     public java.awt.Polygon getShape(int size){

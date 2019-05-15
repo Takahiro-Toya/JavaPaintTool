@@ -16,9 +16,9 @@ public class VecFileManager extends JMenuItem implements Subject {
      * Enums names of every component of the menu bar
      */
     public enum MenuNames{
-        File("File"), Undo("Undo"), Save("Save"), New("New"), Open("Open");
+        File("File"), Undo("Undo"), Save("Save"), New("New"), Open("Open"), Clear("Clear");
         private final String name;
-        private MenuNames(String s){
+        MenuNames(String s){
             name = s;
         }
     }
@@ -27,11 +27,9 @@ public class VecFileManager extends JMenuItem implements Subject {
     private ArrayList<String> Openlist = new ArrayList();
     private String content = "";
 
+    private ArrayList<ShapeInfo> shapesToSave = new ArrayList<>();
 
-    private ArrayList<ShapeInfo> shapes = new ArrayList<>();
-
-    public static ArrayList<ShapeInfo> arrayList = new ArrayList<>();
-
+    public static ArrayList<ShapeInfo> shapesToOpen = new ArrayList<>();
 
     private ArrayList<Observer> observers = new ArrayList<>();
 
@@ -63,11 +61,13 @@ public class VecFileManager extends JMenuItem implements Subject {
         VecFileManager newManager = new VecFileManager(MenuNames.New.name);
         VecFileManager openManager = new VecFileManager(MenuNames.Open.name);
         VecFileManager undoManager = new VecFileManager(MenuNames.Undo.name);
+        VecFileManager clearManager = new VecFileManager(MenuNames.Clear.name);
 
         saveManager.addActionListener(getSaveListener());
         newManager.addActionListener(getNewListener());
         openManager.addActionListener(getOpenListener());
         undoManager.addActionListener(undoShape());
+        clearManager.addActionListener(clearShape());
 
         menu.add(saveManager);
         menu.add(newManager);
@@ -75,6 +75,7 @@ public class VecFileManager extends JMenuItem implements Subject {
 
         bar.add(menu);
         bar.add(undoManager);
+        bar.add(clearManager);
 
         return bar;
     }
@@ -84,7 +85,7 @@ public class VecFileManager extends JMenuItem implements Subject {
      * @return return the finished listener
      */
     public ActionListener getSaveListener(){
-       ActionListener saveListener = new ActionListener() {
+        ActionListener saveListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser chooser = new JFileChooser();
@@ -115,17 +116,14 @@ public class VecFileManager extends JMenuItem implements Subject {
                         FileOutputStream fos = new FileOutputStream(vecFile);
                         fos.close();
                         FileWriter fileWriter = new FileWriter(vecFile);
-                        ////
                         fileWriter.write(content);
                         fileWriter.close();
                         String name = chooser.getName(vecFile);
 
-
                     }catch (IOException es){
-                         es.printStackTrace();
+                        es.printStackTrace();
                     }
                 }
-
             }
         };
         return saveListener;
@@ -177,23 +175,30 @@ public class VecFileManager extends JMenuItem implements Subject {
         return listener;
     }
 
+    public void saveShapes(ArrayList<ShapeInfo> shapes){
+        this.shapesToSave = shapes;
+    }
+
     /**
      * convert the shapes to string and store them into a String called content
      */
     private void convertToString(){
-        VecPaint vecPaint = new VecPaint();
-        for (int a = 0; a < vecPaint.getShapesList().size(); a++){
-            ShapeInfo temp = vecPaint.getShapesList().get(a);
+        for (Observer o: observers){
+            o.update("SaveBtn");
+        }
+
+        for (int a = 0; a < shapesToSave.size(); a++){
+            ShapeInfo temp = shapesToSave.get(a);
             // detect if the line colour has changed
-            if (a == 0 || (temp.getLineColour() != vecPaint.getShapesList().get(a - 1).getLineColour())){
+            if (a == 0 || (temp.getLineColour() != shapesToSave.get(a - 1).getLineColour())){
                 content += "PEN " + String.format("#%02x%02x%02x", temp.getLineColour().getRed(), temp.getLineColour().getGreen(), temp.getLineColour().getBlue()).toUpperCase() + "\n";
             }
             // detect if the fill colour has changed
-            if (a == 0 || (temp.getFillColour() != vecPaint.getShapesList().get(a - 1).getFillColour() && temp.getFill())){
+            if (a == 0 && temp.getFill() || (temp.getFill() && temp.getFillColour() != shapesToSave.get(a - 1).getFillColour() && temp.getFill())){
                 content += "FILL " + String.format("#%02x%02x%02x", temp.getFillColour().getRed(), temp.getFillColour().getGreen(), temp.getFillColour().getBlue()).toUpperCase() + "\n";
             }
             // add the coordinates
-            content += vecPaint.getShapesList().get(a).toString();
+            content += temp.toString();
         }
     }
 
@@ -217,7 +222,7 @@ public class VecFileManager extends JMenuItem implements Subject {
         Color fillColour = null;
         Color lineColour = null;
         boolean fill = false;
-        VecPaint paint = new VecPaint();
+
         for (String str: Openlist) {
             if (str.startsWith("PEN")){
                 String string = "";
@@ -239,28 +244,28 @@ public class VecFileManager extends JMenuItem implements Subject {
                      case "PLOT":
                          double x = Double.valueOf(file[1]);
                          double y = Double.valueOf(file[2]);
-                         arrayList.add(new Plot(x, y, lineColour));
+                         shapesToOpen.add(new Plot(x, y, lineColour));
                          break;
                      case "LINE":
                          double lsx = Double.valueOf(file[1]);
                          double lsy = Double.valueOf(file[2]);
                          double lex = Double.valueOf(file[3]);
                          double ley = Double.valueOf(file[4]);
-                         arrayList.add(new Line(lsx, lsy, lex, ley, lineColour));
+                         shapesToOpen.add(new Line(lsx, lsy, lex, ley, lineColour));
                          break;
                      case "RECTANGLE":
                          double tsx = Double.valueOf(file[1]);
                          double tsy = Double.valueOf(file[2]);
                          double tex = Double.valueOf(file[3]);
                          double tey = Double.valueOf(file[4]);
-                         arrayList.add(new Rectangle(tsx, tsy, tex, tey, lineColour, fillColour, fill));
+                         shapesToOpen.add(new Rectangle(tsx, tsy, tex, tey, lineColour, fillColour, fill));
                          break;
                      case  "ELLIPSE":
                          double esx = Double.valueOf(file[1]);
                          double esy = Double.valueOf(file[2]);
                          double eex = Double.valueOf(file[3]);
                          double eey = Double.valueOf(file[4]);
-                         arrayList.add(new Ellipse(esx, esy, eex, eey, lineColour, fillColour, fill));
+                         shapesToOpen.add(new Ellipse(esx, esy, eex, eey, lineColour, fillColour, fill));
                          break;
                      case "POLYGON":
                         ArrayList<Double> px = new ArrayList<>();
@@ -271,14 +276,20 @@ public class VecFileManager extends JMenuItem implements Subject {
                         for (int b = 2; b < file.length; b += 2){
                             px.add(Double.valueOf(file[b]));
                         }
+                        shapesToOpen.add(new Polygon(px, py, lineColour, fillColour, fill, 1));
                         break;
-
+                     default:
+                         break;
                  }
 
             }
         }
-        for (ShapeInfo shape:arrayList) {
-            paint.updateShapes(shape);
+
+        System.out.println("Here");
+
+        for(Observer o: observers){
+            System.out.println("Open now");
+            o.update("OpenBtn");
         }
     }
 
@@ -289,34 +300,40 @@ public class VecFileManager extends JMenuItem implements Subject {
         ActionListener undoListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (shapes.isEmpty()) {
-                    System.out.println("Nothing to undo");
-                } else {
-                    System.out.println(shapes);
-                    shapes.remove(shapes.size() - 1);
-                    System.out.println(shapes);
-                }
+                notifyObservers("UndoBtn");
             }
         };
 
         return undoListener;
     }
 
+    public ActionListener clearShape() {
+        ActionListener clearListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notifyObservers("ClearBtn");
+            }
+        };
+
+        return clearListener;
+    }
+
     public void attachObservers(Observer observer){
         observers.add(observer);
     }
 
-    public void notifyObservers(){
+    public void notifyObservers(String location){
         for (int i = 0; i < observers.size(); i++){
-            observers.get(i).update();
+            observers.get(i).update(location);
         }
     }
 
     /**
      * return undoShapeList
      */
-    public ArrayList<ShapeInfo> getShapesList() {
-        return shapes;
+    public ArrayList<ShapeInfo> getShapesToOpen() {
+        System.out.println(shapesToOpen.size());
+        return shapesToOpen;
     }
 
 }

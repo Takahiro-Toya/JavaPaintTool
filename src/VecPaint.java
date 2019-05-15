@@ -14,15 +14,15 @@ public class VecPaint extends JFrame implements Observer {
     private int screenWidth;
     private int screenHeight;
 
-    private JMenuBar menuBar = new JMenuBar();
-    VecFileManager manager;
+    private JMenuBar menuBar;
+    private VecFileManager manager;
 
     //Panel variables
+    private JLayeredPane layer;
     private JPanel pnlCanvas;
     private ToolPanel pnlTools;
     private ColorPanel pnlColours;
     private JPanel pnlBottom;
-    private JLayeredPane layer;
 
     private Color widgetBgColor = Color.LIGHT_GRAY;
     private Color layerBgColor = Color.DARK_GRAY;
@@ -55,15 +55,7 @@ public class VecPaint extends JFrame implements Observer {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
-                int edge = keepSquare();
-                imagePanel = new BufferedImage((int)(edge * canvasArea), (int)(edge * canvasArea), BufferedImage.TYPE_INT_ARGB);
-                layer.removeAll();
-                switchMode();
-                pnlCanvas.setBounds((int)((layer.getWidth() - edge * canvasArea) / 2), (int)((layer.getHeight() - edge * canvasArea) / 2),
-                        (int)(edge * canvasArea), (int)(edge * canvasArea));
-
-                refreshImagePane();
-                layer.add(pnlCanvas);
+                    refreshCanvas();
 
             }
         });
@@ -92,21 +84,43 @@ public class VecPaint extends JFrame implements Observer {
         return edge;
     }
 
-    public void update(){
-
-        shapes = manager.getShapesList();
-        currentMode = pnlTools.getCurrentMode();
-        lineColour = pnlColours.getLineColour();
-        fillColour = pnlColours.getFillColour();
-        fill = pnlTools.getFillMode();
-
+    private void refreshCanvas(){
         int edge = keepSquare();
-
+        imagePanel = new BufferedImage((int)(edge * canvasArea), (int)(edge * canvasArea), BufferedImage.TYPE_INT_ARGB);
         layer.removeAll();
         switchMode();
         pnlCanvas.setBounds((int)((layer.getWidth() - edge * canvasArea) / 2), (int)((layer.getHeight() - edge * canvasArea) / 2),
                 (int)(edge * canvasArea), (int)(edge * canvasArea));
+
+        imagePanelResized();
         layer.add(pnlCanvas);
+    }
+
+
+    @Override
+    public void update(String location){
+        if (location == "ToolPanel" || location == "ColourPanel") {
+//            shapes = manager.getShapesList();
+            currentMode = pnlTools.getCurrentMode();
+            lineColour = pnlColours.getLineColour();
+            fillColour = pnlColours.getFillColour();
+            fill = pnlTools.getFillMode();
+            refreshCanvas();
+        } else if (location == "UndoBtn"){
+            if (shapes.size() != 0) {
+                shapes.remove(shapes.size() - 1);
+            }
+            refreshCanvas();
+        } else if (location == "ClearBtn"){
+            shapes.clear();
+            refreshCanvas();
+        } else if (location == "SaveBtn"){
+            manager.saveShapes(shapes);
+        } else if (location == "OpenBtn"){
+            shapes = manager.getShapesToOpen();
+            refreshCanvas();
+        }
+
     }
 
     private void switchMode(){
@@ -135,10 +149,11 @@ public class VecPaint extends JFrame implements Observer {
 
     public void updateShapes(ShapeInfo shape){
         shapes.add(shape);
-        System.out.println("2. :" + shape.getPoint());
+        refreshCanvas();
+        System.out.println(shapes.size());
     }
 
-    private void  refreshImagePane(){
+    private void imagePanelResized(){
         Graphics2D g2d = imagePanel.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(lineWidth));
@@ -163,12 +178,16 @@ public class VecPaint extends JFrame implements Observer {
     private void createVecGUI(){
         // create menu bar
         manager = new VecFileManager(null);
+        menuBar = new JMenuBar();
         menuBar = manager.createJmenu();
         setJMenuBar(menuBar);
 
         pnlTools = new ToolPanel();
         pnlColours = new ColorPanel();
         pnlBottom = new JPanel();
+
+        manager.attachObservers(this);
+
         layer = new JLayeredPane();
         layer.setBackground(Color.darkGray);
         int width = getWidth() - (int)(getWidth() * sideToolTabArea * 2);
@@ -198,12 +217,9 @@ public class VecPaint extends JFrame implements Observer {
         setVisible(true);
     }
 
-    public ArrayList<ShapeInfo> getShapesList(){
-        return shapes;
-    }
-
-
-
+//    public static ArrayList<ShapeInfo> getShapesList(){
+//        return shapes;
+//    }
 
     public static void main(String[] args){
         VecPaint vectorTool = new VecPaint();
