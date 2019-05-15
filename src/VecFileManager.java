@@ -259,6 +259,7 @@ public class VecFileManager extends JMenuItem implements Subject {
                          double tex = Double.valueOf(file[3]);
                          double tey = Double.valueOf(file[4]);
                          shapesToOpen.add(new Rectangle(tsx, tsy, tex, tey, lineColour, fillColour, fill));
+                         fill = false;
                          break;
                      case  "ELLIPSE":
                          double esx = Double.valueOf(file[1]);
@@ -266,6 +267,7 @@ public class VecFileManager extends JMenuItem implements Subject {
                          double eex = Double.valueOf(file[3]);
                          double eey = Double.valueOf(file[4]);
                          shapesToOpen.add(new Ellipse(esx, esy, eex, eey, lineColour, fillColour, fill));
+                         fill = false;
                          break;
                      case "POLYGON":
                         ArrayList<Double> px = new ArrayList<>();
@@ -278,6 +280,7 @@ public class VecFileManager extends JMenuItem implements Subject {
                         }
                         System.out.println("Size" + px.size());
                         shapesToOpen.add(new Polygon(px, py, lineColour, fillColour, fill, 1));
+                        fill = false;
                         break;
                      default:
                          break;
