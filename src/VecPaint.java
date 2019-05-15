@@ -14,8 +14,8 @@ public class VecPaint extends JFrame implements Observer {
     private int screenWidth;
     private int screenHeight;
 
-
     private JMenuBar menuBar = new JMenuBar();
+    VecFileManager manager;
 
     //Panel variables
     private JPanel pnlCanvas;
@@ -94,6 +94,7 @@ public class VecPaint extends JFrame implements Observer {
 
     public void update(){
 
+        shapes = manager.getShapesList();
         currentMode = pnlTools.getCurrentMode();
         lineColour = pnlColours.getLineColour();
         fillColour = pnlColours.getFillColour();
@@ -161,7 +162,7 @@ public class VecPaint extends JFrame implements Observer {
      */
     private void createVecGUI(){
         // create menu bar
-        VecFileManager manager = new VecFileManager(null);
+        manager = new VecFileManager(null);
         menuBar = manager.createJmenu();
         setJMenuBar(menuBar);
 

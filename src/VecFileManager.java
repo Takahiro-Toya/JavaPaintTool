@@ -5,9 +5,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class VecFileManager extends JMenuItem {
+public class VecFileManager extends JMenuItem implements  Subject {
+
     /**
      * Enums names of every component of the menu bar
      */
@@ -24,7 +26,9 @@ public class VecFileManager extends JMenuItem {
     private ArrayList Openlist = new ArrayList();
     private String content = "";
 
+    private ArrayList<ShapeInfo> shapes = new ArrayList<>();
 
+    private ArrayList<Observer> observers = new ArrayList<>();
 
     /**
      * The constructor
@@ -58,6 +62,7 @@ public class VecFileManager extends JMenuItem {
         saveManager.addActionListener(getSaveListener());
         newManager.addActionListener(getNewListener());
         openManager.addActionListener(getOpenListener());
+        undoManager.addActionListener(undoShape());
 
         menu.add(saveManager);
         menu.add(newManager);
@@ -179,6 +184,41 @@ public class VecFileManager extends JMenuItem {
         }
     }
 
+    /**
+     * Undo the last shape drawn
+     */
+    public ActionListener undoShape() {
+        ActionListener undoListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (shapes.isEmpty()) {
+                    System.out.println("Nothing to undo");
+                } else {
+                    System.out.println(shapes);
+                    shapes.remove(shapes.size() - 1);
+                    System.out.println(shapes);
+                }
+            }
+        };
 
+        return undoListener;
+    }
+
+    public void attachObservers(Observer observer){
+        observers.add(observer);
+    }
+
+    public void notifyObservers(){
+        for (int i = 0; i < observers.size(); i++){
+            observers.get(i).update();
+        }
+    }
+
+    /**
+     * return undoShapeList
+     */
+    public ArrayList<ShapeInfo> getShapesList() {
+        return shapes;
+    }
 
 }
