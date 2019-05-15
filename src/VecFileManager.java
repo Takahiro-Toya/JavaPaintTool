@@ -220,7 +220,7 @@ public class VecFileManager extends JMenuItem implements Subject {
     public void convertToShape(){
         ShapeInfo info = null;
         Color fillColour = null;
-        Color lineColour = null;
+        Color lineColour = Color.black;
         boolean fill = false;
 
         for (String str: Openlist) {
