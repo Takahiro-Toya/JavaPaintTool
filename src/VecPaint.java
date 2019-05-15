@@ -134,6 +134,7 @@ public class VecPaint extends JFrame implements Observer {
 
     public void updateShapes(ShapeInfo shape){
         shapes.add(shape);
+        System.out.println("2. :" + shape.getPoint());
     }
 
     private void imagePanelResized(){
