@@ -181,25 +181,35 @@ public class VecFileManager extends JMenuItem implements Subject {
     /**
      * convert the shapes to string and store them into a String called content
      */
-    private void convertToString(){
-        for (Observer o: observers){
+    private void convertToString() {
+        boolean isoff = true;
+        for (Observer o : observers) {
             o.update("SaveBtn");
         }
-
-        for (int a = 0; a < shapesToSave.size(); a++){
+        for (int a = 0; a < shapesToSave.size(); a++) {
             ShapeInfo temp = shapesToSave.get(a);
             // detect if the line colour has changed
-            if (a == 0 || (temp.getLineColour() != shapesToSave.get(a - 1).getLineColour())){
+            if (a == 0 || (temp.getLineColour() != shapesToSave.get(a - 1).getLineColour())) {
                 content += "PEN " + String.format("#%02x%02x%02x", temp.getLineColour().getRed(), temp.getLineColour().getGreen(), temp.getLineColour().getBlue()).toUpperCase() + "\n";
             }
             // detect if should fill
-            if (temp.getFill()){
+            if (a == 0 && temp.getFill()){
                 content += "FILL " + String.format("#%02x%02x%02x", temp.getFillColour().getRed(), temp.getFillColour().getGreen(), temp.getFillColour().getBlue()).toUpperCase() + "\n";
+                isoff = false;
+            }
+            else if ((a != 0 && (temp.getFillColour() != shapesToSave.get(a - 1).getFillColour()) && temp.getFill())) {
+                content += "FILL " + String.format("#%02x%02x%02x", temp.getFillColour().getRed(), temp.getFillColour().getGreen(), temp.getFillColour().getBlue()).toUpperCase() + "\n";
+                isoff = false;
+            }
+            else if (temp.getFill() == false && isoff == false){
+                content += "FILL OFF\n";
+                isoff = true;
             }
             // add the coordinates
             content += temp.toString();
         }
     }
+
 
     /**
      * convert a hex string to rgb color that can be recognised by java
@@ -232,11 +242,16 @@ public class VecFileManager extends JMenuItem implements Subject {
                 lineColour = hexToRgb(string);
             }else if (str.startsWith("FILL")){
                 String string = "";
-                for (int a = str.indexOf('#'); a < str.length(); a++){
-                    string += str.charAt(a);
+                if (str.endsWith("OFF")){
+                    fill = false;
                 }
-                fill = true;
-                fillColour = hexToRgb(string);
+                else {
+                    for (int a = str.indexOf('#'); a < str.length(); a++) {
+                        string += str.charAt(a);
+                    }
+                    fill = true;
+                    fillColour = hexToRgb(string);
+                }
             }else{
                  String[] file = str.split("\\s+");
                  String shapeName = file[0];
@@ -259,7 +274,6 @@ public class VecFileManager extends JMenuItem implements Subject {
                          double tex = Double.valueOf(file[3]);
                          double tey = Double.valueOf(file[4]);
                          shapesToOpen.add(new Rectangle(tsx, tsy, tex, tey, lineColour, fillColour, fill));
-                         fill = false;
                          break;
                      case  "ELLIPSE":
                          double esx = Double.valueOf(file[1]);
@@ -267,7 +281,6 @@ public class VecFileManager extends JMenuItem implements Subject {
                          double eex = Double.valueOf(file[3]);
                          double eey = Double.valueOf(file[4]);
                          shapesToOpen.add(new Ellipse(esx, esy, eex, eey, lineColour, fillColour, fill));
-                         fill = false;
                          break;
                      case "POLYGON":
                         double[] px = new double[(file.length - 1) /2];
@@ -284,7 +297,6 @@ public class VecFileManager extends JMenuItem implements Subject {
                             cy++;
                         }
                         shapesToOpen.add(new Polygon(px, py, lineColour, fillColour, fill));
-                        fill = false;
                         break;
                      default:
                          break;
