@@ -170,6 +170,7 @@ public class VecFileManager extends JMenuBar implements Subject {
     private void convertToString() {
         boolean isoff = true;
         ShapeInfo temp = null;
+        Color currentColour = null;
         for (Observer o : observers) {
             o.update("SaveBtn");
         }
@@ -187,9 +188,10 @@ public class VecFileManager extends JMenuBar implements Subject {
                 content += "FILL " + String.format("#%02x%02x%02x", current.getFillColour().getRed(), current.getFillColour().getGreen(), current.getFillColour().getBlue()).toUpperCase() + "\n";
                 isoff = false;
             }
-            else if ((a != 0 && (current.getFillColour() != temp.getFillColour() && current.getFill()))) {
+            else if ((a != 0 && (current.getFillColour() != currentColour || isoff) && current.getFill())) {
                 content += "FILL " + String.format("#%02x%02x%02x", current.getFillColour().getRed(), current.getFillColour().getGreen(), current.getFillColour().getBlue()).toUpperCase() + "\n";
                 isoff = false;
+                currentColour = current.getFillColour();
             }
             else if (current.getFill() == false && isoff == false){
                 content += "FILL OFF\n";
