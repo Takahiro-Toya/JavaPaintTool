@@ -169,34 +169,34 @@ public class VecFileManager extends JMenuBar implements Subject {
      */
     private void convertToString() {
         boolean isoff = true;
-        Color tempColor = null;
+        ShapeInfo temp = null;
         for (Observer o : observers) {
             o.update("SaveBtn");
         }
         for (int a = 0; a < shapesToSave.size(); a++) {
-            ShapeInfo temp = shapesToSave.get(a);
+            ShapeInfo current = shapesToSave.get(a);
+            if (a != 0){
+                temp = shapesToSave.get(a - 1);
+            }
             // detect if the line colour has changed
-            if (a == 0 || (temp.getLineColour() != shapesToSave.get(a - 1).getLineColour())) {
-                content += "PEN " + String.format("#%02x%02x%02x", temp.getLineColour().getRed(), temp.getLineColour().getGreen(), temp.getLineColour().getBlue()).toUpperCase() + "\n";
+            if (a == 0 || (current.getLineColour() != temp.getLineColour())) {
+                content += "PEN " + String.format("#%02x%02x%02x", current.getLineColour().getRed(), current.getLineColour().getGreen(), current.getLineColour().getBlue()).toUpperCase() + "\n";
             }
             // detect if should fill
-            if (a == 0 && temp.getFill()){
-                content += "FILL " + String.format("#%02x%02x%02x", temp.getFillColour().getRed(), temp.getFillColour().getGreen(), temp.getFillColour().getBlue()).toUpperCase() + "\n";
-                tempColor = temp.getFillColour();
+            if (a == 0 && current.getFill()){
+                content += "FILL " + String.format("#%02x%02x%02x", current.getFillColour().getRed(), current.getFillColour().getGreen(), current.getFillColour().getBlue()).toUpperCase() + "\n";
                 isoff = false;
             }
-            else if ((a != 0 && (temp.getFillColour() != tempColor && temp.getFill()))) {
-                content += "FILL " + String.format("#%02x%02x%02x", temp.getFillColour().getRed(), temp.getFillColour().getGreen(), temp.getFillColour().getBlue()).toUpperCase() + "\n";
-                tempColor = temp.getFillColour();
+            else if ((a != 0 && (current.getFillColour() != temp.getFillColour() && current.getFill()))) {
+                content += "FILL " + String.format("#%02x%02x%02x", current.getFillColour().getRed(), current.getFillColour().getGreen(), current.getFillColour().getBlue()).toUpperCase() + "\n";
                 isoff = false;
             }
-            else if (temp.getFill() == false && isoff == false){
+            else if (current.getFill() == false && isoff == false){
                 content += "FILL OFF\n";
-                tempColor = temp.getFillColour();
                 isoff = true;
             }
             // add the coordinates
-            content += temp.toString();
+            content += current.toString();
         }
     }
 
