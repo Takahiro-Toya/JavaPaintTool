@@ -12,7 +12,7 @@ public class Rectangle extends ShapeInfo{
 
     @Override
     public Shape getShape(int size){
-        return new Rectangle2D.Double(getSx() * size, getSy() * size, getEx() * size, getEy() * size);
+        return new Rectangle2D.Double(getSx() * size, getSy() * size, (getEx() - getSx()) * size, (getEy() - getSy()) * size);
     }
 
     @Override

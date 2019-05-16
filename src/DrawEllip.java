@@ -43,19 +43,19 @@ public class DrawEllip extends DrawShape {
         if (width >= 0 && height >= 0) {
             ellipse = new Ellipse2D.Double(sx, sy, width, height);
             ellipseVec = new Ellipse(sx / imageWidth, sy / imageHeight,
-                    width / imageWidth, height / imageHeight, getLineColour(), fillColor, fill);
+                    ex / imageWidth, ey / imageHeight, getLineColour(), fillColor, fill);
         } else if (width >= 0 && height < 0) {
             ellipse = new Ellipse2D.Double(sx, ey, width, Math.abs(height));
             ellipseVec = new Ellipse(sx / imageWidth, ey / imageHeight,
-                    width / imageWidth, Math.abs(height) / imageHeight, getLineColour(), fillColor, fill);
+                    ex / imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         } else if (width < 0 && height >= 0) {
             ellipse = new Ellipse2D.Double(ex , sy, Math.abs(width), height);
             ellipseVec = new Ellipse(ex / imageWidth, sy / imageHeight,
-                    Math.abs(width) / imageWidth, height /imageHeight, getLineColour(), fillColor, fill);
+                    sx / imageWidth, ey /imageHeight, getLineColour(), fillColor, fill);
         } else {
             ellipse = new Ellipse2D.Double(ex, ey, Math.abs(width), Math.abs(height));
             ellipseVec = new Ellipse(ex / imageWidth, ey / imageHeight,
-                    Math.abs(width)/ imageWidth, Math.abs(height) / imageHeight, getLineColour(), fillColor, fill);
+                    sx/ imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         }
         if (fill) {g2d.fill(ellipse);}
         g2d.setColor(getLineColour());

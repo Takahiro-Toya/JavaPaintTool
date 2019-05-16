@@ -87,6 +87,7 @@ public class VecPaint extends JFrame implements Observer {
     private void refreshCanvas(){
         int edge = keepSquare();
         imagePanel = new BufferedImage((int)(edge * canvasArea), (int)(edge * canvasArea), BufferedImage.TYPE_INT_ARGB);
+        System.out.println("Image size after refreshed" + imagePanel.getWidth() + " : " + imagePanel.getHeight());
         layer.removeAll();
         switchMode();
         pnlCanvas.setBounds((int)((layer.getWidth() - edge * canvasArea) / 2), (int)((layer.getHeight() - edge * canvasArea) / 2),
@@ -117,6 +118,9 @@ public class VecPaint extends JFrame implements Observer {
             manager.saveShapes(shapes);
         } else if (location == "OpenBtn"){
             shapes = manager.getShapesToOpen();
+            for(ShapeInfo shape: shapes){
+                System.out.println("Shape :" + shape);
+            }
             refreshCanvas();
         }
     }
@@ -154,15 +158,24 @@ public class VecPaint extends JFrame implements Observer {
         Graphics2D g2d = imagePanel.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(lineWidth));
+
         for(int i = 0; i < shapes.size(); i++) {
             ShapeInfo shape = shapes.get(i);
-
+            System.out.println("------");
+            System.out.println("Size here: " + imagePanel.getWidth() + " : " + imagePanel.getHeight());
             if (shape.getFill()) {
                 g2d.setColor(shape.getFillColour());
                 g2d.fill(shape.getShape(imagePanel.getWidth()));
+                System.out.println("fill shape: " + shape);
             }
             g2d.setColor(shape.getLineColour());
             g2d.draw(shape.getShape(imagePanel.getWidth()));
+
+            System.out.println("draw shape: " + shape);
+            System.out.println("sx: " + shape.getSx() * imagePanel.getWidth());
+            System.out.println("sy: " + shape.getSy() * imagePanel.getHeight());
+            System.out.println("ex: " + shape.getEx() * imagePanel.getWidth());
+            System.out.println("ey: " + shape.getEy() * imagePanel.getHeight());
 
         }
         g2d.dispose();

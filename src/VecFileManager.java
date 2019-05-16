@@ -284,6 +284,7 @@ public class VecFileManager extends JMenuItem implements Subject {
                          double esy = Double.valueOf(file[2]);
                          double eex = Double.valueOf(file[3]);
                          double eey = Double.valueOf(file[4]);
+                         System.out.println("HEllo: "+ " " + esx + " "+ esy + " " + eex + " " + eey);
                          shapesToOpen.add(new Ellipse(esx, esy, eex, eey, lineColour, fillColour, fill));
                          break;
                      case "POLYGON":
