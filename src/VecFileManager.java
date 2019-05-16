@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleToIntFunction;
 
-public class VecFileManager extends JMenuItem implements Subject {
+public class VecFileManager extends JMenuBar implements Subject {
 
     /**
      * Enums names of every component of the menu bar
      */
     public enum MenuNames{
-        File("File"), Undo("Undo"), Save("Save"), New("New"), Open("Open"), Clear("Clear");
+        File("File"), Undo("Undo"), Save("Save"), Open("Open"), Clear("Clear");
         private final String name;
         MenuNames(String s){
             name = s;
@@ -35,10 +35,9 @@ public class VecFileManager extends JMenuItem implements Subject {
 
     /**
      * The constructor
-     * @param name the name of the component
      */
-    public VecFileManager(String name) {
-        super(name);
+    public VecFileManager() {
+        super();
     }
 
     /**
@@ -52,25 +51,22 @@ public class VecFileManager extends JMenuItem implements Subject {
      * Create a Jmenu bar and add all the component into it
      * @return return the completed menu bar
      */
-    public JMenuBar createJmenu(){
+    public JMenuBar createJmenuBar(){
         JMenuBar bar = new JMenuBar();
 
         JMenu menu = new JMenu(MenuNames.File.name);
 
-        VecFileManager saveManager = new VecFileManager(MenuNames.Save.name);
-        VecFileManager newManager = new VecFileManager(MenuNames.New.name);
-        VecFileManager openManager = new VecFileManager(MenuNames.Open.name);
-        VecFileManager undoManager = new VecFileManager(MenuNames.Undo.name);
-        VecFileManager clearManager = new VecFileManager(MenuNames.Clear.name);
+        JMenuItem saveManager = new JMenuItem(MenuNames.Save.name);
+        JMenuItem openManager = new JMenuItem(MenuNames.Open.name);
+        JMenuItem undoManager = new JMenuItem(MenuNames.Undo.name);
+        JMenuItem clearManager = new JMenuItem(MenuNames.Clear.name);
 
         saveManager.addActionListener(getSaveListener());
-        newManager.addActionListener(getNewListener());
         openManager.addActionListener(getOpenListener());
         undoManager.addActionListener(undoShape());
         clearManager.addActionListener(clearShape());
 
         menu.add(saveManager);
-        menu.add(newManager);
         menu.add(openManager);
 
         bar.add(menu);
@@ -126,16 +122,6 @@ public class VecFileManager extends JMenuItem implements Subject {
             }
         };
         return saveListener;
-    }
-
-    // havent finished
-    public ActionListener getNewListener(){
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        };
     }
 
     /**

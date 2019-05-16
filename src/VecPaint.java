@@ -14,7 +14,6 @@ public class VecPaint extends JFrame implements Observer {
     private int screenWidth;
     private int screenHeight;
 
-    private JMenuBar menuBar;
     private VecFileManager manager;
 
     //Panel variables
@@ -72,7 +71,7 @@ public class VecPaint extends JFrame implements Observer {
 
     private int keepSquare(){
         int width = getWidth() - (int)(getWidth() * sideToolTabArea * 2);
-        int height = getHeight() - menuBar.getHeight() - bottomHeight;
+        int height = getHeight() - manager.getHeight() - bottomHeight;
         int edge;
         // for square canvas
         if (height > width){
@@ -187,10 +186,8 @@ public class VecPaint extends JFrame implements Observer {
      */
     private void createVecGUI(){
         // create menu bar
-        manager = new VecFileManager(null);
-        menuBar = new JMenuBar();
-        menuBar = manager.createJmenu();
-        setJMenuBar(menuBar);
+        manager = new VecFileManager();
+        setJMenuBar(manager.createJmenuBar());
 
         pnlTools = new ToolPanel();
         pnlColours = new ColorPanel();
@@ -201,7 +198,7 @@ public class VecPaint extends JFrame implements Observer {
         layer = new JLayeredPane();
         layer.setBackground(Color.darkGray);
         int width = getWidth() - (int)(getWidth() * sideToolTabArea * 2);
-        int height = getHeight() - menuBar.getHeight() - bottomHeight;
+        int height = getHeight() - manager.getHeight() - bottomHeight;
         imagePanel = new BufferedImage((int)(width * canvasArea), (int)(height * canvasArea), BufferedImage.TYPE_INT_ARGB);
 
         pnlCanvas = new DrawPlot(imagePanel, lineColour, this);
