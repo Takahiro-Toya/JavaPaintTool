@@ -183,6 +183,7 @@ public class VecFileManager extends JMenuItem implements Subject {
      */
     private void convertToString() {
         boolean isoff = true;
+        Color tempColor = null;
         for (Observer o : observers) {
             o.update("SaveBtn");
         }
@@ -195,14 +196,17 @@ public class VecFileManager extends JMenuItem implements Subject {
             // detect if should fill
             if (a == 0 && temp.getFill()){
                 content += "FILL " + String.format("#%02x%02x%02x", temp.getFillColour().getRed(), temp.getFillColour().getGreen(), temp.getFillColour().getBlue()).toUpperCase() + "\n";
+                tempColor = temp.getFillColour();
                 isoff = false;
             }
-            else if ((a != 0 && (temp.getFillColour() != shapesToSave.get(a - 1).getFillColour()) && temp.getFill())) {
+            else if ((a != 0 && (temp.getFillColour() != tempColor && temp.getFill()))) {
                 content += "FILL " + String.format("#%02x%02x%02x", temp.getFillColour().getRed(), temp.getFillColour().getGreen(), temp.getFillColour().getBlue()).toUpperCase() + "\n";
+                tempColor = temp.getFillColour();
                 isoff = false;
             }
             else if (temp.getFill() == false && isoff == false){
                 content += "FILL OFF\n";
+                tempColor = temp.getFillColour();
                 isoff = true;
             }
             // add the coordinates
@@ -331,6 +335,7 @@ public class VecFileManager extends JMenuItem implements Subject {
                 shapesToSave.clear();
                 shapesToOpen.clear();
                 Openlist.clear();
+                content = "";
                 notifyObservers("ClearBtn");
             }
         };
