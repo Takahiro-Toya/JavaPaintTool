@@ -12,7 +12,7 @@ public class Ellipse extends ShapeInfo{
 
     @Override
     public Shape getShape(int size){
-        return new Ellipse2D.Double(getSx() * size, getSy() * size, getEx() * size, getEy() * size);
+        return new Ellipse2D.Double(getSx() * size, getSy() * size, getEx() * size - getSx() * size, getEy() * size - getSy() * size);
 
     }
 

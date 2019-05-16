@@ -132,7 +132,6 @@ public class DrawEllip extends DrawShape {
         }
 
     }
-    public void writeVecFile(){}
 
 
 
