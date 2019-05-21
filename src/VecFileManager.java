@@ -214,7 +214,6 @@ public class VecFileManager extends JMenuBar implements Subject {
         boolean fill = false;
 
         for (String str: Openlist) {
-            System.out.println(str);
             if (str.startsWith("PEN")){
                 String string = "";
                 for (int a = str.indexOf('#'); a < str.length(); a++){
@@ -261,7 +260,6 @@ public class VecFileManager extends JMenuBar implements Subject {
                          double esy = Double.valueOf(file[2]);
                          double eex = Double.valueOf(file[3]);
                          double eey = Double.valueOf(file[4]);
-                         System.out.println("HEllo: "+ " " + esx + " "+ esy + " " + eex + " " + eey);
                          shapesToOpen.add(new VecEllipse(esx, esy, eex, eey, lineColour, fillColour, fill));
                          break;
                      case "POLYGON":

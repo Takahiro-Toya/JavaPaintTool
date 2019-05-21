@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
@@ -64,6 +63,22 @@ public class VecPaint extends JFrame implements Observer, Canvas {
                     refreshCanvas();
             }
         });
+        this.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
 
     }
 
@@ -110,6 +125,14 @@ public class VecPaint extends JFrame implements Observer, Canvas {
         layer.add(pnlCanvas);
     }
 
+    /**
+     * Deletes last element of shape array if shapes array size is greater than zero
+     */
+    private void undo(){
+        if (shapes.size() > 0) {
+            shapes.remove(shapes.size() - 1);
+        }
+    }
 
     /**
      * One of Observer interface components
@@ -125,9 +148,7 @@ public class VecPaint extends JFrame implements Observer, Canvas {
             fill = pnlTools.getFillMode();
             refreshCanvas();
         } else if (location == "UndoBtn"){
-            if (shapes.size() != 0) {
-                shapes.remove(shapes.size() - 1);
-            }
+            undo();
             refreshCanvas();
         } else if (location == "ClearBtn"){
             shapes.clear();
@@ -137,7 +158,6 @@ public class VecPaint extends JFrame implements Observer, Canvas {
         } else if (location == "OpenBtn"){
             shapes = manager.getShapesToOpen();
             for(VecShape shape: shapes){
-                System.out.println("Shape :" + shape);
             }
             refreshCanvas();
         }
