@@ -9,25 +9,24 @@ import java.awt.image.BufferedImage;
  */
 public class DrawLine extends DrawShape {
 
-
-
     private double sx = 0;
     private double sy = 0;
     private double ex = 0;
     private double ey = 0;
     private boolean drawTempLine = false;
-    private Color lineColor;
 
     /**
      * constructor
-     * @param imagePanel to display drawn image
+     * @param imagePanel BufferedImage -on which the image is drawn
+     * @param penColour Color -colour of line
+     * @param o Observer -class that wants to receive a drawn object information.
+     *                    Usually, a class that has a canvas to draw this object (rectangle)
      */
-    public DrawLine(BufferedImage imagePanel, Color c, Observer o){
-        super(imagePanel, c, o);
+    public DrawLine(BufferedImage imagePanel, Color penColour, Observer o){
+        super(imagePanel, penColour, o);
         LineMouseListener mouse = new LineMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
-        lineColor = c;
     }
 
     /**
@@ -42,14 +41,15 @@ public class DrawLine extends DrawShape {
         g2d.drawImage(getImagePanel(), 0, 0, this);
 
         if (drawTempLine) {
-            g2d.setColor(lineColor);
+            g2d.setColor(getLineColour());
             g2d.draw(new Line2D.Double(sx, sy, ex, ey));
         }
+        g2d.dispose();
     }
 
 
     /**
-     * Mouse Listener
+     * private class that defines behaviour when mouse movement is made
      */
     private class LineMouseListener extends MouseAdapter {
         /**
@@ -62,8 +62,11 @@ public class DrawLine extends DrawShape {
         }
 
         /**
-         * While mouse is being dragged, temporary line is shown
-         * every time repaint the JPanel (this object)
+         *
+         */
+        /**
+         * While mouse is being dragged, temporary line is show every time repaint the JPanel (this object)
+         * @param e -mouse event
          */
         @Override
         public void mouseDragged(MouseEvent e) {
@@ -74,22 +77,17 @@ public class DrawLine extends DrawShape {
         }
 
         /**
-         * When mouse click is released, the rectangle is drawn on the BufferedImage
+         * Once the mouse is released create line object, and send this data to main class to draw plot as an image
+         * @param e -mouse event
          */
         @Override
         public void mouseReleased(MouseEvent e) {
             ex = e.getPoint().getX();
             ey = e.getPoint().getY();
-//            Graphics2D g2 = getImagePanel().createGraphics();
-//            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//            g2.setColor(lineColor);
-//            g2.setStroke(new BasicStroke(getLineWidth()));
-            Line lineVec = new Line(sx / getImagePanel().getWidth(), sy / getImagePanel().getHeight(),
-                    ex / getImagePanel().getWidth(), ey /  getImagePanel().getHeight(), lineColor);
-//            g2.draw(new Line2D.Double(sx, sy, ex, ey));
-//            g2.dispose();
+            VecLine vecLine = new VecLine(sx / getImagePanel().getWidth(), sy / getImagePanel().getHeight(),
+                    ex / getImagePanel().getWidth(), ey /  getImagePanel().getHeight(), getLineColour());
             drawTempLine = false;
-            paintUpdated(lineVec);
+            paintUpdated(vecLine);
             repaint();
         }
 

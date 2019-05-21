@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -8,7 +7,7 @@ import java.util.ArrayList;
 
 /**
  * Class to draw a line
- * This class provides JPanel to draw a temporary line,
+ * This class provides JPanel to display a temporary line when user is dragging mouse
  * and when the user finished drawing (released mouse) the line is drawn on the Buffered Image
  */
 public class DrawPoly extends DrawShape {
@@ -29,13 +28,17 @@ public class DrawPoly extends DrawShape {
     private Color fillColour;
 
 
-
     /**
-     * constructor
-     * @param imagePanel to display drawn image
+     * Constructor
+     * @param imagePanel BufferedImage -on which the image is drawn
+     * @param penColour Color -colour of line
+     * @param fillColour Color -fill colour
+     * @param fill boolean -true if image needs to be filled
+     * @param o Observer -class that wants to receive a drawn object information.
+     *                    Usually, a class that has a canvas to draw this object (polygon)
      */
-    public DrawPoly (BufferedImage imagePanel, Color lineColour, Color fillColour, boolean fill, Observer o){
-        super(imagePanel, lineColour, o);
+    public DrawPoly (BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, Observer o){
+        super(imagePanel, penColour, o);
         PolyMouseListener mouse = new PolyMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
@@ -44,7 +47,12 @@ public class DrawPoly extends DrawShape {
     }
 
     /**
-     * Draw image on the image Panel
+     * draw polygon components on image panel
+     * This method is used to draw polygon's edges on image panel.
+     * @param x1 -start x coordinate of an edge
+     * @param y1 -start y coordinate of an edge
+     * @param x2 -end x coordinate of an edge
+     * @param y2 -end x coordinate of an edge
      */
     private void drawOnImagePanel(double x1, double y1, double x2, double y2){
         Graphics2D g2 = getImagePanel().createGraphics();
@@ -55,24 +63,6 @@ public class DrawPoly extends DrawShape {
         g2.dispose();
     }
 
-//    private void drawPolygon(Polygon polygon){
-//        Graphics2D g2d = getImagePanel().createGraphics();
-//        g2d.setStroke(new BasicStroke((getLineWidth())));
-//
-//        if(fill){
-//            g2d.setColor(fillColour);
-//            g2d.fill(polygon.getShape(getImagePanel().getWidth()));
-//        }
-//
-//        g2d.setColor(getLineColour());
-//        g2d.draw(polygon.getShape(getImagePanel().getWidth()));
-//        xVertices.clear();
-//        yVertices.clear();
-//    }
-
-    public void paintUpdated(ShapeInfo shape){
-        ((VecPaint)getObserver()).updateShapes(shape);
-    }
 
     /**
      * Override paintComponent so that when user made changes on the application window,
@@ -88,10 +78,13 @@ public class DrawPoly extends DrawShape {
             g2d.setColor(getLineColour());
             g2d.draw(new Line2D.Double(tpx, tpy, ex, ey));
         }
+        g2d.dispose();
     }
 
 
-
+    /**
+     * private class that defines behaviour when mouse movement is made
+     */
     private class PolyMouseListener extends MouseAdapter {
         /**
          * When mouse is pressed, start drawing a rectangle, so set the start location
@@ -148,6 +141,7 @@ public class DrawPoly extends DrawShape {
 
         /**
          * Double clicking finishes drawing polygon, and connects end to start point
+         * send a polygon object to draw on image panel
          */
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
@@ -157,7 +151,7 @@ public class DrawPoly extends DrawShape {
                     xScaled[i] = xVertices.get(i) / getImagePanel().getWidth();
                     yScaled[i] = yVertices.get(i) / getImagePanel().getHeight();
                 }
-                Polygon polygon = new Polygon(xScaled, yScaled, getLineColour(), fillColour, fill);
+                VecPolygon polygon = new VecPolygon(xScaled, yScaled, getLineColour(), fillColour, fill);
                 paintUpdated(polygon);
                 drawTempLine = false;
                 edges = 0;
@@ -167,7 +161,7 @@ public class DrawPoly extends DrawShape {
         /**
          * When mouse is being dragged, continuously updates tpx, tpy and ex, ey.
          * So, it produces like a free shape
-         * This is still a polygon : A polygon with lots of very short straight lines
+         * This is still a polygon : A polygon with lots of very short straight edges
          */
         public void mouseDragged(MouseEvent e) {
             ex = e.getPoint().getX();

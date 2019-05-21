@@ -4,9 +4,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+/**
+ * Defines Color picker GUI component
+ */
 public class ColorPanel extends JPanel implements Subject {
 
-    private String className = "ColorPanel";
+    enum SelectMode{PEN, FILL};
+
+    private String className = "ColourPanel";
 
     private ArrayList<Observer> observers  = new ArrayList<>();
 
@@ -15,12 +20,12 @@ public class ColorPanel extends JPanel implements Subject {
     private JPanel lineColourPicked = new JPanel();
     private JPanel fillColourPicked = new JPanel();
     private JButton btnColourPicker = new JButton("More Colours");
-    private JButton btnChooseLineColour = new JButton("Line");
+    private JButton btnChooseLineColour = new JButton("Pen");
     private JButton btnChooseFillColour = new JButton("Fill");
-    private Color lineColour = Color.black; // default
+    private Color penColour = Color.black; // default
     private Color fillColour = Color.white; // default
 
-    private String colourChooseMode = "Line";
+    private SelectMode colourChooseMode = SelectMode.PEN;
 
     private Color[] quickColours = {Color.red, Color.blue, Color.green, Color.orange, Color.yellow,
             Color.pink, Color.cyan, Color.gray, Color.black, Color.magenta};
@@ -43,11 +48,8 @@ public class ColorPanel extends JPanel implements Subject {
         add(btnColourPicker);
         add(pnlColourPicked);
 
-        setUpLineColourPanel();
-
+        setUpPenColourPanel();
         setUpFillColourPanel();
-        add(lineColourPicked);
-        add(fillColourPicked);
 
         pnlColourPicked.setLayout(new GridLayout(1, 2));
         pnlColourPicked.add(lineColourPicked);
@@ -58,15 +60,18 @@ public class ColorPanel extends JPanel implements Subject {
         pnlColourPicked.setAlignmentX(0.5f);
     }
 
-    private void setUpLineColourPanel(){
-        lineColourPicked.setBackground(lineColour);
+    /**
+     * Sets up line (pen) colour panel
+     */
+    private void setUpPenColourPanel(){
+        lineColourPicked.setBackground(penColour);
         btnChooseLineColour.setForeground(Color.orange);
         btnChooseLineColour.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 btnChooseLineColour.setForeground(Color.orange);
                 btnChooseFillColour.setForeground(Color.black);
-                colourChooseMode = "Line";
+                colourChooseMode = SelectMode.PEN;
             }
         });
         lineColourPicked.add(btnChooseLineColour, TOP_ALIGNMENT);
@@ -80,7 +85,7 @@ public class ColorPanel extends JPanel implements Subject {
             public void actionPerformed(ActionEvent e) {
                 btnChooseLineColour.setForeground(Color.black);
                 btnChooseFillColour.setForeground(Color.orange);
-                colourChooseMode = "Fill";
+                colourChooseMode = SelectMode.FILL;
             }
         });
         fillColourPicked.add(btnChooseFillColour, TOP_ALIGNMENT);
@@ -95,12 +100,12 @@ public class ColorPanel extends JPanel implements Subject {
 
         btnColourPicker.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (colourChooseMode == "Line") {
-                    lineColour = JColorChooser.showDialog(null, "Select Line Colour", lineColour);
-                    if (lineColour == null) {
-                        lineColour = Color.black;
+                if (colourChooseMode == SelectMode.PEN) {
+                    penColour = JColorChooser.showDialog(null, "Select VecLine Colour", penColour);
+                    if (penColour == null) {
+                        penColour = Color.black;
                     }
-                    lineColourPicked.setBackground(lineColour);
+                    lineColourPicked.setBackground(penColour);
                 } else {
                     fillColour = JColorChooser.showDialog(null, "Select Fill Colour", fillColour);
                     if (fillColour == null) {
@@ -108,7 +113,7 @@ public class ColorPanel extends JPanel implements Subject {
                     }
                     fillColourPicked.setBackground(fillColour);
                 }
-                notifyObservers("ColourPanel");
+                notifyObservers(className);
             }
         });
     }
@@ -127,14 +132,14 @@ public class ColorPanel extends JPanel implements Subject {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JButton button = (JButton)e.getSource();
-                    if (colourChooseMode == "Line") {
-                        lineColour = button.getBackground();
-                        lineColourPicked.setBackground(lineColour);
+                    if (colourChooseMode == SelectMode.PEN) {
+                        penColour = button.getBackground();
+                        lineColourPicked.setBackground(penColour);
                     } else {
                         fillColour = button.getBackground();
                         fillColourPicked.setBackground(fillColour);
                     }
-                    notifyObservers("ColourPanel");
+                    notifyObservers(className);
                 }
             });
             quickColourBtns.add(btn);
@@ -150,10 +155,18 @@ public class ColorPanel extends JPanel implements Subject {
     }
 
 
-    public void attachObservers(Observer observer){
+    /**
+     * attach observer
+     * @param observer new observer to be registered
+     */
+    public void attachObserver(Observer observer){
         observers.add(observer);
     }
 
+    /**
+     * Tell changes in this class (changes of colour) to observers
+     * @param location -need to specify location as this application have multiple subject and one observer
+     */
     public void notifyObservers(String location){
         for (int i = 0; i < observers.size(); i++){
             observers.get(i).update(location);
@@ -161,13 +174,17 @@ public class ColorPanel extends JPanel implements Subject {
     }
 
     /**
-     * return current choose colour
-     * @return current choosen colour
+     * return current pen colour
+     * @return current pen colour
      */
-    public Color getLineColour(){
-        return lineColour;
+    public Color getPenColour(){
+        return penColour;
     }
 
+    /**
+     * Returns current fill colour
+     * @return current fill colour
+     */
     public Color getFillColour() { return fillColour;}
 
 }

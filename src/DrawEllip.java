@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -8,10 +7,9 @@ import java.awt.image.BufferedImage;
 /**
  * Class to draw a ellipse
  * This class provides JPanel to draw a temporary ellipse,
- * and when the user finished drawing (released mouse) the ellipse is drawn on the Buffered Image
+ * and when the user finished drawing (mouse released) an ellipse object is sent to main class
  */
 public class DrawEllip extends DrawShape {
-
 
     private double sx;
     private double sy;
@@ -22,19 +20,34 @@ public class DrawEllip extends DrawShape {
     private boolean fill;
     private Color fillColor;
 
-    public DrawEllip(BufferedImage imagePanel, Color lineColor, Color fillColor, boolean fill, Observer o){
-        super(imagePanel, lineColor, o);
+    /**
+     * constructor
+     * @param imagePanel BufferedImage -on which the image is drawn
+     * @param penColour Color -colour of line
+     * @param fillColour Color -fill colour
+     * @param fill boolean -true if image needs to be filled
+     * @param o Observer -class that wants to receive a drawn object information.
+     *                    Usually, a class that has a canvas to draw this object (ellipse)
+     */
+    public DrawEllip(BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, Observer o){
+        super(imagePanel, penColour, o);
         EllipMouseListener mouse = new EllipMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
-        this.fillColor = fillColor;
+        this.fillColor = fillColour;
         this.fill = fill;
     }
 
 
+    /**
+     * Calculate ellipse width and height from sx, sy, ex and ey.
+     * while mouse is dragging, temporary ellipse is drawn.
+     * once mouse is released, ellipse object is passed to main class to draw ellipse as image
+     * @param g2d graphic component
+     */
     private void drawEllipse(Graphics2D g2d){
-        Ellipse2D ellipse;
-        Ellipse ellipseVec;
+        Ellipse2D ellipse; // this is used to draw temporary ellipse
+        VecEllipse vEllipse; // this is used as draw ellipse object, to be passed to main class
         int imageWidth = getImagePanel().getWidth();
         int imageHeight = getImagePanel().getHeight();
         double width = ex - sx;
@@ -42,26 +55,27 @@ public class DrawEllip extends DrawShape {
         g2d.setColor(fillColor);
         if (width >= 0 && height >= 0) {
             ellipse = new Ellipse2D.Double(sx, sy, width, height);
-            ellipseVec = new Ellipse(sx / imageWidth, sy / imageHeight,
+            vEllipse = new VecEllipse(sx / imageWidth, sy / imageHeight,
                     ex / imageWidth, ey / imageHeight, getLineColour(), fillColor, fill);
         } else if (width >= 0 && height < 0) {
             ellipse = new Ellipse2D.Double(sx, ey, width, Math.abs(height));
-            ellipseVec = new Ellipse(sx / imageWidth, ey / imageHeight,
+            vEllipse = new VecEllipse(sx / imageWidth, ey / imageHeight,
                     ex / imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         } else if (width < 0 && height >= 0) {
             ellipse = new Ellipse2D.Double(ex , sy, Math.abs(width), height);
-            ellipseVec = new Ellipse(ex / imageWidth, sy / imageHeight,
+            vEllipse = new VecEllipse(ex / imageWidth, sy / imageHeight,
                     sx / imageWidth, ey /imageHeight, getLineColour(), fillColor, fill);
         } else {
             ellipse = new Ellipse2D.Double(ex, ey, Math.abs(width), Math.abs(height));
-            ellipseVec = new Ellipse(ex / imageWidth, ey / imageHeight,
+            vEllipse = new VecEllipse(ex / imageWidth, ey / imageHeight,
                     sx/ imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         }
-        if (fill) {g2d.fill(ellipse);}
-        g2d.setColor(getLineColour());
-        g2d.draw(ellipse);
-        if (!drawTemp) {
-            paintUpdated(ellipseVec);
+        if (drawTemp) {
+            if (fill) { g2d.fill(ellipse); }
+            g2d.setColor(getLineColour());
+            g2d.draw(ellipse);
+        } else {
+            paintUpdated(vEllipse);
         }
     }
 
@@ -75,12 +89,13 @@ public class DrawEllip extends DrawShape {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
         g2d.drawImage(getImagePanel(), 0, 0, this);
-
-        if (drawTemp) {
-            drawEllipse(g2d);
-        }
+        if (drawTemp) { drawEllipse(g2d); }
+        g2d.dispose();
     }
 
+    /**
+     * private class that defines behaviour when mouse movement is made
+     */
     private class EllipMouseListener extends MouseAdapter {
         /**
          * When mouse is pressed, start drawing a rectangle, so set the start location
@@ -102,18 +117,15 @@ public class DrawEllip extends DrawShape {
         }
 
         /**
-         * When mouse click is released, the rectangle is drawn on the BufferedImage
+         * Once the mouse is released create plot object, and send this data to main class to draw plot as an image
          */
         public void mouseReleased(MouseEvent e) {
             ex = e.getPoint().getX();
             ey = e.getPoint().getY();
             drawTemp = false;
-            Graphics2D g2d = getImagePanel().createGraphics();
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setStroke(new BasicStroke(getLineWidth()));
+            Graphics2D g2d = (Graphics2D)getGraphics(); // just to pass graphics to call drawRect(g2d);
             drawEllipse(g2d);
             g2d.dispose();
-
             repaint();
 
         }

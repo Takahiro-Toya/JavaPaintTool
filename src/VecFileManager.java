@@ -1,14 +1,10 @@
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.function.DoubleToIntFunction;
 
 public class VecFileManager extends JMenuBar implements Subject {
 
@@ -27,9 +23,9 @@ public class VecFileManager extends JMenuBar implements Subject {
     private ArrayList<String> Openlist = new ArrayList();
     private String content = "";
 
-    private ArrayList<ShapeInfo> shapesToSave = new ArrayList<>();
+    private ArrayList<VecShape> shapesToSave = new ArrayList<>();
 
-    public static ArrayList<ShapeInfo> shapesToOpen = new ArrayList<>();
+    private ArrayList<VecShape> shapesToOpen = new ArrayList<>();
 
     private ArrayList<Observer> observers = new ArrayList<>();
 
@@ -38,13 +34,6 @@ public class VecFileManager extends JMenuBar implements Subject {
      */
     public VecFileManager() {
         super();
-    }
-
-    /**
-     * Get the current file
-     */
-    public File getFile(){
-        return vecFile;
     }
 
     /**
@@ -160,7 +149,7 @@ public class VecFileManager extends JMenuBar implements Subject {
         return listener;
     }
 
-    public void saveShapes(ArrayList<ShapeInfo> shapes){
+    public void saveShapes(ArrayList<VecShape> shapes){
         this.shapesToSave = shapes;
     }
 
@@ -169,13 +158,13 @@ public class VecFileManager extends JMenuBar implements Subject {
      */
     private void convertToString() {
         boolean isoff = true;
-        ShapeInfo temp = null;
+        VecShape temp = null;
         Color currentColour = null;
         for (Observer o : observers) {
             o.update("SaveBtn");
         }
         for (int a = 0; a < shapesToSave.size(); a++) {
-            ShapeInfo current = shapesToSave.get(a);
+            VecShape current = shapesToSave.get(a);
             if (a != 0){
                 temp = shapesToSave.get(a - 1);
             }
@@ -219,7 +208,7 @@ public class VecFileManager extends JMenuBar implements Subject {
      * convert the input string to objects
      */
     public void convertToShape(){
-        ShapeInfo info = null;
+        VecShape info = null;
         Color fillColour = null;
         Color lineColour = Color.black;
         boolean fill = false;
@@ -251,21 +240,21 @@ public class VecFileManager extends JMenuBar implements Subject {
                      case "PLOT":
                          double x = Double.valueOf(file[1]);
                          double y = Double.valueOf(file[2]);
-                         shapesToOpen.add(new Plot(x, y, lineColour));
+                         shapesToOpen.add(new VecPlot(x, y, lineColour));
                          break;
                      case "LINE":
                          double lsx = Double.valueOf(file[1]);
                          double lsy = Double.valueOf(file[2]);
                          double lex = Double.valueOf(file[3]);
                          double ley = Double.valueOf(file[4]);
-                         shapesToOpen.add(new Line(lsx, lsy, lex, ley, lineColour));
+                         shapesToOpen.add(new VecLine(lsx, lsy, lex, ley, lineColour));
                          break;
                      case "RECTANGLE":
                          double tsx = Double.valueOf(file[1]);
                          double tsy = Double.valueOf(file[2]);
                          double tex = Double.valueOf(file[3]);
                          double tey = Double.valueOf(file[4]);
-                         shapesToOpen.add(new Rectangle(tsx, tsy, tex, tey, lineColour, fillColour, fill));
+                         shapesToOpen.add(new VecRectangle(tsx, tsy, tex, tey, lineColour, fillColour, fill));
                          break;
                      case  "ELLIPSE":
                          double esx = Double.valueOf(file[1]);
@@ -273,7 +262,7 @@ public class VecFileManager extends JMenuBar implements Subject {
                          double eex = Double.valueOf(file[3]);
                          double eey = Double.valueOf(file[4]);
                          System.out.println("HEllo: "+ " " + esx + " "+ esy + " " + eex + " " + eey);
-                         shapesToOpen.add(new Ellipse(esx, esy, eex, eey, lineColour, fillColour, fill));
+                         shapesToOpen.add(new VecEllipse(esx, esy, eex, eey, lineColour, fillColour, fill));
                          break;
                      case "POLYGON":
                         double[] px = new double[(file.length - 1) /2];
@@ -289,7 +278,7 @@ public class VecFileManager extends JMenuBar implements Subject {
                             py[cy] = Double.valueOf(file[b]);
                             cy++;
                         }
-                        shapesToOpen.add(new Polygon(px, py, lineColour, fillColour, fill));
+                        shapesToOpen.add(new VecPolygon(px, py, lineColour, fillColour, fill));
                         break;
                      default:
                          break;
@@ -332,7 +321,7 @@ public class VecFileManager extends JMenuBar implements Subject {
         return clearListener;
     }
 
-    public void attachObservers(Observer observer){
+    public void attachObserver(Observer observer){
         observers.add(observer);
     }
 
@@ -345,7 +334,7 @@ public class VecFileManager extends JMenuBar implements Subject {
     /**
      * return undoShapeList
      */
-    public ArrayList<ShapeInfo> getShapesToOpen() {
+    public ArrayList<VecShape> getShapesToOpen() {
         return shapesToOpen;
     }
 

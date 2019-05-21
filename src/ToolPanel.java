@@ -4,17 +4,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+/**
+ * Defines tool picker GUI components
+ */
 public class ToolPanel extends JPanel implements Subject {
 
-    private VecPaint.Mode currentMode = VecPaint.Mode.PLOT;
+    private String[] toolBtnTexts = {"Plot", "Line", "Rectangle", "Ellipse", "Polygon"};
+
+    private VecShape.Mode currentMode = VecShape.Mode.PLOT;
 
     private boolean fill = false;
 
     private ArrayList<Observer> observers = new ArrayList<>();
-
     private ArrayList<JButton> toolBtns =  new ArrayList<>();
-
-    private String[] toolBtnTexts = {"Plot", "Line", "Rectangle", "Ellipse", "Polygon"};
 
     private JButton btnFill = new JButton("Fill on");
 
@@ -23,7 +25,7 @@ public class ToolPanel extends JPanel implements Subject {
      */
     public ToolPanel(){
         setBorder(BorderFactory.createTitledBorder("Tools"));
-        setLayout(new GridLayout(toolBtnTexts.length + 1, 1));
+        setLayout(new GridLayout(VecShape.Mode.values().length + 1, 1));
         setBackground(Color.LIGHT_GRAY);
         createToolBtns();
         for (int i = 0; i < toolBtns.size(); i++){
@@ -38,7 +40,7 @@ public class ToolPanel extends JPanel implements Subject {
      * Initialise each tool buttons
      */
     private void createToolBtns(){
-        for (int i = 0; i < toolBtnTexts.length; i++){
+        for (int i = 0; i < VecShape.Mode.values().length; i++){
             JButton btn = new JButton(toolBtnTexts[i]);
             btn.setOpaque(true);
             btn.setBackground(Color.lightGray);
@@ -48,23 +50,23 @@ public class ToolPanel extends JPanel implements Subject {
                     JButton clickedBtn = (JButton)e.getSource();
                     switch (clickedBtn.getText()){
                         case "Plot":
-                            currentMode = VecPaint.Mode.PLOT;
+                            currentMode = VecShape.Mode.PLOT;
                             break;
                         case "Line":
-                            currentMode = VecPaint.Mode.LINE;
+                            currentMode = VecShape.Mode.LINE;
                             break;
                         case "Rectangle":
-                            currentMode = VecPaint.Mode.RECTANGLE;
+                            currentMode = VecShape.Mode.RECTANGLE;
 
                             break;
                         case "Ellipse":
-                            currentMode = VecPaint.Mode.ELLIPSE;
+                            currentMode = VecShape.Mode.ELLIPSE;
                             break;
                         case "Polygon":
-                            currentMode = VecPaint.Mode.POLYGON;
+                            currentMode = VecShape.Mode.POLYGON;
                             break;
                         default:
-                            currentMode = VecPaint.Mode.PLOT;
+                            currentMode = VecShape.Mode.PLOT;
                     }
                     notifyObservers("ToolPanel");
                 }
@@ -73,6 +75,9 @@ public class ToolPanel extends JPanel implements Subject {
         }
     }
 
+    /**
+     * create fill button
+     */
     private void createFillButton(){
         btnFill.addActionListener(new ActionListener() {
             @Override
@@ -88,10 +93,18 @@ public class ToolPanel extends JPanel implements Subject {
         });
     }
 
-    public void attachObservers(Observer observer){
+    /**
+     * attach observer that wants to know the change of drawing tool
+     * @param observer new observer to be registered
+     */
+    public void attachObserver(Observer observer){
         observers.add(observer);
     }
 
+    /**
+     * notify changes to observers
+     * @param location -need to specify location as this application have multiple subject and one observer
+     */
     public void notifyObservers(String location){
         for (int i = 0; i < observers.size(); i++){
             observers.get(i).update(location);
@@ -102,10 +115,14 @@ public class ToolPanel extends JPanel implements Subject {
      * Return current drawing mode
      * @return current drawing mode
      */
-    public VecPaint.Mode getCurrentMode(){
+    public VecShape.Mode getCurrentMode(){
         return currentMode;
     }
 
+    /**
+     * return current fill mode
+     * @return true if fill mode is on
+     */
     public boolean getFillMode(){return fill;}
 }
 

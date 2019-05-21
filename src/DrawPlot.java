@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Line2D;
@@ -16,10 +15,13 @@ public class DrawPlot extends DrawShape {
 
     /**
      * constructor
-     * @param imagePanel to display drawn image
+     * @param imagePanel BufferedImage -on which the image is drawn
+     * @param penColour Color -colour of plot
+     * @param o Observer -class that wants to receive a drawn object information.
+     *                    Usually, a class that has a canvas to draw this object (rectangle)
      */
-    public DrawPlot(BufferedImage imagePanel, Color c, Observer o){
-        super(imagePanel, c, o);
+    public DrawPlot(BufferedImage imagePanel, Color penColour, Observer o){
+        super(imagePanel, penColour, o);
         PlotMouseListener mouse = new PlotMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
@@ -41,11 +43,12 @@ public class DrawPlot extends DrawShape {
     }
 
     /**
-     * Mouse Listener
+     * private class that defines behaviour when mouse movement is made
      */
     private class PlotMouseListener extends MouseAdapter {
         /**
          * When mouse is pressed, start drawing a rectangle, so set the start location
+         * @param e -mouse event
          */
         @Override
         public void mousePressed(MouseEvent e) {
@@ -53,17 +56,14 @@ public class DrawPlot extends DrawShape {
             sy = e.getPoint().getY();
         }
 
+        /**
+         * Once the mouse is released create plot object, and send this data to main class to draw plot as an image
+         * @param e -mouse event
+         */
         public void mouseReleased(MouseEvent e) {
-            Graphics2D g2 = getImagePanel().createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(getLineColour());
-            g2.setStroke(new BasicStroke(getLineWidth()));
-            Line2D plot = new Line2D.Double(sx, sy, sx, sy);
-            Plot plotVec = new Plot(sx / getImagePanel().getWidth(), sy / getImagePanel().getHeight(), getLineColour());
-            g2.draw(plot);
-            g2.dispose();
+            VecPlot vecPlot = new VecPlot(sx / getImagePanel().getWidth(), sy / getImagePanel().getHeight(), getLineColour());
             repaint();
-            paintUpdated(plotVec);
+            paintUpdated(vecPlot);
         }
 
         // those methods are not used, just need to implements here

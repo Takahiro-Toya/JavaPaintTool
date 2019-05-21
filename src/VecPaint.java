@@ -2,13 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.File;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
-public class VecPaint extends JFrame implements Observer {
-
-    enum Mode{PLOT, LINE, RECTANGLE, ELLIPSE, POLYGON};
+public class VecPaint extends JFrame implements Observer, Canvas {
 
     //Menu bar variables
     private int screenWidth;
@@ -23,25 +20,35 @@ public class VecPaint extends JFrame implements Observer {
     private ColorPanel pnlColours;
     private JPanel pnlBottom;
 
+    // GUI colours: DEFAULT setting
     private Color widgetBgColor = Color.LIGHT_GRAY;
     private Color layerBgColor = Color.DARK_GRAY;
     private Color canvasBgColor = Color.WHITE;
 
-    private static ArrayList<ShapeInfo> shapes = new ArrayList<>();
+    // store all shapes drawn on the image panel
+    private static ArrayList<VecShape> shapes = new ArrayList<>();
 
+    // image panel that is responsible to show any drawn objects at all time, and updated
     private BufferedImage imagePanel;
 
-    private Mode currentMode = Mode.PLOT;
+    // default painting colour/ fill mode
+    private VecShape.Mode currentMode = VecShape.Mode.PLOT;
     private Color lineColour = Color.BLACK;
     private Color fillColour = Color.WHITE;
     private boolean fill = false;
     private float lineWidth = 2f;
 
+    // Define GUI properties' area
     private double sideToolTabArea = 0.2;
     private int bottomHeight = 20;
     private double canvasArea = 0.8;
 
 
+    /**
+     * Constructor
+     * application size is set to half of screen width x half of screen height, and displayed at the center of screen
+     * This is minimum size, user cannot make it smaller than this size
+     */
     public VecPaint(){
         super("VecPaint tool");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -55,7 +62,6 @@ public class VecPaint extends JFrame implements Observer {
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
                     refreshCanvas();
-
             }
         });
 
@@ -69,6 +75,10 @@ public class VecPaint extends JFrame implements Observer {
         screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
     }
 
+    /**
+     * Vec paint canvas is always square, this method determines canvas edge based on application width and height
+     * @return edge that can be used as one edge of canvas
+     */
     private int keepSquare(){
         int width = getWidth() - (int)(getWidth() * sideToolTabArea * 2);
         int height = getHeight() - manager.getHeight() - bottomHeight;
@@ -83,25 +93,34 @@ public class VecPaint extends JFrame implements Observer {
         return edge;
     }
 
+    /**
+     * This method reflects any changes on canvas, such as:
+     * drawing mode change, undo/ clear button click, resized application size
+     * so that drawn image is always visible
+     */
     private void refreshCanvas(){
         int edge = keepSquare();
         imagePanel = new BufferedImage((int)(edge * canvasArea), (int)(edge * canvasArea), BufferedImage.TYPE_INT_ARGB);
-        System.out.println("Image size after refreshed" + imagePanel.getWidth() + " : " + imagePanel.getHeight());
         layer.removeAll();
         switchMode();
         pnlCanvas.setBounds((int)((layer.getWidth() - edge * canvasArea) / 2), (int)((layer.getHeight() - edge * canvasArea) / 2),
                 (int)(edge * canvasArea), (int)(edge * canvasArea));
 
-        imagePanelResized();
+        refreshImage();
         layer.add(pnlCanvas);
     }
 
 
+    /**
+     * One of Observer interface components
+     * reflects changes of drawing mode, colour, undo/ clear, save / open
+     * @param location -class or component name in which a change is made
+     */
     @Override
     public void update(String location){
         if (location == "ToolPanel" || location == "ColourPanel") {
             currentMode = pnlTools.getCurrentMode();
-            lineColour = pnlColours.getLineColour();
+            lineColour = pnlColours.getPenColour();
             fillColour = pnlColours.getFillColour();
             fill = pnlTools.getFillMode();
             refreshCanvas();
@@ -117,64 +136,60 @@ public class VecPaint extends JFrame implements Observer {
             manager.saveShapes(shapes);
         } else if (location == "OpenBtn"){
             shapes = manager.getShapesToOpen();
-            for(ShapeInfo shape: shapes){
+            for(VecShape shape: shapes){
                 System.out.println("Shape :" + shape);
             }
             refreshCanvas();
         }
     }
 
-    private void switchMode(){
-
-        switch (currentMode) {
-            case LINE:
-                pnlCanvas = new DrawLine(imagePanel, lineColour, this);
-                break;
-            case RECTANGLE:
-                pnlCanvas = new DrawRect(imagePanel, lineColour, fillColour, fill, this);
-                break;
-            case ELLIPSE:
-                pnlCanvas = new DrawEllip(imagePanel, lineColour, fillColour, fill, this);
-                break;
-            case POLYGON:
-                pnlCanvas = new DrawPoly(imagePanel, lineColour, fillColour, fill, this);
-                break;
-            default:
-                pnlCanvas = new DrawPlot(imagePanel, lineColour, this);
-                break;
+    /**
+     * Used when drawing mode has changed
+     */
+    private void switchMode() {
+        if (currentMode == VecShape.Mode.PLOT){
+            pnlCanvas = new DrawPlot(imagePanel, lineColour, this);
+        } else if (currentMode == VecShape.Mode.LINE){
+            pnlCanvas = new DrawLine(imagePanel, lineColour, this);
+        } else if (currentMode == VecShape.Mode.RECTANGLE){
+            pnlCanvas = new DrawRect(imagePanel, lineColour, fillColour, fill, this);
+        } else if (currentMode == VecShape.Mode.ELLIPSE){
+            pnlCanvas = new DrawEllip(imagePanel, lineColour, fillColour, fill, this);
+        } else if (currentMode == VecShape.Mode.POLYGON){
+            pnlCanvas = new DrawPoly(imagePanel, lineColour, fillColour, fill, this);
         }
         pnlCanvas.setBackground(canvasBgColor);
         layer.setOpaque(true);
         setVisible(true);
     }
 
-    public void updateShapes(ShapeInfo shape){
+    /**
+     * update shapes array after new drawing object is drawn
+     * @param shape -new shape to be drawn
+     */
+    @Override
+    public void updateShapes(VecShape shape){
         shapes.add(shape);
         refreshCanvas();
     }
 
-    private void imagePanelResized(){
+    /**
+     * clear image on imagePanel, and draw them again
+     */
+    private void refreshImage(){
         Graphics2D g2d = imagePanel.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(lineWidth));
 
         for(int i = 0; i < shapes.size(); i++) {
-            ShapeInfo shape = shapes.get(i);
-            System.out.println("------");
-            System.out.println("Size here: " + imagePanel.getWidth() + " : " + imagePanel.getHeight());
+            VecShape shape = shapes.get(i);
             if (shape.getFill()) {
                 g2d.setColor(shape.getFillColour());
                 g2d.fill(shape.getShape(imagePanel.getWidth()));
-                System.out.println("fill shape: " + shape);
             }
             g2d.setColor(shape.getLineColour());
             g2d.draw(shape.getShape(imagePanel.getWidth()));
 
-            System.out.println("draw shape: " + shape);
-            System.out.println("sx: " + shape.getSx() * imagePanel.getWidth());
-            System.out.println("sy: " + shape.getSy() * imagePanel.getHeight());
-            System.out.println("ex: " + shape.getEx() * imagePanel.getWidth());
-            System.out.println("ey: " + shape.getEy() * imagePanel.getHeight());
 
         }
         g2d.dispose();
@@ -193,7 +208,7 @@ public class VecPaint extends JFrame implements Observer {
         pnlColours = new ColorPanel();
         pnlBottom = new JPanel();
 
-        manager.attachObservers(this);
+        manager.attachObserver(this);
 
         layer = new JLayeredPane();
         layer.setBackground(Color.darkGray);
@@ -208,11 +223,11 @@ public class VecPaint extends JFrame implements Observer {
         getContentPane().add(layer, BorderLayout.CENTER);
 
         pnlTools.setPreferredSize(new Dimension((int)(getWidth() * sideToolTabArea), getHeight()));
-        pnlTools.attachObservers(this);
+        pnlTools.attachObserver(this);
         getContentPane().add(pnlTools, BorderLayout.WEST);
 
         pnlColours.setPreferredSize(new Dimension((int)(getWidth() * sideToolTabArea), getHeight()));
-        pnlColours.attachObservers(this);
+        pnlColours.attachObserver(this);
         getContentPane().add(pnlColours, BorderLayout.EAST);
 
         pnlBottom.setBackground(widgetBgColor);

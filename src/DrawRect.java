@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,24 +19,33 @@ public class DrawRect extends DrawShape {
     private Color fillColor;
     private boolean fill;
 
-
     /**
      * constructor
-     * @param imagePanel to display drawn image
+     * @param imagePanel BufferedImage -on which the image is drawn
+     * @param penColour Color -colour of line
+     * @param fillColour Color -fill colour
+     * @param fill boolean -true if image needs to be filled
+     * @param o Observer -class that wants to receive a drawn object information.
+     *                    Usually, a class that has a canvas to draw this object (rectangle)
      */
-    public DrawRect(BufferedImage imagePanel, Color lc, Color fc, boolean fill, Observer o){
-        super(imagePanel, lc, o);
+    public DrawRect(BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, Observer o){
+        super(imagePanel, penColour, o);
         RectMouseListener mouse = new RectMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
-        fillColor = fc;
+        fillColor = fillColour;
         this.fill = fill;
     }
 
-
+    /**
+     * Calculate rectangle width and height from sx, sy, ex and ey.
+     * while mouse is dragging, temporary rectangle is drawn.
+     * once mouse is released, rectangle object is passed to main class to draw rectangle as image
+     * @param g2d graphic component
+     */
     private void drawRect(Graphics2D g2d){
         Rectangle2D rect;
-        Rectangle rectVec;
+        VecRectangle vRect;
         int imageWidth = getImagePanel().getWidth();
         int imageHeight = getImagePanel().getHeight();
         double width = ex - sx;
@@ -45,26 +53,28 @@ public class DrawRect extends DrawShape {
         g2d.setColor(fillColor);
         if (width >= 0 && height >= 0) {
             rect = new Rectangle2D.Double(sx, sy, width, height);
-            rectVec = new Rectangle(sx / imageWidth, sy / imageHeight, ex / imageWidth,
+            vRect = new VecRectangle(sx / imageWidth, sy / imageHeight, ex / imageWidth,
                     ey / imageHeight, getLineColour(), fillColor, fill);
         } else if (width >= 0 && height < 0) {
             rect = new Rectangle2D.Double(sx, ey, width, Math.abs(height));
-            rectVec = new Rectangle(sx / imageWidth, ey / imageHeight,
+            vRect = new VecRectangle(sx / imageWidth, ey / imageHeight,
                     ex / imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         } else if (width < 0 && height >= 0) {
             rect = new Rectangle2D.Double(ex, sy, Math.abs(width), height);
-            rectVec = new Rectangle(ex / imageWidth, sy / imageHeight,
+            vRect = new VecRectangle(ex / imageWidth, sy / imageHeight,
                     sx / imageWidth, ey /imageHeight, getLineColour(), fillColor, fill);
         } else {
             rect = new Rectangle2D.Double(ex, ey, Math.abs(width), Math.abs(height));
-            rectVec = new Rectangle(ex / imageWidth, ey / imageHeight,
+            vRect = new VecRectangle(ex / imageWidth, ey / imageHeight,
                     sx / imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         }
-        if (fill) {g2d.fill(rect);}
-        g2d.setColor(getLineColour());
-        g2d.draw(rect);
-        if (!drawTempRect) {
-            paintUpdated(rectVec);
+
+        if(drawTempRect) {
+            if (fill) { g2d.fill(rect); }
+            g2d.setColor(getLineColour());
+            g2d.draw(rect);
+        } else {
+            paintUpdated(vRect);
         }
     }
 
@@ -78,12 +88,14 @@ public class DrawRect extends DrawShape {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
         g2d.drawImage(getImagePanel(), 0, 0, this);
+        if (drawTempRect) { drawRect(g2d); }
+        g2d.dispose();
 
-        if (drawTempRect) {
-            drawRect(g2d);
-        }
     }
 
+    /**
+     * private class that defines behaviour when mouse movement is made
+     */
     private class RectMouseListener extends MouseAdapter {
 
         /**
@@ -112,9 +124,7 @@ public class DrawRect extends DrawShape {
             ex = e.getPoint().getX();
             ey = e.getPoint().getY();
             drawTempRect = false;
-            Graphics2D g2d = getImagePanel().createGraphics();
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setStroke(new BasicStroke(getLineWidth()));
+            Graphics2D g2d = (Graphics2D)getGraphics(); // just to pass graphics to call drawRect(g2d);
             drawRect(g2d);
             g2d.dispose();
             repaint();
