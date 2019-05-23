@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,27 +16,77 @@ public class ToolPanel extends JPanel implements Subject {
     private VecShape.Mode currentMode = VecShape.Mode.PLOT;
 
     private boolean fill = false;
+    private boolean grid = false;
+    private int gridSize = 0;
 
     private ArrayList<Observer> observers = new ArrayList<>();
     private ArrayList<JButton> toolBtns =  new ArrayList<>();
 
     private JButton btnFill = new JButton("Fill on");
 
+    private JCheckBox gridCheckBox;
+
+    private JSlider gridSlider;
+
+    private JLabel gridSizeText;
+
     /**
      * Constructor
      */
     public ToolPanel(){
         setBorder(BorderFactory.createTitledBorder("Tools"));
-        setLayout(new GridLayout(VecShape.Mode.values().length + 1, 1));
+        setLayout(new GridLayout(VecShape.Mode.values().length + 4, 1)); // +3 for btnFill, gridCheckBox and gridSlider
         setBackground(Color.LIGHT_GRAY);
         createToolBtns();
         for (int i = 0; i < toolBtns.size(); i++){
             add(toolBtns.get(i));
         }
         createFillButton();
+        createGridTool();
         add(btnFill);
+        add(gridCheckBox);
+        add(gridSlider);
+        add(gridSizeText);
     }
 
+    /**
+     * Create a check box to enable grid, slider bar to customise grid size, and a label that displays current grid size
+     * Grid size can be customised range between 2 ~ 50: size represents how many the canvas is divided into.
+     * E.g. if grid size is 2, then canvas is divided in to 2 at both vertical and horizontal direction. So there will be two grid lines
+     * vertically and horizontally.
+     */
+    private void createGridTool(){
+        gridCheckBox = new JCheckBox("Grid", false);
+        gridCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(gridCheckBox.isSelected()){
+                    grid = true;
+                    gridSlider.setEnabled(true);
+                    gridSlider.setValue(gridSize);
+                    gridSizeText.setVisible(true);
+                    notifyObservers("GridSlider");
+                } else {
+                    grid = false;
+                    gridSlider.setEnabled(false);
+                    gridSizeText.setVisible(false);
+                    notifyObservers("GridSlider");
+                }
+            }
+        });
+        gridSlider = new JSlider(2, 50);
+        gridSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                gridSize = gridSlider.getValue();
+                gridSizeText.setText("Grid Size: " + gridSize);
+                notifyObservers("GridSlider");
+            }
+        });
+        gridSlider.setEnabled(false);
+        gridSizeText = new JLabel();
+        gridSizeText.setVisible(false);
+    }
 
     /**
      * Initialise each tool buttons
@@ -124,5 +176,17 @@ public class ToolPanel extends JPanel implements Subject {
      * @return true if fill mode is on
      */
     public boolean getFillMode(){return fill;}
+
+    /**
+     * return current grid mode
+     * @return true if grid is enabled
+     */
+    public boolean getGridMode(){return grid;}
+
+    /**
+     * return current grid size
+     * @return grid size that divides screen into.
+     */
+    public int getGridSize(){return gridSize;}
 }
 

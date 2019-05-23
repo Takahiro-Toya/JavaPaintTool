@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
@@ -18,6 +19,7 @@ public class VecPaint extends JFrame implements Observer, Canvas {
     private ToolPanel pnlTools;
     private ColorPanel pnlColours;
     private JPanel pnlBottom;
+    private HelpPanel helpLabel;
 
     // GUI colours: DEFAULT setting
     private Color widgetBgColor = Color.LIGHT_GRAY;
@@ -63,6 +65,7 @@ public class VecPaint extends JFrame implements Observer, Canvas {
                     refreshCanvas();
             }
         });
+
         this.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -120,7 +123,6 @@ public class VecPaint extends JFrame implements Observer, Canvas {
         switchMode();
         pnlCanvas.setBounds((int)((layer.getWidth() - edge * canvasArea) / 2), (int)((layer.getHeight() - edge * canvasArea) / 2),
                 (int)(edge * canvasArea), (int)(edge * canvasArea));
-
         refreshImage();
         layer.add(pnlCanvas);
     }
@@ -157,8 +159,8 @@ public class VecPaint extends JFrame implements Observer, Canvas {
             manager.saveShapes(shapes);
         } else if (location == "OpenBtn"){
             shapes = manager.getShapesToOpen();
-            for(VecShape shape: shapes){
-            }
+            refreshCanvas();
+        } else if (location == "GridSlider"){
             refreshCanvas();
         }
     }
@@ -178,6 +180,7 @@ public class VecPaint extends JFrame implements Observer, Canvas {
         } else if (currentMode == VecShape.Mode.POLYGON){
             pnlCanvas = new DrawPoly(imagePanel, lineColour, fillColour, fill, this);
         }
+        helpLabel.changeText(currentMode);
         pnlCanvas.setBackground(canvasBgColor);
         layer.setOpaque(true);
         setVisible(true);
@@ -199,6 +202,20 @@ public class VecPaint extends JFrame implements Observer, Canvas {
     private void refreshImage(){
         Graphics2D g2d = imagePanel.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        if (pnlTools.getGridMode()){
+            double interval = (double)imagePanel.getHeight() / (double)pnlTools.getGridSize();
+            g2d.setStroke(new BasicStroke(1f));
+            g2d.setColor(Color.lightGray);
+            System.out.println("width: " + imagePanel.getWidth());
+            System.out.println("interval: " + interval);
+            System.out.println("num: " + pnlTools.getGridSize());
+            for (int i = 1; i < pnlTools.getGridSize(); i++ ){
+                g2d.draw(new Line2D.Double(0, interval * i, imagePanel.getWidth(), interval * i));
+            }
+            for (int i = 1; i < pnlTools.getGridSize(); i++ ) {
+                g2d.draw(new Line2D.Double(interval * i, 0, interval * i, imagePanel.getHeight()));
+            }
+        }
         g2d.setStroke(new BasicStroke(lineWidth));
 
         for(int i = 0; i < shapes.size(); i++) {
@@ -209,9 +226,9 @@ public class VecPaint extends JFrame implements Observer, Canvas {
             }
             g2d.setColor(shape.getLineColour());
             g2d.draw(shape.getShape(imagePanel.getWidth()));
-
-
         }
+
+
         g2d.dispose();
     }
 
@@ -227,6 +244,10 @@ public class VecPaint extends JFrame implements Observer, Canvas {
         pnlTools = new ToolPanel();
         pnlColours = new ColorPanel();
         pnlBottom = new JPanel();
+        helpLabel = new HelpPanel();
+        helpLabel.changeText(currentMode);
+        pnlBottom.add(helpLabel);
+        pnlBottom.add(helpLabel);
 
         manager.attachObserver(this);
 
@@ -258,6 +279,8 @@ public class VecPaint extends JFrame implements Observer, Canvas {
         repaint();
         setVisible(true);
     }
+
+
 
     public static void main(String[] args){
         VecPaint vectorTool = new VecPaint();
