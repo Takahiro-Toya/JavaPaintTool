@@ -18,6 +18,7 @@ public class ToolPanel extends JPanel implements Subject {
     private boolean fill = false;
     private boolean grid = false;
     private int gridSize = 0;
+    private boolean isGridTop = false;
 
     private ArrayList<Observer> observers = new ArrayList<>();
     private ArrayList<JButton> toolBtns =  new ArrayList<>();
@@ -30,12 +31,14 @@ public class ToolPanel extends JPanel implements Subject {
 
     private JLabel gridSizeText;
 
+    private JCheckBox gridTopCheckBox;
+
     /**
      * Constructor
      */
     public ToolPanel(){
         setBorder(BorderFactory.createTitledBorder("Tools"));
-        setLayout(new GridLayout(VecShape.Mode.values().length + 4, 1)); // +3 for btnFill, gridCheckBox and gridSlider
+        setLayout(new GridLayout(VecShape.Mode.values().length + 5, 1)); // +4 for btnFill, gridCheckBox and gridSlider
         setBackground(Color.LIGHT_GRAY);
         createToolBtns();
         for (int i = 0; i < toolBtns.size(); i++){
@@ -46,6 +49,7 @@ public class ToolPanel extends JPanel implements Subject {
         add(btnFill);
         add(gridCheckBox);
         add(gridSlider);
+        add(gridTopCheckBox);
         add(gridSizeText);
     }
 
@@ -64,14 +68,15 @@ public class ToolPanel extends JPanel implements Subject {
                     grid = true;
                     gridSlider.setEnabled(true);
                     gridSlider.setValue(gridSize);
+                    gridTopCheckBox.setEnabled(true);
                     gridSizeText.setVisible(true);
-                    notifyObservers("GridSlider");
                 } else {
                     grid = false;
                     gridSlider.setEnabled(false);
+                    gridTopCheckBox.setEnabled(false);
                     gridSizeText.setVisible(false);
-                    notifyObservers("GridSlider");
                 }
+                notifyObservers("GridSlider");
             }
         });
         gridSlider = new JSlider(2, 50);
@@ -84,6 +89,19 @@ public class ToolPanel extends JPanel implements Subject {
             }
         });
         gridSlider.setEnabled(false);
+        gridTopCheckBox = new JCheckBox("Grid top", false);
+        gridTopCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(gridTopCheckBox.isSelected()){
+                    isGridTop = true;
+                } else {
+                    isGridTop = false;
+                }
+                notifyObservers("GridTop");
+            }
+        });
+        gridTopCheckBox.setEnabled(false);
         gridSizeText = new JLabel();
         gridSizeText.setVisible(false);
     }
@@ -188,5 +206,7 @@ public class ToolPanel extends JPanel implements Subject {
      * @return grid size that divides screen into.
      */
     public int getGridSize(){return gridSize;}
+
+    public boolean getIsGridTop(){ return isGridTop;}
 }
 

@@ -35,7 +35,7 @@ public class VecPolygon extends VecShape {
      * @return Shape object
      */
     @Override
-    public java.awt.Polygon getShape(int size){
+    public Shape getShape(int size){
         int[] XsForDrawing = new int[vecPointXs.length];
         int[] YsForDrawing = new int[vecPointYs.length];
         for(int i = 0; i < vecPointYs.length; i++){

@@ -12,7 +12,7 @@ public class VecFileManager extends JMenuBar implements Subject {
      * Enums names of every component of the menu bar
      */
     public enum MenuNames{
-        File("File"), Undo("Undo"), Save("Save"), Open("Open"), Clear("Clear");
+        File("File"), Undo("Undo"), Redo("Redo"), Save("Save"), Open("Open"), Clear("Clear");
         private final String name;
         MenuNames(String s){
             name = s;
@@ -48,11 +48,13 @@ public class VecFileManager extends JMenuBar implements Subject {
         JMenuItem saveManager = new JMenuItem(MenuNames.Save.name);
         JMenuItem openManager = new JMenuItem(MenuNames.Open.name);
         JMenuItem undoManager = new JMenuItem(MenuNames.Undo.name);
+        JMenuItem redoManager = new JMenuItem(MenuNames.Redo.name);
         JMenuItem clearManager = new JMenuItem(MenuNames.Clear.name);
 
         saveManager.addActionListener(getSaveListener());
         openManager.addActionListener(getOpenListener());
         undoManager.addActionListener(undoShape());
+        redoManager.addActionListener(redoShape());
         clearManager.addActionListener(clearShape());
 
         menu.add(saveManager);
@@ -60,6 +62,7 @@ public class VecFileManager extends JMenuBar implements Subject {
 
         bar.add(menu);
         bar.add(undoManager);
+        bar.add(redoManager);
         bar.add(clearManager);
 
         return bar;
@@ -293,7 +296,7 @@ public class VecFileManager extends JMenuBar implements Subject {
     /**
      * Undo the last shape drawn
      */
-    public ActionListener undoShape() {
+    private ActionListener undoShape() {
         ActionListener undoListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -304,7 +307,17 @@ public class VecFileManager extends JMenuBar implements Subject {
         return undoListener;
     }
 
-    public ActionListener clearShape() {
+    private ActionListener redoShape(){
+        ActionListener redoListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notifyObservers("RedoBtn");
+            }
+        };
+        return redoListener;
+    }
+
+    private ActionListener clearShape() {
         ActionListener clearListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

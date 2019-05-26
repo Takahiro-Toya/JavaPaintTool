@@ -20,8 +20,8 @@ public class DrawPlot extends DrawShape {
      * @param o Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (rectangle)
      */
-    public DrawPlot(BufferedImage imagePanel, Color penColour, Observer o){
-        super(imagePanel, penColour, o);
+    public DrawPlot(BufferedImage imagePanel, Color penColour, boolean grid, double gridSize, Observer o){
+        super(imagePanel, penColour, o, grid, gridSize);
         PlotMouseListener mouse = new PlotMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
@@ -52,8 +52,15 @@ public class DrawPlot extends DrawShape {
          */
         @Override
         public void mousePressed(MouseEvent e) {
-            sx = e.getPoint().getX();
-            sy = e.getPoint().getY();
+            double x = e.getPoint().getX();
+            double y = e.getPoint().getY();
+            if (!grid){
+                sx = x;
+                sy = y;
+            } else {
+                sx = adjustPoint(x);
+                sy = adjustPoint(y);
+            }
         }
 
         /**

@@ -22,8 +22,8 @@ public class DrawLine extends DrawShape {
      * @param o Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (rectangle)
      */
-    public DrawLine(BufferedImage imagePanel, Color penColour, Observer o){
-        super(imagePanel, penColour, o);
+    public DrawLine(BufferedImage imagePanel, Color penColour, boolean grid, double gridSize, Observer o){
+        super(imagePanel, penColour, o, grid, gridSize);
         LineMouseListener mouse = new LineMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
@@ -57,8 +57,16 @@ public class DrawLine extends DrawShape {
          */
         @Override
         public void mousePressed(MouseEvent e) {
-            sx = e.getPoint().getX();
-            sy = e.getPoint().getY();
+            double x = e.getPoint().getX();
+            double y = e.getPoint().getY();
+            if (!grid){
+                sx = x;
+                sy = y;
+            } else {
+                sx = adjustPoint(x);
+                sy = adjustPoint(y);
+            }
+
         }
 
         /**
@@ -82,8 +90,15 @@ public class DrawLine extends DrawShape {
          */
         @Override
         public void mouseReleased(MouseEvent e) {
-            ex = e.getPoint().getX();
-            ey = e.getPoint().getY();
+            double x = e.getPoint().getX();
+            double y = e.getPoint().getY();
+            if (!grid){
+                ex = x;
+                ey = y;
+            } else {
+                ex = adjustPoint(x);
+                ey = adjustPoint(y);
+            }
             VecLine vecLine = new VecLine(sx / getImagePanel().getWidth(), sy / getImagePanel().getHeight(),
                     ex / getImagePanel().getWidth(), ey /  getImagePanel().getHeight(), getLineColour());
             drawTempLine = false;

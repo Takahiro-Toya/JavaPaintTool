@@ -14,6 +14,8 @@ public class DrawShape extends JPanel implements Subject{
     private Color plotColour;
     private BufferedImage imagePanel;
     private float lineWidth = 2f;
+    protected Boolean grid = false;
+    protected double gridSize = 0;
 
     /**
      * constructor
@@ -22,9 +24,11 @@ public class DrawShape extends JPanel implements Subject{
      * @param observer Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (rectangle)
      */
-    public DrawShape(BufferedImage imagePanel, Color plotColour, Observer observer){
+    public DrawShape(BufferedImage imagePanel, Color plotColour, Observer observer, boolean grid, double gridSize){
         this.imagePanel = imagePanel;
         this.plotColour = plotColour;
+        this.grid = grid;
+        this.gridSize = gridSize;
         attachObserver(observer);
     }
 
@@ -53,6 +57,11 @@ public class DrawShape extends JPanel implements Subject{
         for(Observer observer: observers){
             ((Canvas)observer).updateShapes(shape);
         }
+    }
+
+    protected double adjustPoint(double coordinate){
+        double gridInterval = imagePanel.getWidth() / gridSize;
+        return Math.floor((coordinate + gridInterval / 2) / gridInterval) * gridInterval ;
     }
 
     /**

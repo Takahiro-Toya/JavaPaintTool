@@ -28,8 +28,8 @@ public class DrawRect extends DrawShape {
      * @param o Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (rectangle)
      */
-    public DrawRect(BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, Observer o){
-        super(imagePanel, penColour, o);
+    public DrawRect(BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, double gridSize, Observer o){
+        super(imagePanel, penColour, o, grid, gridSize);
         RectMouseListener mouse = new RectMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
@@ -102,8 +102,15 @@ public class DrawRect extends DrawShape {
          * When mouse is pressed, start drawing a rectangle, so set the start location
          */
         public void mousePressed(MouseEvent e) {
-            sx = e.getPoint().getX();
-            sy = e.getPoint().getY();
+            double x = e.getPoint().getX();
+            double y = e.getPoint().getY();
+            if (!grid){
+                sx = x;
+                sy = y;
+            } else {
+                sx = adjustPoint(x);
+                sy = adjustPoint(y);
+            }
         }
 
         /**
@@ -121,8 +128,15 @@ public class DrawRect extends DrawShape {
          * When mouse click is released, the rectangle is drawn on the BufferedImage
          */
         public void mouseReleased(MouseEvent e) {
-            ex = e.getPoint().getX();
-            ey = e.getPoint().getY();
+            double x = e.getPoint().getX();
+            double y = e.getPoint().getY();
+            if (!grid){
+                ex = x;
+                ey = y;
+            } else {
+                ex = adjustPoint(x);
+                ey = adjustPoint(y);
+            }
             drawTempRect = false;
             Graphics2D g2d = (Graphics2D)getGraphics(); // just to pass graphics to call drawRect(g2d);
             drawRect(g2d);

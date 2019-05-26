@@ -27,7 +27,8 @@ public class VecPaint extends JFrame implements Observer, Canvas {
     private Color canvasBgColor = Color.WHITE;
 
     // store all shapes drawn on the image panel
-    private static ArrayList<VecShape> shapes = new ArrayList<>();
+    private ArrayList<VecShape> shapes = new ArrayList<>();
+    private ArrayList<VecShape> undoneShapes = new ArrayList<>();
 
     // image panel that is responsible to show any drawn objects at all time, and updated
     private BufferedImage imagePanel;
@@ -129,10 +130,23 @@ public class VecPaint extends JFrame implements Observer, Canvas {
 
     /**
      * Deletes last element of shape array if shapes array size is greater than zero
+     * Add deleted shape to the undone shapes list to perform redo
      */
     private void undo(){
         if (shapes.size() > 0) {
+            undoneShapes.add(shapes.get(shapes.size() - 1));
             shapes.remove(shapes.size() - 1);
+        }
+    }
+
+    /**
+     * Deletes last element of undonShapes array if undoneShapes array size is greater than zero
+     * Add deleted shape to the shapes list
+     */
+    private void redo(){
+        if (undoneShapes.size() > 0){
+            shapes.add(undoneShapes.get(undoneShapes.size() - 1));
+            undoneShapes.remove(undoneShapes.size() - 1);
         }
     }
 
@@ -149,8 +163,11 @@ public class VecPaint extends JFrame implements Observer, Canvas {
             fillColour = pnlColours.getFillColour();
             fill = pnlTools.getFillMode();
             refreshCanvas();
-        } else if (location == "UndoBtn"){
+        } else if (location == "UndoBtn") {
             undo();
+            refreshCanvas();
+        } else if (location == "RedoBtn"){
+            redo();
             refreshCanvas();
         } else if (location == "ClearBtn"){
             shapes.clear();
@@ -162,6 +179,8 @@ public class VecPaint extends JFrame implements Observer, Canvas {
             refreshCanvas();
         } else if (location == "GridSlider"){
             refreshCanvas();
+        } else if (location == "GridTop"){
+            refreshCanvas();
         }
     }
 
@@ -170,15 +189,15 @@ public class VecPaint extends JFrame implements Observer, Canvas {
      */
     private void switchMode() {
         if (currentMode == VecShape.Mode.PLOT){
-            pnlCanvas = new DrawPlot(imagePanel, lineColour, this);
+            pnlCanvas = new DrawPlot(imagePanel, lineColour, pnlTools.getGridMode(), pnlTools.getGridSize(), this);
         } else if (currentMode == VecShape.Mode.LINE){
-            pnlCanvas = new DrawLine(imagePanel, lineColour, this);
+            pnlCanvas = new DrawLine(imagePanel, lineColour, pnlTools.getGridMode(), pnlTools.getGridSize(),this);
         } else if (currentMode == VecShape.Mode.RECTANGLE){
-            pnlCanvas = new DrawRect(imagePanel, lineColour, fillColour, fill, this);
+            pnlCanvas = new DrawRect(imagePanel, lineColour, fillColour, fill, pnlTools.getGridMode(), pnlTools.getGridSize(),this);
         } else if (currentMode == VecShape.Mode.ELLIPSE){
-            pnlCanvas = new DrawEllip(imagePanel, lineColour, fillColour, fill, this);
+            pnlCanvas = new DrawEllip(imagePanel, lineColour, fillColour, fill, pnlTools.getGridMode(),pnlTools.getGridSize(),this);
         } else if (currentMode == VecShape.Mode.POLYGON){
-            pnlCanvas = new DrawPoly(imagePanel, lineColour, fillColour, fill, this);
+            pnlCanvas = new DrawPoly(imagePanel, lineColour, fillColour, fill, pnlTools.getGridMode(),pnlTools.getGridSize(),this);
         }
         helpLabel.changeText(currentMode);
         pnlCanvas.setBackground(canvasBgColor);
@@ -193,29 +212,23 @@ public class VecPaint extends JFrame implements Observer, Canvas {
     @Override
     public void updateShapes(VecShape shape){
         shapes.add(shape);
+        undoneShapes.clear();
         refreshCanvas();
     }
 
-    /**
-     * clear image on imagePanel, and draw them again
-     */
-    private void refreshImage(){
-        Graphics2D g2d = imagePanel.createGraphics();
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        if (pnlTools.getGridMode()){
-            double interval = (double)imagePanel.getHeight() / (double)pnlTools.getGridSize();
-            g2d.setStroke(new BasicStroke(1f));
-            g2d.setColor(Color.lightGray);
-            System.out.println("width: " + imagePanel.getWidth());
-            System.out.println("interval: " + interval);
-            System.out.println("num: " + pnlTools.getGridSize());
-            for (int i = 1; i < pnlTools.getGridSize(); i++ ){
-                g2d.draw(new Line2D.Double(0, interval * i, imagePanel.getWidth(), interval * i));
-            }
-            for (int i = 1; i < pnlTools.getGridSize(); i++ ) {
-                g2d.draw(new Line2D.Double(interval * i, 0, interval * i, imagePanel.getHeight()));
-            }
+    private void drawGrid(Graphics2D g2d){
+        double interval = (double)imagePanel.getHeight() / (double)pnlTools.getGridSize();
+        g2d.setStroke(new BasicStroke(1f));
+        g2d.setColor(Color.lightGray);
+        for (int i = 1; i < pnlTools.getGridSize(); i++ ){
+            g2d.draw(new Line2D.Double(0, interval * i, imagePanel.getWidth(), interval * i));
         }
+        for (int i = 1; i < pnlTools.getGridSize(); i++ ) {
+            g2d.draw(new Line2D.Double(interval * i, 0, interval * i, imagePanel.getHeight()));
+        }
+    }
+
+    private void drawShapes(Graphics2D g2d){
         g2d.setStroke(new BasicStroke(lineWidth));
 
         for(int i = 0; i < shapes.size(); i++) {
@@ -227,8 +240,22 @@ public class VecPaint extends JFrame implements Observer, Canvas {
             g2d.setColor(shape.getLineColour());
             g2d.draw(shape.getShape(imagePanel.getWidth()));
         }
-
-
+    }
+    /**
+     * clear image on imagePanel, and draw them again
+     */
+    private void refreshImage(){
+        Graphics2D g2d = imagePanel.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        if (pnlTools.getGridMode() && !pnlTools.getIsGridTop()){
+            drawGrid(g2d);
+            drawShapes(g2d);
+        } else if (pnlTools.getGridMode() && pnlTools.getIsGridTop()){
+            drawShapes(g2d);
+            drawGrid(g2d);
+        } else {
+            drawShapes(g2d);
+        }
         g2d.dispose();
     }
 
@@ -257,7 +284,7 @@ public class VecPaint extends JFrame implements Observer, Canvas {
         int height = getHeight() - manager.getHeight() - bottomHeight;
         imagePanel = new BufferedImage((int)(width * canvasArea), (int)(height * canvasArea), BufferedImage.TYPE_INT_ARGB);
 
-        pnlCanvas = new DrawPlot(imagePanel, lineColour, this);
+        pnlCanvas = new DrawPlot(imagePanel, lineColour, false, 0, this);
         pnlCanvas.setBackground(canvasBgColor);
         layer.setBackground(layerBgColor);
         layer.setOpaque(true);
@@ -278,6 +305,11 @@ public class VecPaint extends JFrame implements Observer, Canvas {
         pack();
         repaint();
         setVisible(true);
+    }
+
+
+    public ArrayList<VecShape> getShapesForUnitTest(){
+        return shapes;
     }
 
 

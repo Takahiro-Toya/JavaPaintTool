@@ -29,8 +29,8 @@ public class DrawEllip extends DrawShape {
      * @param o Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (ellipse)
      */
-    public DrawEllip(BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, Observer o){
-        super(imagePanel, penColour, o);
+    public DrawEllip(BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, double gridSize, Observer o){
+        super(imagePanel, penColour, o, grid, gridSize);
         EllipMouseListener mouse = new EllipMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
@@ -101,8 +101,15 @@ public class DrawEllip extends DrawShape {
          * When mouse is pressed, start drawing a rectangle, so set the start location
          */
         public void mousePressed(MouseEvent e) {
-            sx = e.getPoint().getX();
-            sy = e.getPoint().getY();
+            double x = e.getPoint().getX();
+            double y = e.getPoint().getY();
+            if (!grid){
+                sx = x;
+                sy = y;
+            } else {
+                sx = adjustPoint(x);
+                sy = adjustPoint(y);
+            }
         }
 
         /**
@@ -120,8 +127,15 @@ public class DrawEllip extends DrawShape {
          * Once the mouse is released create plot object, and send this data to main class to draw plot as an image
          */
         public void mouseReleased(MouseEvent e) {
-            ex = e.getPoint().getX();
-            ey = e.getPoint().getY();
+            double x = e.getPoint().getX();
+            double y = e.getPoint().getY();
+            if (!grid){
+                ex = x;
+                ey = y;
+            } else {
+                ex = adjustPoint(x);
+                ey = adjustPoint(y);
+            }
             drawTemp = false;
             Graphics2D g2d = (Graphics2D)getGraphics(); // just to pass graphics to call drawRect(g2d);
             drawEllipse(g2d);

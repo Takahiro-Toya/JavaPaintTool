@@ -31,14 +31,26 @@ public abstract class VecShape {
      * @param mode -drawing mode
      */
     public VecShape(double sx, double sy, double ex, double ey, Color lineColor, Color fillColour, boolean fill, Mode mode){
-        this.sx = sx;
-        this.sy = sy;
-        this.ex = ex;
-        this.ey = ey;
-        this.lineColour = lineColor;
-        this.mode = mode;
-        this.fillColour = fillColour;
-        this.fill = fill;
+        if (lineColor == null || mode == null || (fill == true && fillColour == null)){
+            throw new RuntimeException();
+        } else {
+            this.sx = sx;
+            this.sy = sy;
+            this.ex = ex;
+            this.ey = ey;
+            this.lineColour = lineColor;
+            this.mode = mode;
+        }
+
+        if (fill == false){
+            this.fillColour = null;
+            this.fill = false;
+        } else {
+            this.fillColour = fillColour;
+            this.fill = true;
+        }
+
+
     }
 
     /**

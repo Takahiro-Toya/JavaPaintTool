@@ -37,8 +37,8 @@ public class DrawPoly extends DrawShape {
      * @param o Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (polygon)
      */
-    public DrawPoly (BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, Observer o){
-        super(imagePanel, penColour, o);
+    public DrawPoly (BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, double gridSize, Observer o){
+        super(imagePanel, penColour, o, grid, gridSize);
         PolyMouseListener mouse = new PolyMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
@@ -92,8 +92,15 @@ public class DrawPoly extends DrawShape {
         public void mousePressed(MouseEvent e) {
 
             if (edges == 0) {
-                sx = e.getPoint().getX();
-                sy = e.getPoint().getY();
+                double x = e.getPoint().getX();
+                double y = e.getPoint().getY();
+                if (!grid){
+                    sx = x;
+                    sy = y;
+                } else {
+                    sx = adjustPoint(x);
+                    sy = adjustPoint(y);
+                }
                 xVertices.add(sx);
                 yVertices.add(sy);
                 tpx = sx;
@@ -101,8 +108,15 @@ public class DrawPoly extends DrawShape {
                 edges++;
             } else {
                 if(e.getClickCount() != 2) {
-                    ex = e.getPoint().getX();
-                    ey = e.getPoint().getY();
+                    double x = e.getPoint().getX();
+                    double y = e.getPoint().getY();
+                    if (!grid){
+                        ex = x;
+                        ey = y;
+                    } else {
+                        ex = adjustPoint(x);
+                        ey = adjustPoint(y);
+                    }
                     xVertices.add(ex);
                     yVertices.add(ey);
                     drawOnImagePanel(tpx, tpy, ex, ey);
