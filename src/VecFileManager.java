@@ -12,7 +12,7 @@ public class VecFileManager extends JMenuBar implements Subject {
      * Enums names of every component of the menu bar
      */
     public enum MenuNames{
-        File("File"), Undo("Undo"), Redo("Redo"), Save("Save"), Open("Open"), Clear("Clear");
+        File("File"), Edit("Edit"), Undo("Undo"), Redo("Redo"), Save("Save"), Open("Open"), Clear("Clear");
         private final String name;
         MenuNames(String s){
             name = s;
@@ -43,7 +43,8 @@ public class VecFileManager extends JMenuBar implements Subject {
     public JMenuBar createJmenuBar(){
         JMenuBar bar = new JMenuBar();
 
-        JMenu menu = new JMenu(MenuNames.File.name);
+        JMenu fileMenu = new JMenu(MenuNames.File.name);
+        JMenu editMenu = new JMenu(MenuNames.Edit.name);
 
         JMenuItem saveManager = new JMenuItem(MenuNames.Save.name);
         JMenuItem openManager = new JMenuItem(MenuNames.Open.name);
@@ -57,13 +58,14 @@ public class VecFileManager extends JMenuBar implements Subject {
         redoManager.addActionListener(redoShape());
         clearManager.addActionListener(clearShape());
 
-        menu.add(saveManager);
-        menu.add(openManager);
+        fileMenu.add(saveManager);
+        fileMenu.add(openManager);
+        editMenu.add(undoManager);
+        editMenu.add(redoManager);
+        editMenu.add(clearManager);
 
-        bar.add(menu);
-        bar.add(undoManager);
-        bar.add(redoManager);
-        bar.add(clearManager);
+        bar.add(fileMenu);
+        bar.add(editMenu);
 
         return bar;
     }
