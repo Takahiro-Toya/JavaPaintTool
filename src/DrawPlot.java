@@ -17,6 +17,8 @@ public class DrawPlot extends DrawShape {
      * constructor
      * @param imagePanel BufferedImage -on which the image is drawn
      * @param penColour Color -colour of plot
+     * @param grid - set true if grid is on
+     * @param gridSize - grid size that divides the canvas: e.g gridSize = 2 means the grid divides canvas into two horizontally and vertically
      * @param o Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (rectangle)
      */

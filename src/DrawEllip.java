@@ -26,6 +26,8 @@ public class DrawEllip extends DrawShape {
      * @param penColour Color -colour of line
      * @param fillColour Color -fill colour
      * @param fill boolean -true if image needs to be filled
+     * @param grid - set true if grid is on
+     * @param gridSize - grid size that divides the canvas: e.g gridSize = 2 means the grid divides canvas into two horizontally and vertically
      * @param o Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (ellipse)
      */

@@ -53,13 +53,7 @@ public class ToolPanel extends JPanel implements Subject {
         add(gridSizeText);
     }
 
-    /**
-     * Create a check box to enable grid, slider bar to customise grid size, and a label that displays current grid size
-     * Grid size can be customised range between 2 ~ 50: size represents how many the canvas is divided into.
-     * E.g. if grid size is 2, then canvas is divided in to 2 at both vertical and horizontal direction. So there will be two grid lines
-     * vertically and horizontally.
-     */
-    private void createGridTool(){
+    private void createGridCheckBox(){
         gridCheckBox = new JCheckBox("Grid", false);
         gridCheckBox.addActionListener(new ActionListener() {
             @Override
@@ -79,6 +73,9 @@ public class ToolPanel extends JPanel implements Subject {
                 notifyObservers("GridSlider");
             }
         });
+    }
+
+    private void createGridSlider(){
         gridSlider = new JSlider(2, 50);
         gridSlider.addChangeListener(new ChangeListener() {
             @Override
@@ -89,6 +86,9 @@ public class ToolPanel extends JPanel implements Subject {
             }
         });
         gridSlider.setEnabled(false);
+    }
+
+    private void createGridTopCheckBox(){
         gridTopCheckBox = new JCheckBox("Grid top", false);
         gridTopCheckBox.addActionListener(new ActionListener() {
             @Override
@@ -101,6 +101,19 @@ public class ToolPanel extends JPanel implements Subject {
                 notifyObservers("GridTop");
             }
         });
+    }
+
+    /**
+     * Create a check box to enable grid, slider bar to customise grid size, and a label that displays current grid size
+     * Grid size can be customised range between 2 ~ 50: size represents how many the canvas is divided into.
+     * E.g. if grid size is 2, then canvas is divided in to 2 at both vertical and horizontal direction. So there will be two grid lines
+     * vertically and horizontally.
+     */
+    private void createGridTool(){
+
+        createGridCheckBox();
+        createGridSlider();
+        createGridTopCheckBox();
         gridTopCheckBox.setEnabled(false);
         gridSizeText = new JLabel();
         gridSizeText.setVisible(false);
@@ -207,6 +220,10 @@ public class ToolPanel extends JPanel implements Subject {
      */
     public int getGridSize(){return gridSize;}
 
+    /**
+     * return is gridTop check box is selected or not
+     * @return true if grid needs to appear top of the shapes
+     */
     public boolean getIsGridTop(){ return isGridTop;}
 }
 
