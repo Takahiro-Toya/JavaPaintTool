@@ -1,3 +1,8 @@
+package DrawVecShape;
+
+import VecShape.VecPolygon;
+import VecInterface.Observer;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -36,11 +41,11 @@ public class DrawPoly extends DrawShape {
      * @param fill boolean -true if image needs to be filled
      * @param grid - set true if grid is on
      * @param gridSize - grid size that divides the canvas: e.g gridSize = 2 means the grid divides canvas into two horizontally and vertically
-     * @param o Observer -class that wants to receive a drawn object information.
+     * @param observer VecInterface.Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (polygon)
      */
-    public DrawPoly (BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, double gridSize, Observer o){
-        super(imagePanel, penColour, o, grid, gridSize);
+    public DrawPoly (BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, Observer observer){
+        super(imagePanel, penColour, observer, grid, gridSize);
         PolyMouseListener mouse = new PolyMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
@@ -78,7 +83,7 @@ public class DrawPoly extends DrawShape {
         g2d.drawImage(getImagePanel(), 0, 0, this);
         if (drawTempLine) {
             g2d.setColor(getLineColour());
-            g2d.draw(new Line2D.Double(tpx, tpy, ex, ey));
+            g2d.drawLine((int)tpx, (int)tpy, (int)ex, (int)ey);
         }
         g2d.dispose();
     }
@@ -91,12 +96,13 @@ public class DrawPoly extends DrawShape {
         /**
          * When mouse is pressed, start drawing a rectangle, so set the start location
          */
+        @Override
         public void mousePressed(MouseEvent e) {
 
             if (edges == 0) {
                 double x = e.getPoint().getX();
                 double y = e.getPoint().getY();
-                if (!grid){
+                if (!getIsGridOn()){
                     sx = x;
                     sy = y;
                 } else {
@@ -112,7 +118,7 @@ public class DrawPoly extends DrawShape {
                 if(e.getClickCount() != 2) {
                     double x = e.getPoint().getX();
                     double y = e.getPoint().getY();
-                    if (!grid){
+                    if (!getIsGridOn()){
                         ex = x;
                         ey = y;
                     } else {
@@ -137,6 +143,7 @@ public class DrawPoly extends DrawShape {
          * When mouse is being moved (not dragged!), a temporary line is drawn
          * between previously clicked location to current mouse location
          */
+        @Override
         public void mouseMoved(MouseEvent e) {
             if (!(edges == 0)) {
                 ex = e.getPoint().getX();
@@ -149,6 +156,7 @@ public class DrawPoly extends DrawShape {
         /**
          * When mouse click is released, a line is drawn on the BufferedImage
          */
+        @Override
         public void mouseReleased(MouseEvent e) {
             drawTempLine = false;
             repaint();
@@ -159,6 +167,7 @@ public class DrawPoly extends DrawShape {
          * Double clicking finishes drawing polygon, and connects end to start point
          * send a polygon object to draw on image panel
          */
+        @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
                 double[] xScaled = new double[xVertices.size()];
@@ -179,6 +188,7 @@ public class DrawPoly extends DrawShape {
          * So, it produces like a free shape
          * This is still a polygon : A polygon with lots of very short straight edges
          */
+        @Override
         public void mouseDragged(MouseEvent e) {
             ex = e.getPoint().getX();
             ey = e.getPoint().getY();

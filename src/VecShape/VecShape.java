@@ -1,3 +1,5 @@
+package VecShape;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -8,7 +10,7 @@ import java.util.ArrayList;
  */
 public abstract class VecShape {
 
-    enum Mode{PLOT, LINE, RECTANGLE, ELLIPSE, POLYGON};
+    public enum Mode{PLOT, LINE, RECTANGLE, ELLIPSE, POLYGON}
 
     private double sx;
     private double sy;
@@ -31,8 +33,12 @@ public abstract class VecShape {
      * @param mode -drawing mode
      */
     public VecShape(double sx, double sy, double ex, double ey, Color lineColor, Color fillColour, boolean fill, Mode mode){
-        if (lineColor == null || mode == null || (fill == true && fillColour == null)){
-            throw new RuntimeException();
+        if (lineColor == null){
+            throw new VecShapeException(("Must specify line colour."));
+        } else if (mode == null){
+            throw new VecShapeException("Must specify VecShape type (mode).");
+        } else if (fill == true && fillColour == null){
+            throw new VecShapeException(("Must specify fill colour when fill mode is true."));
         } else {
             this.sx = sx;
             this.sy = sy;

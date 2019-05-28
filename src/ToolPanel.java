@@ -1,3 +1,7 @@
+import VecInterface.Observer;
+import VecInterface.Subject;
+import VecShape.VecShape;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;

@@ -1,3 +1,5 @@
+package VecInterface;
+
 /**
  * This class must be implemented in all the classes that need to communicate with observers
  */

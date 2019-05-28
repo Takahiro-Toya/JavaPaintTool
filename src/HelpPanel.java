@@ -1,3 +1,5 @@
+import VecShape.VecShape;
+
 import javax.swing.*;
 
 /**

@@ -1,8 +1,12 @@
+package VecShape;
+
+import VecShape.VecShape;
+
 import java.awt.*;
 import java.util.ArrayList;
 
 /**
- * Java standard Polygon does not support Double precise drawing, so this class allows VecPolygon object to have double values.
+ * Java standard Polygon does not support Double precise drawing, so this class allows VecShape.VecPolygon object to have double values.
  * But, when drawing a polygon object, this class draws an integer precise polygon.
  * So, this class stores a polygon's coordinates as double precise value for producing .vec file, and
  * when drawing an polygon on a canvas, convert stored double values to int values.

@@ -1,3 +1,7 @@
+import VecInterface.Observer;
+import VecInterface.Subject;
+import VecShape.*;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;

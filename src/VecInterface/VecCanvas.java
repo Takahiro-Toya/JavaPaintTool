@@ -1,7 +1,11 @@
+package VecInterface;
+
+import VecShape.VecShape;
+
 /**
  * this class must be implemented in all classes that wants to get drawn shape object
  */
-public interface Canvas {
+public interface VecCanvas {
 
     /**
      * pass a shape object that is newly drawn

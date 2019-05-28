@@ -1,3 +1,8 @@
+import DrawVecShape.*;
+import VecInterface.VecCanvas;
+import VecInterface.Observer;
+import VecShape.VecShape;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -5,7 +10,7 @@ import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
-public class VecPaint extends JFrame implements Observer, Canvas {
+public class VecPaint extends JFrame implements Observer, VecCanvas {
 
     //Menu bar variables
     private int screenWidth;
@@ -151,7 +156,7 @@ public class VecPaint extends JFrame implements Observer, Canvas {
     }
 
     /**
-     * One of Observer interface components
+     * One of VecInterface.Observer interface components
      * reflects changes of drawing mode, colour, undo/ clear, save / open
      * @param location -class or component name in which a change is made
      */
@@ -195,9 +200,9 @@ public class VecPaint extends JFrame implements Observer, Canvas {
         } else if (currentMode == VecShape.Mode.RECTANGLE){
             pnlCanvas = new DrawRect(imagePanel, lineColour, fillColour, fill, pnlTools.getGridMode(), pnlTools.getGridSize(),this);
         } else if (currentMode == VecShape.Mode.ELLIPSE){
-            pnlCanvas = new DrawEllip(imagePanel, lineColour, fillColour, fill, pnlTools.getGridMode(),pnlTools.getGridSize(),this);
+            pnlCanvas = new DrawEllip(imagePanel, lineColour, fillColour, fill, pnlTools.getGridMode(), pnlTools.getGridSize(),this);
         } else if (currentMode == VecShape.Mode.POLYGON){
-            pnlCanvas = new DrawPoly(imagePanel, lineColour, fillColour, fill, pnlTools.getGridMode(),pnlTools.getGridSize(),this);
+            pnlCanvas = new DrawPoly(imagePanel, lineColour, fillColour, fill, pnlTools.getGridMode(), pnlTools.getGridSize(),this);
         }
         helpLabel.changeText(currentMode);
         pnlCanvas.setBackground(canvasBgColor);

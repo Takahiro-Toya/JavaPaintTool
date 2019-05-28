@@ -1,3 +1,6 @@
+import VecInterface.Observer;
+import VecInterface.Subject;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -101,7 +104,7 @@ public class ColorPanel extends JPanel implements Subject {
         btnColourPicker.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (colourChooseMode == SelectMode.PEN) {
-                    penColour = JColorChooser.showDialog(null, "Select VecLine Colour", penColour);
+                    penColour = JColorChooser.showDialog(null, "Select VecShape.VecLine Colour", penColour);
                     if (penColour == null) {
                         penColour = Color.black;
                     }
