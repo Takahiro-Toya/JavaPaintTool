@@ -7,11 +7,11 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.ArrayList;
 
 public class VecFileManager extends JMenuBar implements Subject {
-
     /**
      * Enums names of every component of the menu bar
      */
@@ -36,7 +36,7 @@ public class VecFileManager extends JMenuBar implements Subject {
     /**
      * The constructor
      */
-    public VecFileManager() {
+    public VecFileManager(){
         super();
     }
 
@@ -47,6 +47,11 @@ public class VecFileManager extends JMenuBar implements Subject {
     public JMenuBar createJmenuBar(){
         JMenuBar bar = new JMenuBar();
 
+        KeyStroke ksSave = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke ksOpen = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke ksUndo = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke ksRedo = KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke ksClear = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK);
         JMenu fileMenu = new JMenu(MenuNames.File.name);
         JMenu editMenu = new JMenu(MenuNames.Edit.name);
 
@@ -55,6 +60,12 @@ public class VecFileManager extends JMenuBar implements Subject {
         JMenuItem undoManager = new JMenuItem(MenuNames.Undo.name);
         JMenuItem redoManager = new JMenuItem(MenuNames.Redo.name);
         JMenuItem clearManager = new JMenuItem(MenuNames.Clear.name);
+
+        saveManager.setAccelerator(ksSave);
+        openManager.setAccelerator(ksOpen);
+        undoManager.setAccelerator(ksUndo);
+        redoManager.setAccelerator(ksRedo);
+        clearManager.setAccelerator(ksClear);
 
         saveManager.addActionListener(getSaveListener());
         openManager.addActionListener(getOpenListener());
@@ -145,8 +156,12 @@ public class VecFileManager extends JMenuBar implements Subject {
                             br.close();
                             reader.close();
 
-                        } catch (Exception e1) {
+                        } catch (IOException e1) {
                             e1.printStackTrace();
+                        }catch (VecShapeException e2){
+                            JOptionPane.showMessageDialog(null, "This vec file can not be read" +
+                                    "correctly.");
+                            e2.printStackTrace();
                         }
                         // else, show a message that tells the users the forate is not supported
                     }else{
@@ -216,12 +231,10 @@ public class VecFileManager extends JMenuBar implements Subject {
     /**
      * convert the input string to objects
      */
-    public void convertToShape(){
-        VecShape info = null;
+    public void convertToShape() throws VecShapeException {
         Color fillColour = null;
         Color lineColour = Color.black;
         boolean fill = false;
-
         for (String str: Openlist) {
             if (str.startsWith("PEN")){
                 String string = "";
@@ -246,11 +259,15 @@ public class VecFileManager extends JMenuBar implements Subject {
                  String shapeName = file[0];
                  switch (shapeName){
                      case "PLOT":
+                         if (file.length != 3){throw new VecShapeException("Plot can not be construct correctly, "
+                                 + "check if the .vec file is broken.");}
                          double x = Double.valueOf(file[1]);
                          double y = Double.valueOf(file[2]);
                          shapesToOpen.add(new VecPlot(x, y, lineColour));
                          break;
                      case "LINE":
+                         if (file.length != 5){throw new VecShapeException("Line can not be construct correctly, "
+                                 + "check if the .vec file is broken.");}
                          double lsx = Double.valueOf(file[1]);
                          double lsy = Double.valueOf(file[2]);
                          double lex = Double.valueOf(file[3]);
@@ -258,6 +275,8 @@ public class VecFileManager extends JMenuBar implements Subject {
                          shapesToOpen.add(new VecLine(lsx, lsy, lex, ley, lineColour));
                          break;
                      case "RECTANGLE":
+                         if (file.length != 5){throw new VecShapeException("Rectangle can not be construct correctly, "
+                                 + "check if the .vec file is broken.");}
                          double tsx = Double.valueOf(file[1]);
                          double tsy = Double.valueOf(file[2]);
                          double tex = Double.valueOf(file[3]);
@@ -265,6 +284,8 @@ public class VecFileManager extends JMenuBar implements Subject {
                          shapesToOpen.add(new VecRectangle(tsx, tsy, tex, tey, lineColour, fillColour, fill));
                          break;
                      case  "ELLIPSE":
+                         if (file.length != 5){throw new VecShapeException("Ellipse can not be construct correctly, "
+                                 + "check if the .vec file is broken.");}
                          double esx = Double.valueOf(file[1]);
                          double esy = Double.valueOf(file[2]);
                          double eex = Double.valueOf(file[3]);
@@ -273,8 +294,7 @@ public class VecFileManager extends JMenuBar implements Subject {
                          break;
                      case "POLYGON":
                         double[] px = new double[(file.length - 1) /2];
-                        double[] py = new double[(file.length - 1) / 2];
-
+                        double[] py = new double[(file.length - 1) /2];
                         int cy = 0;
                         int cx = 0;
                         for (int a = 1; a < file.length - 1; a += 2){
@@ -285,6 +305,8 @@ public class VecFileManager extends JMenuBar implements Subject {
                             py[cy] = Double.valueOf(file[b]);
                             cy++;
                         }
+                         if (px.length != py.length){throw new VecShapeException("Polygon can not be construct correctly, "
+                                 + "check if the .vec file is broken");}
                         shapesToOpen.add(new VecPolygon(px, py, lineColour, fillColour, fill));
                         break;
                      default:
@@ -327,11 +349,14 @@ public class VecFileManager extends JMenuBar implements Subject {
         ActionListener clearListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                shapesToSave.clear();
-                shapesToOpen.clear();
-                Openlist.clear();
-                content = "";
-                notifyObservers("ClearBtn");
+                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to clear this canvas?", "Clean warning", JOptionPane.YES_NO_CANCEL_OPTION);
+                if (choice == JOptionPane.YES_OPTION){
+                    shapesToSave.clear();
+                    shapesToOpen.clear();
+                    Openlist.clear();
+                    content = "";
+                    notifyObservers("ClearBtn");
+                }
             }
         };
 

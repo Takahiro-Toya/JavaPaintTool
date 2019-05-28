@@ -17,7 +17,6 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
     private int screenHeight;
 
     private VecFileManager manager;
-
     //Panel variables
     private JLayeredPane layer;
     private JPanel pnlCanvas;
