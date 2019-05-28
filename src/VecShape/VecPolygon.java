@@ -27,6 +27,9 @@ public class VecPolygon extends VecShape {
     public VecPolygon(double[] xVertices, double[] yVertices, Color penColour, Color fillColour, boolean fill){
         super(xVertices[0], yVertices[0], xVertices[xVertices.length - 1], yVertices[yVertices.length - 1],
                 penColour, fillColour, fill, Mode.POLYGON);
+        if (xVertices.length != yVertices.length){
+            throw new VecShapeException("VecPolygon's number of x and y points do not match.");
+        }
         vecPointXs = new double[xVertices.length];
         vecPointXs = new double[yVertices.length];
         vecPointXs = xVertices;
