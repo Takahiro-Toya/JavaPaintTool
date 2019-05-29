@@ -51,7 +51,6 @@ public class DrawRect extends DrawShape {
      * @param g2d graphic component
      */
     private void drawRect(Graphics2D g2d){
-        Rectangle2D rect;
         VecRectangle vRect;
         int imageWidth = getImagePanel().getWidth();
         int imageHeight = getImagePanel().getHeight();
@@ -59,27 +58,23 @@ public class DrawRect extends DrawShape {
         double height = ey - sy;
         g2d.setColor(fillColor);
         if (width >= 0 && height >= 0) {
-            rect = new Rectangle2D.Double(sx, sy, width, height);
             vRect = new VecRectangle(sx / imageWidth, sy / imageHeight, ex / imageWidth,
                     ey / imageHeight, getLineColour(), fillColor, fill);
         } else if (width >= 0 && height < 0) {
-            rect = new Rectangle2D.Double(sx, ey, width, Math.abs(height));
             vRect = new VecRectangle(sx / imageWidth, ey / imageHeight,
                     ex / imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         } else if (width < 0 && height >= 0) {
-            rect = new Rectangle2D.Double(ex, sy, Math.abs(width), height);
             vRect = new VecRectangle(ex / imageWidth, sy / imageHeight,
                     sx / imageWidth, ey /imageHeight, getLineColour(), fillColor, fill);
         } else {
-            rect = new Rectangle2D.Double(ex, ey, Math.abs(width), Math.abs(height));
             vRect = new VecRectangle(ex / imageWidth, ey / imageHeight,
                     sx / imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         }
 
         if(drawTempRect) {
-            if (fill) { g2d.fill(rect); }
+            if (fill) { g2d.fill(vRect.getShape(imageWidth)); }
             g2d.setColor(getLineColour());
-            g2d.draw(rect);
+            g2d.draw(vRect.getShape(imageWidth));
         } else {
             paintUpdated(vRect);
         }

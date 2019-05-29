@@ -53,34 +53,29 @@ public class DrawEllip extends DrawShape {
      * @param g2d graphic component
      */
     private void drawEllipse(Graphics2D g2d){
-        Ellipse2D ellipse; // this is used to draw temporary ellipse
-        VecEllipse vEllipse; // this is used as draw ellipse object, to be passed to main class
+        VecEllipse vEllipse;
         int imageWidth = getImagePanel().getWidth();
         int imageHeight = getImagePanel().getHeight();
         double width = ex - sx;
         double height = ey - sy;
         g2d.setColor(fillColor);
         if (width >= 0 && height >= 0) {
-            ellipse = new Ellipse2D.Double(sx, sy, width, height);
             vEllipse = new VecEllipse(sx / imageWidth, sy / imageHeight,
                     ex / imageWidth, ey / imageHeight, getLineColour(), fillColor, fill);
         } else if (width >= 0 && height < 0) {
-            ellipse = new Ellipse2D.Double(sx, ey, width, Math.abs(height));
             vEllipse = new VecEllipse(sx / imageWidth, ey / imageHeight,
                     ex / imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         } else if (width < 0 && height >= 0) {
-            ellipse = new Ellipse2D.Double(ex , sy, Math.abs(width), height);
             vEllipse = new VecEllipse(ex / imageWidth, sy / imageHeight,
                     sx / imageWidth, ey /imageHeight, getLineColour(), fillColor, fill);
         } else {
-            ellipse = new Ellipse2D.Double(ex, ey, Math.abs(width), Math.abs(height));
             vEllipse = new VecEllipse(ex / imageWidth, ey / imageHeight,
                     sx/ imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         }
         if (drawTemp) {
-            if (fill) { g2d.fill(ellipse); }
+            if (fill) { g2d.fill(vEllipse.getShape(imageWidth)); }
             g2d.setColor(getLineColour());
-            g2d.draw(ellipse);
+            g2d.draw(vEllipse.getShape(imageWidth));
         } else {
             paintUpdated(vEllipse);
         }

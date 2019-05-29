@@ -46,7 +46,6 @@ public class DrawPlot extends DrawShape {
         g2d.drawImage(getImagePanel(), 0, 0, this);
         g2d.setColor(getLineColour());
         g2d.draw(new Line2D.Double(sx, sy, sx, sy));
-
     }
 
     /**
