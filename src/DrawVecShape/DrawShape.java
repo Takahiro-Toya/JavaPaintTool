@@ -44,6 +44,7 @@ public class DrawShape extends JPanel implements Subject {
      * attach observer that wants to get object information
      * @param o
      */
+    @Override
     public void attachObserver(Observer o){
         observers.add(o);
     }
