@@ -115,7 +115,7 @@ public class DrawPoly extends DrawShape {
                 tpy = sy;
                 edges++;
             } else {
-                if(e.getClickCount() != 2) {
+                if(e.getClickCount() != 2) { // avoid producing two points (another produced by mouseClicked())
                     double x = e.getPoint().getX();
                     double y = e.getPoint().getY();
                     if (!getIsGridOn()){
@@ -185,19 +185,21 @@ public class DrawPoly extends DrawShape {
 
         /**
          * When mouse is being dragged, continuously updates tpx, tpy and ex, ey.
-         * So, it produces like a free shape
+         * So, it produces like a free shape. This mode is only enabled while grid is not visible
          * This is still a polygon : A polygon with lots of very short straight edges
          */
         @Override
         public void mouseDragged(MouseEvent e) {
-            ex = e.getPoint().getX();
-            ey = e.getPoint().getY();
-            xVertices.add(ex);
-            yVertices.add(ey);
-            drawOnImagePanel(tpx, tpy, ex, ey);
-            repaint();
-            tpx = ex;
-            tpy = ey;
+            if (!getIsGridOn()){
+                ex = e.getPoint().getX();
+                ey = e.getPoint().getY();
+                xVertices.add(ex);
+                yVertices.add(ey);
+                drawOnImagePanel(tpx, tpy, ex, ey);
+                repaint();
+                tpx = ex;
+                tpy = ey;
+            }
         }
 
         // those methods are not used, just need to implements here

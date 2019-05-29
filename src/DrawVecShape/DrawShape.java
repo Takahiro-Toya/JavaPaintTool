@@ -103,7 +103,7 @@ public class DrawShape extends JPanel implements Subject {
     protected boolean getIsGridOn() {return grid;}
 
     /**
-     * geet grid size (2 if grid divides canvas into two)
+     * get grid size (2 if grid divides canvas into two)
      * @return grid size
      */
     protected int getGridSize() {return gridSize;}

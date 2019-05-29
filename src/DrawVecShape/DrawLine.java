@@ -75,9 +75,6 @@ public class DrawLine extends DrawShape {
         }
 
         /**
-         *
-         */
-        /**
          * While mouse is being dragged, temporary line is show every time repaint the JPanel (this object)
          * @param e -mouse event
          */
