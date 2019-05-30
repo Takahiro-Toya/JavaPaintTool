@@ -1,6 +1,5 @@
 package DrawVecShape;
 
-import VecInterface.*;
 import VecShape.VecShape;
 import javax.swing.*;
 import java.awt.*;
@@ -12,9 +11,9 @@ import java.util.ArrayList;
  * This class provides JPanel to draw a temporary object (line, rectangle, ellipse etc.),
  * and when the user finished drawing (released mouse) the drawn object information is sent to observer
  */
-public class DrawShape extends JPanel implements Subject {
+public class DrawShape extends JPanel {
 
-    private ArrayList<Observer> observers  = new ArrayList<>();
+    private ArrayList<VecCanvas> observers  = new ArrayList<>();
     private Color lineColour;
     private BufferedImage imagePanel;
     private float lineWidth = 2f;
@@ -26,34 +25,18 @@ public class DrawShape extends JPanel implements Subject {
      * constructor
      * @param imagePanel -BufferedImage in which an object is drawn
      * @param lineColour -plot colour
-     * @param observer VecInterface.Observer -class that wants to receive a drawn object information.
+     * @param canvasObserver VecInterface.Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (rectangle)
      * @param grid - set true if grid is on
      * @param gridSize - grid size that divides the canvas: e.g gridSize = 2 means the grid divides canvas into two horizontally and vertically
      */
-    public DrawShape(BufferedImage imagePanel, Color lineColour, Observer observer, boolean grid, int gridSize){
+    public DrawShape(BufferedImage imagePanel, Color lineColour, VecCanvas canvasObserver, boolean grid, int gridSize){
         this.imagePanel = imagePanel;
         this.lineColour = lineColour;
         this.grid = grid;
         this.gridSize = gridSize;
-        attachObserver(observer);
+        this.observers.add(canvasObserver);
     }
-
-
-    /**
-     * attach observer that wants to get object information
-     * @param o
-     */
-    @Override
-    public void attachObserver(Observer o){
-        observers.add(o);
-    }
-
-    /**
-     * not used here, instead paintUpdated(VecShape.VecShape shape) plays similar roles
-     */
-    @Override
-    public void notifyObservers(String location){ }
 
     /**
      * Tells observers that new shape has made.
@@ -62,7 +45,7 @@ public class DrawShape extends JPanel implements Subject {
      * @param shape -new shape
      */
     protected void paintUpdated(VecShape shape){
-        for(Observer observer: observers){
+        for(VecCanvas observer: observers){
             ((VecCanvas)observer).updateShapes(shape);
         }
     }

@@ -1,7 +1,6 @@
 package DrawVecShape;
 
 import VecShape.VecPolygon;
-import VecInterface.Observer;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -41,11 +40,11 @@ public class DrawPoly extends DrawShape {
      * @param fill boolean -true if image needs to be filled
      * @param grid - set true if grid is on
      * @param gridSize - grid size that divides the canvas: e.g gridSize = 2 means the grid divides canvas into two horizontally and vertically
-     * @param observer VecInterface.Observer -class that wants to receive a drawn object information.
+     * @param canvasObserver VecInterface.Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (polygon)
      */
-    public DrawPoly (BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, Observer observer){
-        super(imagePanel, penColour, observer, grid, gridSize);
+    public DrawPoly (BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, VecCanvas canvasObserver){
+        super(imagePanel, penColour, canvasObserver, grid, gridSize);
         PolyMouseListener mouse = new PolyMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);

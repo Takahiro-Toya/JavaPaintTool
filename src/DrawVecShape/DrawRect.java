@@ -1,12 +1,10 @@
 package DrawVecShape;
 
 import VecShape.VecRectangle;
-import VecInterface.Observer;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -32,11 +30,11 @@ public class DrawRect extends DrawShape {
      * @param fill boolean -true if image needs to be filled
      * @param grid - set true if grid is on
      * @param gridSize - grid size that divides the canvas: e.g gridSize = 2 means the grid divides canvas into two horizontally and vertically
-     * @param observer VecInterface.Observer -class that wants to receive a drawn object information.
+     * @param canvasObserver VecInterface.Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (rectangle)
      */
-    public DrawRect(BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, Observer observer){
-        super(imagePanel, penColour, observer, grid, gridSize);
+    public DrawRect(BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, VecCanvas canvasObserver){
+        super(imagePanel, penColour, canvasObserver, grid, gridSize);
         RectMouseListener mouse = new RectMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);

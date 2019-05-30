@@ -1,5 +1,5 @@
 import DrawVecShape.*;
-import VecInterface.VecCanvas;
+import DrawVecShape.VecCanvas;
 import VecInterface.Observer;
 import VecShape.VecShape;
 
