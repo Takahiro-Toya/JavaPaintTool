@@ -39,6 +39,15 @@ public class DrawShape extends JPanel {
     }
 
     /**
+     * This function may be useful in the future if the application needs to have several canvases
+     * For example, Microsoft power point has small canvases at the left side.
+     * @param canvasObserver canvas class that implements VecCanvas
+     */
+    public void attachCanvasObserver(VecCanvas canvasObserver){
+        this.observers.add(canvasObserver);
+    }
+
+    /**
      * Tells observers that new shape has made.
      * Each DrawVecShape.DrawShape's children class need to call this method to send new shape information to observer
      * Alternative for notifyObservers(String location);
@@ -46,7 +55,7 @@ public class DrawShape extends JPanel {
      */
     protected void paintUpdated(VecShape shape){
         for(VecCanvas observer: observers){
-            ((VecCanvas)observer).updateShapes(shape);
+            (observer).updateShapes(shape);
         }
     }
 
