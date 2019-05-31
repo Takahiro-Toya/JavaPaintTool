@@ -176,9 +176,6 @@ public class VecFileManager extends JMenuBar implements Subject {
         return listener;
     }
 
-    public void saveShapes(ArrayList<VecShape> shapes){
-        this.shapesToSave = shapes;
-    }
 
     /**
      * convert the shapes to string and store them into a String called content
@@ -325,7 +322,8 @@ public class VecFileManager extends JMenuBar implements Subject {
     }
 
     /**
-     * Undo the last shape drawn
+     * Behaviour of when undo button is clicked
+     * @return undoListener that notifies observers that undo button is clicked
      */
     private ActionListener undoShape() {
         ActionListener undoListener = new ActionListener() {
@@ -338,6 +336,10 @@ public class VecFileManager extends JMenuBar implements Subject {
         return undoListener;
     }
 
+    /**
+     * Behaviour of when redo button is clicked
+     * @return redoListener that notifies observers that redo button is clicked
+     */
     private ActionListener redoShape(){
         ActionListener redoListener = new ActionListener() {
             @Override
@@ -348,6 +350,10 @@ public class VecFileManager extends JMenuBar implements Subject {
         return redoListener;
     }
 
+    /**
+     * Behaviur of when clear button is clicked
+     * @return clearListener that notifies observers that clear button is clicked
+     */
     private ActionListener clearShape() {
         ActionListener clearListener = new ActionListener() {
             @Override
@@ -366,10 +372,21 @@ public class VecFileManager extends JMenuBar implements Subject {
         return clearListener;
     }
 
+    /**
+     * attach observer that wants to changes in this GUI component
+     * basically, in this assignment, this observer is the canvas
+     * @param observer new observer to be registered
+     */
+    @Override
     public void attachObserver(Observer observer){
         observers.add(observer);
     }
 
+    /**
+     * notify changes to observers
+     * @param location -need to specify location as this application have multiple subject and one observer
+     */
+    @Override
     public void notifyObservers(String location){
         for (int i = 0; i < observers.size(); i++){
             observers.get(i).update(location);
@@ -377,10 +394,20 @@ public class VecFileManager extends JMenuBar implements Subject {
     }
 
     /**
-     * return undoShapeList
+     * After read a .vec file, new shapes are created based on file contents and are stored in shapesToOpen.
+     * Call this method to get temporary saved shape array to draw on canvas
+     * @return shapes that is read and to draw on canvas.
      */
     public ArrayList<VecShape> getShapesToOpen() {
         return shapesToOpen;
+    }
+
+    /**
+     * register array of VecShape as a save list, call this method from canvas class to pass shape list to file manager
+     * @param shapes shapes to save
+     */
+    public void saveShapes(ArrayList<VecShape> shapes){
+        this.shapesToSave = shapes;
     }
 
 }

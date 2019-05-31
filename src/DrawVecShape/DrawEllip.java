@@ -1,12 +1,10 @@
 package DrawVecShape;
 
 import VecShape.VecEllipse;
-import VecInterface.Observer;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -33,11 +31,11 @@ public class DrawEllip extends DrawShape {
      * @param fill boolean -true if image needs to be filled
      * @param grid - set true if grid is on
      * @param gridSize - grid size that divides the canvas: e.g gridSize = 2 means the grid divides canvas into two horizontally and vertically
-     * @param observer VecInterface.Observer -class that wants to receive a drawn object information.
+     * @param canvasObserver VecInterface.Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (ellipse)
      */
-    public DrawEllip(BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, Observer observer){
-        super(imagePanel, penColour, observer, grid, gridSize);
+    public DrawEllip(BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, VecCanvas canvasObserver){
+        super(imagePanel, penColour, canvasObserver, grid, gridSize);
         EllipMouseListener mouse = new EllipMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
@@ -53,34 +51,29 @@ public class DrawEllip extends DrawShape {
      * @param g2d graphic component
      */
     private void drawEllipse(Graphics2D g2d){
-        Ellipse2D ellipse; // this is used to draw temporary ellipse
-        VecEllipse vEllipse; // this is used as draw ellipse object, to be passed to main class
+        VecEllipse vEllipse;
         int imageWidth = getImagePanel().getWidth();
         int imageHeight = getImagePanel().getHeight();
         double width = ex - sx;
         double height = ey - sy;
         g2d.setColor(fillColor);
         if (width >= 0 && height >= 0) {
-            ellipse = new Ellipse2D.Double(sx, sy, width, height);
             vEllipse = new VecEllipse(sx / imageWidth, sy / imageHeight,
                     ex / imageWidth, ey / imageHeight, getLineColour(), fillColor, fill);
         } else if (width >= 0 && height < 0) {
-            ellipse = new Ellipse2D.Double(sx, ey, width, Math.abs(height));
             vEllipse = new VecEllipse(sx / imageWidth, ey / imageHeight,
                     ex / imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         } else if (width < 0 && height >= 0) {
-            ellipse = new Ellipse2D.Double(ex , sy, Math.abs(width), height);
             vEllipse = new VecEllipse(ex / imageWidth, sy / imageHeight,
                     sx / imageWidth, ey /imageHeight, getLineColour(), fillColor, fill);
         } else {
-            ellipse = new Ellipse2D.Double(ex, ey, Math.abs(width), Math.abs(height));
             vEllipse = new VecEllipse(ex / imageWidth, ey / imageHeight,
                     sx/ imageWidth, sy / imageHeight, getLineColour(), fillColor, fill);
         }
         if (drawTemp) {
-            if (fill) { g2d.fill(ellipse); }
+            if (fill) { g2d.fill(vEllipse.getShape(imageWidth)); }
             g2d.setColor(getLineColour());
-            g2d.draw(ellipse);
+            g2d.draw(vEllipse.getShape(imageWidth));
         } else {
             paintUpdated(vEllipse);
         }

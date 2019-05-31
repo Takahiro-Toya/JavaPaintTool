@@ -1,5 +1,5 @@
 import DrawVecShape.*;
-import VecInterface.VecCanvas;
+import DrawVecShape.VecCanvas;
 import VecInterface.Observer;
 import VecShape.VecShape;
 
@@ -10,6 +10,10 @@ import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
+/**
+ * Vec Paint software's main class
+ * This class is basically a canvas that draws a drawn or opened image
+ */
 public class VecPaint extends JFrame implements Observer, VecCanvas {
 
     //Menu bar variables
@@ -70,24 +74,6 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
                     refreshCanvas();
             }
         });
-
-        this.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
-            }
-        });
-
     }
 
     /**
@@ -181,7 +167,7 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         } else if (location == "OpenBtn"){
             shapes = manager.getShapesToOpen();
             refreshCanvas();
-        } else if (location == "GridSlider"){
+        } else if (location == "GridEnabler"){
             refreshCanvas();
         } else if (location == "GridTop"){
             refreshCanvas();
@@ -220,6 +206,10 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         refreshCanvas();
     }
 
+    /**
+     * draw grid based on the grid size that user specifies
+     * @param g2d graphic object of canvas on which the image is drawn
+     */
     private void drawGrid(Graphics2D g2d){
         double interval = (double)imagePanel.getHeight() / (double)pnlTools.getGridSize();
         g2d.setStroke(new BasicStroke(1f));
@@ -232,6 +222,10 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         }
     }
 
+    /**
+     * draw all the stored vec shape on canvas
+     * @param g2d graphic object of canvas on which the image is drawn
+     */
     private void drawShapes(Graphics2D g2d){
         g2d.setStroke(new BasicStroke(lineWidth));
 
@@ -310,13 +304,6 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         repaint();
         setVisible(true);
     }
-
-
-    public ArrayList<VecShape> getShapesForUnitTest(){
-        return shapes;
-    }
-
-
 
     public static void main(String[] args){
         VecPaint vectorTool = new VecPaint();

@@ -1,4 +1,4 @@
-package VecInterface;
+package DrawVecShape;
 
 import VecShape.VecShape;
 

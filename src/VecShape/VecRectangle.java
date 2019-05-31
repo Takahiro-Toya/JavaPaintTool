@@ -24,6 +24,9 @@ public class VecRectangle extends VecShape {
      */
     public VecRectangle(double sx, double sy, double ex, double ey, Color penColour, Color fillColour, boolean fill){
         super(sx, sy, ex, ey, penColour, fillColour, fill, Mode.RECTANGLE);
+        if (sx > ex || sy > ey){
+            throw new VecShapeException("VecRectangle points need to be 'sx <= ex and sy <= ey'");
+        }
     }
 
     /**

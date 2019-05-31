@@ -1,7 +1,6 @@
 package DrawVecShape;
 
 import VecShape.VecPlot;
-import VecInterface.Observer;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -24,11 +23,11 @@ public class DrawPlot extends DrawShape {
      * @param penColour Color -colour of plot
      * @param grid - set true if grid is on
      * @param gridSize - grid size that divides the canvas: e.g gridSize = 2 means the grid divides canvas into two horizontally and vertically
-     * @param observer VecInterface.Observer -class that wants to receive a drawn object information.
+     * @param canvasObserver VecInterface.Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (rectangle)
      */
-    public DrawPlot(BufferedImage imagePanel, Color penColour, boolean grid, int gridSize, Observer observer){
-        super(imagePanel, penColour, observer, grid, gridSize);
+    public DrawPlot(BufferedImage imagePanel, Color penColour, boolean grid, int gridSize, VecCanvas canvasObserver){
+        super(imagePanel, penColour, canvasObserver, grid, gridSize);
         PlotMouseListener mouse = new PlotMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
@@ -46,7 +45,6 @@ public class DrawPlot extends DrawShape {
         g2d.drawImage(getImagePanel(), 0, 0, this);
         g2d.setColor(getLineColour());
         g2d.draw(new Line2D.Double(sx, sy, sx, sy));
-
     }
 
     /**

@@ -57,6 +57,10 @@ public class ToolPanel extends JPanel implements Subject {
         add(gridSizeText);
     }
 
+    /**
+     * create a check box that is used to enable grid
+     * while this check box is selected, grid is visible
+     */
     private void createGridCheckBox(){
         gridCheckBox = new JCheckBox("Grid", false);
         gridCheckBox.addActionListener(new ActionListener() {
@@ -74,11 +78,15 @@ public class ToolPanel extends JPanel implements Subject {
                     gridTopCheckBox.setEnabled(false);
                     gridSizeText.setVisible(false);
                 }
-                notifyObservers("GridSlider");
+                notifyObservers("GridEnabler");
             }
         });
     }
 
+    /**
+     * create a JSlider to customise grid size
+     * the value is range between 2 to 50 where 2 divides the canvas into two
+     */
     private void createGridSlider(){
         gridSlider = new JSlider(2, 50);
         gridSlider.addChangeListener(new ChangeListener() {
@@ -86,12 +94,16 @@ public class ToolPanel extends JPanel implements Subject {
             public void stateChanged(ChangeEvent e) {
                 gridSize = gridSlider.getValue();
                 gridSizeText.setText("Grid Size: " + gridSize);
-                notifyObservers("GridSlider");
+                notifyObservers("GridEnabler");
             }
         });
         gridSlider.setEnabled(false);
     }
 
+    /**
+     * create a check box to determine where to draw grid
+     * While this check box is selected, grid is visible on top of the image
+     */
     private void createGridTopCheckBox(){
         gridTopCheckBox = new JCheckBox("Grid top", false);
         gridTopCheckBox.addActionListener(new ActionListener() {

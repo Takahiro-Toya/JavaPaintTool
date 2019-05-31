@@ -1,7 +1,6 @@
 package DrawVecShape;
 
 import VecShape.VecPolygon;
-import VecInterface.Observer;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -41,11 +40,11 @@ public class DrawPoly extends DrawShape {
      * @param fill boolean -true if image needs to be filled
      * @param grid - set true if grid is on
      * @param gridSize - grid size that divides the canvas: e.g gridSize = 2 means the grid divides canvas into two horizontally and vertically
-     * @param observer VecInterface.Observer -class that wants to receive a drawn object information.
+     * @param canvasObserver VecInterface.Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (polygon)
      */
-    public DrawPoly (BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, Observer observer){
-        super(imagePanel, penColour, observer, grid, gridSize);
+    public DrawPoly (BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, VecCanvas canvasObserver){
+        super(imagePanel, penColour, canvasObserver, grid, gridSize);
         PolyMouseListener mouse = new PolyMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
@@ -115,7 +114,7 @@ public class DrawPoly extends DrawShape {
                 tpy = sy;
                 edges++;
             } else {
-                if(e.getClickCount() != 2) {
+                if(e.getClickCount() != 2) { // avoid producing two points (another produced by mouseClicked())
                     double x = e.getPoint().getX();
                     double y = e.getPoint().getY();
                     if (!getIsGridOn()){
@@ -185,19 +184,21 @@ public class DrawPoly extends DrawShape {
 
         /**
          * When mouse is being dragged, continuously updates tpx, tpy and ex, ey.
-         * So, it produces like a free shape
+         * So, it produces like a free shape. This mode is only enabled while grid is not visible
          * This is still a polygon : A polygon with lots of very short straight edges
          */
         @Override
         public void mouseDragged(MouseEvent e) {
-            ex = e.getPoint().getX();
-            ey = e.getPoint().getY();
-            xVertices.add(ex);
-            yVertices.add(ey);
-            drawOnImagePanel(tpx, tpy, ex, ey);
-            repaint();
-            tpx = ex;
-            tpy = ey;
+            if (!getIsGridOn()){
+                ex = e.getPoint().getX();
+                ey = e.getPoint().getY();
+                xVertices.add(ex);
+                yVertices.add(ey);
+                drawOnImagePanel(tpx, tpy, ex, ey);
+                repaint();
+                tpx = ex;
+                tpy = ey;
+            }
         }
 
         // those methods are not used, just need to implements here

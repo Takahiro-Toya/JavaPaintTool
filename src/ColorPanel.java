@@ -80,6 +80,9 @@ public class ColorPanel extends JPanel implements Subject {
         lineColourPicked.add(btnChooseLineColour, TOP_ALIGNMENT);
     }
 
+    /**
+     * Sets up fill colour panel
+     */
     private void setUpFillColourPanel(){
         fillColourPicked.setBackground(fillColour);
         btnChooseFillColour.setForeground(Color.black);
