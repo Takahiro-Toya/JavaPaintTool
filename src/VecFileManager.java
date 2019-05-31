@@ -162,8 +162,12 @@ public class VecFileManager extends JMenuBar implements Subject {
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }catch (VecShapeException e2){
-                            JOptionPane.showMessageDialog(null, "This vec file can not be read" +
+                            JOptionPane.showMessageDialog(null, "This vec file can not be read " +
                                     "correctly.");
+                            shapesToSave.clear();
+                            shapesToOpen.clear();
+                            Openlist.clear();
+                            content = "";
                             e2.printStackTrace();
                         }
                         // else, show a message that tells the users the forate is not supported
