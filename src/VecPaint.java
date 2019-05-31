@@ -163,7 +163,9 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
             shapes.clear();
             refreshCanvas();
         } else if (location == "SaveBtn"){
-            manager.saveShapes(shapes);
+            VecConvertor convertor = new VecConvertor(null, null, null, null, null);
+            System.out.println(shapes.size());
+           convertor.saveShapes(shapes);
         } else if (location == "OpenBtn"){
             shapes = manager.getShapesToOpen();
             refreshCanvas();
