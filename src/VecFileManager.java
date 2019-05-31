@@ -2,12 +2,15 @@ import VecInterface.Observer;
 import VecInterface.Subject;
 import VecShape.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.security.Key;
 import java.util.ArrayList;
@@ -27,7 +30,6 @@ public class VecFileManager extends JMenuBar implements Subject {
     private File vecFile;
     private ArrayList<String> Openlist = new ArrayList();
     private String content = "";
-
     private ArrayList<VecShape> shapesToSave = new ArrayList<>();
 
     private ArrayList<VecShape> shapesToOpen = new ArrayList<>();
@@ -99,7 +101,7 @@ public class VecFileManager extends JMenuBar implements Subject {
                     // set the default saving file extension to .vec
                     @Override
                     public boolean accept(File f) {
-                        if (f.getName().endsWith(".vec")){
+                        if (f.getName().toLowerCase().endsWith(".vec")){
                             return true;
                         }else{
                             return f.getName().toLowerCase().endsWith(".vec");
@@ -123,7 +125,6 @@ public class VecFileManager extends JMenuBar implements Subject {
                         FileWriter fileWriter = new FileWriter(vecFile);
                         fileWriter.write(content);
                         fileWriter.close();
-                        String name = chooser.getName(vecFile);
 
                     }catch (IOException es){
                         es.printStackTrace();
@@ -142,6 +143,7 @@ public class VecFileManager extends JMenuBar implements Subject {
         java.awt.event.ActionListener listener = new ActionListener() {
             JFileChooser chooser = new JFileChooser();
             public void actionPerformed(ActionEvent e) {
+                chooser.addChoosableFileFilter(new FileNameExtensionFilter("*.vec", "vec"));
                 if (chooser.showOpenDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
                     vecFile = chooser.getSelectedFile();
                     // load this file if is is a .vec file
