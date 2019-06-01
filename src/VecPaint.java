@@ -3,11 +3,16 @@ import DrawVecShape.VecCanvas;
 import VecInterface.Observer;
 import VecShape.VecShape;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -74,6 +79,10 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
                     refreshCanvas();
             }
         });
+    }
+
+    public BufferedImage getImagePanel(){
+        return imagePanel;
     }
 
     /**
@@ -171,6 +180,8 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
             refreshCanvas();
         } else if (location == "GridTop"){
             refreshCanvas();
+        }else if (location == "Export"){
+            //
         }
     }
 
@@ -264,8 +275,8 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
     private void createVecGUI(){
         // create menu bar
         manager = new VecFileManager();
-        setJMenuBar(manager.createJmenuBar());
-
+        JMenuBar bar = manager.createJmenuBar();
+        setJMenuBar(bar);
         pnlTools = new ToolPanel();
         pnlColours = new ColorPanel();
         pnlBottom = new JPanel();
@@ -281,6 +292,8 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         int width = getWidth() - (int)(getWidth() * sideToolTabArea * 2);
         int height = getHeight() - manager.getHeight() - bottomHeight;
         imagePanel = new BufferedImage((int)(width * canvasArea), (int)(height * canvasArea), BufferedImage.TYPE_INT_ARGB);
+
+
 
         pnlCanvas = new DrawPlot(imagePanel, lineColour, false, 0, this);
         pnlCanvas.setBackground(canvasBgColor);

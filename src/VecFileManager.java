@@ -2,6 +2,7 @@ import VecInterface.Observer;
 import VecInterface.Subject;
 import VecShape.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -9,6 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ public class VecFileManager extends JMenuBar implements Subject {
      * Enums names of every component of the menu bar
      */
     public enum MenuNames{
-        File("File"), Edit("Edit"), Undo("Undo"), Redo("Redo"), Save("Save"), Open("Open"), Clear("Clear");
+        File("File"), Edit("Edit"), Undo("Undo"), Redo("Redo"), Save("Save"), Open("Open"), Clear("Clear"), Export("Export");
         private final String name;
         MenuNames(String s){
             name = s;
@@ -27,7 +29,7 @@ public class VecFileManager extends JMenuBar implements Subject {
     // Variables
     private File vecFile;
 
-
+    VecPaint vecPaint = new VecPaint();
     private ArrayList<Observer> observers = new ArrayList<>();
 
     private VecConverter converter = new VecConverter();
@@ -59,6 +61,8 @@ public class VecFileManager extends JMenuBar implements Subject {
         JMenuItem undoManager = new JMenuItem(MenuNames.Undo.name);
         JMenuItem redoManager = new JMenuItem(MenuNames.Redo.name);
         JMenuItem clearManager = new JMenuItem(MenuNames.Clear.name);
+        ImgManager exportManager = new ImgManager(MenuNames.Export.name);
+
 
         saveManager.setAccelerator(ksSave);
         openManager.setAccelerator(ksOpen);
@@ -71,9 +75,13 @@ public class VecFileManager extends JMenuBar implements Subject {
         undoManager.addActionListener(undoShape());
         redoManager.addActionListener(redoShape());
         clearManager.addActionListener(clearShape());
+        exportManager.addActionListener(exportManager.getExportListener());
+
 
         fileMenu.add(saveManager);
         fileMenu.add(openManager);
+        fileMenu.add(exportManager);
+
         editMenu.add(undoManager);
         editMenu.add(redoManager);
         editMenu.add(clearManager);
