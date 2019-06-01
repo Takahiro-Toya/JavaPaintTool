@@ -91,21 +91,7 @@ public class VecFileManager extends JMenuBar implements Subject {
     public void saveShape(ArrayList<VecShape> shapes){
         String content = converter.convertToString(shapes);
         JFileChooser chooser = new JFileChooser();
-        chooser.addChoosableFileFilter(new FileFilter() {
-            // set the default saving file extension to .vec
-            @Override
-            public boolean accept(File f) {
-                if (f.getName().toLowerCase().endsWith(".vec")){
-                    return true;
-                }else{
-                    return f.getName().toLowerCase().endsWith(".vec");
-                }
-            }
-            @Override
-            public String getDescription() {
-                return "VEC Documents (*.vec)";
-            }
-        });
+        chooser.setFileFilter(new FileNameExtensionFilter("*.vec", "vec"));
         if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
             vecFile = chooser.getSelectedFile();
             String path = vecFile.getPath();
@@ -165,8 +151,7 @@ public class VecFileManager extends JMenuBar implements Subject {
         ArrayList<VecShape> shapesToOpen = new ArrayList<>();
 
         JFileChooser chooser = new JFileChooser();
-
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("*.vec", "vec"));
+        chooser.setFileFilter(new FileNameExtensionFilter("*.vec", "vec"));
         if (chooser.showOpenDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
             vecFile = chooser.getSelectedFile();
             // load this file if is is a .vec file
