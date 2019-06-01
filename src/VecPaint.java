@@ -170,25 +170,25 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         } else if (location == "GridEnabler" || location == "GridTop"){
             refreshCanvas();
         } else if (location == "PngExport"){
-            manager.exportAsPng(changeResolutionForExport(imagePanel, 1500, 1500));
+            BufferedImage output = new BufferedImage(1500, 1500, imagePanel.getType());
+            manager.exportAsPng(changeResolutionForExport(output));
         } else if (location == "BmpExport"){
-            manager.exportAsBmp(imagePanel);
+            BufferedImage output = new BufferedImage(4000, 4000, BufferedImage.TYPE_INT_RGB);
+            manager.exportAsBmp(changeResolutionForExport(output));
         } else if (location == "JpegExport"){
-            manager.exportAsJpeg(imagePanel);
+            BufferedImage output = new BufferedImage(2000, 2000, BufferedImage.TYPE_INT_RGB);
+            manager.exportAsJpeg(changeResolutionForExport(output));
         }
     }
 
     /**
      * change BufferedImage's resolution to specified dimenstion
      * @param image BufferedImage that contains original image
-     * @param width width of output BufferedImage
-     * @param height height of output BufferedImage
      * @return resized BufferedImage
      */
-    private BufferedImage changeResolutionForExport(BufferedImage image, int width, int height){
-        BufferedImage output = new BufferedImage(width, height, image.getType());
-        drawShapes(output);
-        return output;
+    private BufferedImage changeResolutionForExport(BufferedImage image){
+        drawShapes(image);
+        return image;
     }
 
     /**

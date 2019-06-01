@@ -149,7 +149,19 @@ public class VecFileManager extends JMenuBar implements Subject {
      * @param image -an image to convert to bmp
      */
     public void exportAsBmp(BufferedImage image){
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("*.bmp", "bmp"));
+        if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
+            String path = chooser.getSelectedFile().getPath();
+            try {
+                if (!path.toLowerCase().endsWith(".bmp")) {
+                    File file = new File(path + ".bmp");
+                    ImageIO.write(image, "BMP", file);
+                }
+            } catch (IOException ex) {
 
+            }
+        }
     }
 
     /**
@@ -157,7 +169,19 @@ public class VecFileManager extends JMenuBar implements Subject {
      * @param image -an image to convert to jpeg
      */
     public void exportAsJpeg(BufferedImage image){
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("*.jpg", "jpg"));
+        if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
+            String path = chooser.getSelectedFile().getPath();
+            try {
+                if (!path.toLowerCase().endsWith(".jpg")) {
+                    File file = new File(path + ".jpg");
+                    ImageIO.write(image, "jpg", file);
+                }
+            } catch (IOException ex) {
 
+            }
+        }
     }
 
 
@@ -241,7 +265,7 @@ public class VecFileManager extends JMenuBar implements Subject {
         ArrayList<VecShape> shapesToOpen = new ArrayList<>();
 
         JFileChooser chooser = new JFileChooser();
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("*.vec", "vec"));
+        chooser.setFileFilter(new FileNameExtensionFilter("*.vec", "vec"));
         if (chooser.showOpenDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
             vecFile = chooser.getSelectedFile();
             // load this file if is is a .vec file
