@@ -67,7 +67,10 @@ public class VecConverter {
     }
 
     /**
-     * convert the input string to objects
+     * convert the input string arrayList to ArrayList of VecShape
+     * @param openList -list of strings of what you want to read and convert to VecShape
+     * @return ArrayList of VecShape that has been converted from String array
+     * @throws VecShapeException -exception will be thrown if string sequence contains unsupported format
      */
     public ArrayList<VecShape> convertToShape(ArrayList<String> openList) throws VecShapeException {
         ArrayList<VecShape> shapesToOpen = new ArrayList<>();

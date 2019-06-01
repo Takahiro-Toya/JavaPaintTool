@@ -20,7 +20,8 @@ public class VecFileManager extends JMenuBar implements Subject {
      * Enums names of every component of the menu bar
      */
     public enum MenuNames{
-        File("File"), Edit("Edit"), Undo("Undo"), Redo("Redo"), Save("Save"), Open("Open"), Clear("Clear"), Export("Export");
+        File("File"), Edit("Edit"), Undo("Undo"), Redo("Redo"), Save("Save"), Open("Open"), Clear("Clear"),
+        Png("Export as PNG"), Bmp("Export as BMP"), Jpeg("Export as JPEG");
         private final String name;
         MenuNames(String s){
             name = s;
@@ -29,7 +30,6 @@ public class VecFileManager extends JMenuBar implements Subject {
     // Variables
     private File vecFile;
 
-    VecPaint vecPaint = new VecPaint();
     private ArrayList<Observer> observers = new ArrayList<>();
 
     private VecConverter converter = new VecConverter();
@@ -61,8 +61,9 @@ public class VecFileManager extends JMenuBar implements Subject {
         JMenuItem undoManager = new JMenuItem(MenuNames.Undo.name);
         JMenuItem redoManager = new JMenuItem(MenuNames.Redo.name);
         JMenuItem clearManager = new JMenuItem(MenuNames.Clear.name);
-        ImgManager exportManager = new ImgManager(MenuNames.Export.name);
-
+        JMenuItem pngManager = new JMenuItem(MenuNames.Png.name);
+        JMenuItem bmpManager = new JMenuItem(MenuNames.Bmp.name);
+        JMenuItem jpegManager = new JMenuItem(MenuNames.Jpeg.name);
 
         saveManager.setAccelerator(ksSave);
         openManager.setAccelerator(ksOpen);
@@ -70,18 +71,20 @@ public class VecFileManager extends JMenuBar implements Subject {
         redoManager.setAccelerator(ksRedo);
         clearManager.setAccelerator(ksClear);
 
-        saveManager.addActionListener(getSaveListener());
-        openManager.addActionListener(getOpenListener());
-        undoManager.addActionListener(undoShape());
-        redoManager.addActionListener(redoShape());
-        clearManager.addActionListener(clearShape());
-        exportManager.addActionListener(exportManager.getExportListener());
-
+        saveManager.addActionListener(createSaveListener());
+        openManager.addActionListener(createOpenListener());
+        undoManager.addActionListener(createUndoListener());
+        redoManager.addActionListener(createRedoListener());
+        clearManager.addActionListener(createClearListner());
+        pngManager.addActionListener(createPngListener());
+        bmpManager.addActionListener(createBmpListener());
+        jpegManager.addActionListener(createJpegListener());
 
         fileMenu.add(saveManager);
         fileMenu.add(openManager);
-        fileMenu.add(exportManager);
-
+        fileMenu.add(pngManager);
+        fileMenu.add(bmpManager);
+        fileMenu.add(jpegManager);
         editMenu.add(undoManager);
         editMenu.add(redoManager);
         editMenu.add(clearManager);
@@ -120,10 +123,89 @@ public class VecFileManager extends JMenuBar implements Subject {
     }
 
     /**
+     * convert BufferedImage to png format, and save output png file to selected location
+     * @param image -an image to convert to png
+     */
+    public void exportAsPng(BufferedImage image){
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("*.png", "png"));
+        if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
+            String path = chooser.getSelectedFile().getPath();
+            try {
+                if (!path.toLowerCase().endsWith(".png")) {
+                    File file = new File(path + ".png");
+                    ImageIO.write(image, "png", file);
+                }
+            } catch (IOException ex) {
+
+            }
+        }
+    }
+
+
+    /**
+     * convert BufferedImage to bmp format, and save output bmp file to selected location
+     * @param image -an image to convert to bmp
+     */
+    public void exportAsBmp(BufferedImage image){
+
+    }
+
+    /**
+     * convert BufferedImage to jpeg format, and save output .jpg file to selected location
+     * @param image -an image to convert to jpeg
+     */
+    public void exportAsJpeg(BufferedImage image){
+
+    }
+
+
+    /**
+     * Action when jpeg export button is clicked
+     * @return return the finished listener
+     */
+    private ActionListener createJpegListener() {
+        ActionListener jpegListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notifyObservers("JpegExport");
+            }
+        };
+        return jpegListener;
+    }
+
+
+    /**
+     * Action when bmp export button is clicked
+     * @return return the finished listener
+     */
+    private ActionListener createBmpListener(){
+        ActionListener bmpListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) { notifyObservers("BmpExport");
+            }
+        };
+        return bmpListener;
+    }
+
+    /**
+     * Action when png export button is clicked
+     * @return return the finished listener
+     */
+    private ActionListener createPngListener(){
+        ActionListener pngListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){ notifyObservers("PngExport");}
+        };
+        return pngListener;
+    }
+
+    /**
      * Action when save button is clicked
      * @return return the finished listener
      */
-    private ActionListener getSaveListener(){
+    private ActionListener createSaveListener(){
         ActionListener saveListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -137,7 +219,7 @@ public class VecFileManager extends JMenuBar implements Subject {
      * Action when open button is clicked
      * @return
      */
-    private ActionListener getOpenListener(){
+    private ActionListener createOpenListener(){
         ActionListener openListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -159,7 +241,7 @@ public class VecFileManager extends JMenuBar implements Subject {
         ArrayList<VecShape> shapesToOpen = new ArrayList<>();
 
         JFileChooser chooser = new JFileChooser();
-        chooser.setFileFilter(new FileNameExtensionFilter("*.vec", "vec"));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("*.vec", "vec"));
         if (chooser.showOpenDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
             vecFile = chooser.getSelectedFile();
             // load this file if is is a .vec file
@@ -199,7 +281,7 @@ public class VecFileManager extends JMenuBar implements Subject {
      * Behaviour of when undo button is clicked
      * @return undoListener that notifies observers that undo button is clicked
      */
-    private ActionListener undoShape() {
+    private ActionListener createUndoListener() {
         ActionListener undoListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -214,7 +296,7 @@ public class VecFileManager extends JMenuBar implements Subject {
      * Behaviour of when redo button is clicked
      * @return redoListener that notifies observers that redo button is clicked
      */
-    private ActionListener redoShape(){
+    private ActionListener createRedoListener(){
         ActionListener redoListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -228,7 +310,7 @@ public class VecFileManager extends JMenuBar implements Subject {
      * Behaviour of when clear button is clicked
      * @return clearListener that notifies observers that clear button is clicked
      */
-    private ActionListener clearShape() {
+    private ActionListener createClearListner() {
         ActionListener clearListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

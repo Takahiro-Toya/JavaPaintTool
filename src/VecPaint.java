@@ -3,16 +3,11 @@ import DrawVecShape.VecCanvas;
 import VecInterface.Observer;
 import VecShape.VecShape;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -81,10 +76,6 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         });
     }
 
-    public BufferedImage getImagePanel(){
-        return imagePanel;
-    }
-
     /**
      * get screen size of the laptop or desktop
      */
@@ -123,7 +114,7 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         switchMode();
         pnlCanvas.setBounds((int)((layer.getWidth() - edge * canvasArea) / 2), (int)((layer.getHeight() - edge * canvasArea) / 2),
                 (int)(edge * canvasArea), (int)(edge * canvasArea));
-        refreshImage();
+        refreshImage(imagePanel);
         layer.add(pnlCanvas);
     }
 
@@ -176,13 +167,28 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         } else if (location == "OpenBtn"){
             shapes = manager.getOpenedShapes();
             refreshCanvas();
-        } else if (location == "GridEnabler"){
+        } else if (location == "GridEnabler" || location == "GridTop"){
             refreshCanvas();
-        } else if (location == "GridTop"){
-            refreshCanvas();
-        }else if (location == "Export"){
-            //
+        } else if (location == "PngExport"){
+            manager.exportAsPng(changeResolutionForExport(imagePanel, 1500, 1500));
+        } else if (location == "BmpExport"){
+            manager.exportAsBmp(imagePanel);
+        } else if (location == "JpegExport"){
+            manager.exportAsJpeg(imagePanel);
         }
+    }
+
+    /**
+     * change BufferedImage's resolution to specified dimenstion
+     * @param image BufferedImage that contains original image
+     * @param width width of output BufferedImage
+     * @param height height of output BufferedImage
+     * @return resized BufferedImage
+     */
+    private BufferedImage changeResolutionForExport(BufferedImage image, int width, int height){
+        BufferedImage output = new BufferedImage(width, height, image.getType());
+        drawShapes(output);
+        return output;
     }
 
     /**
@@ -221,9 +227,14 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
      * draw grid based on the grid size that user specifies
      * @param g2d graphic object of canvas on which the image is drawn
      */
-    private void drawGrid(Graphics2D g2d){
-        double interval = (double)imagePanel.getHeight() / (double)pnlTools.getGridSize();
-        g2d.setStroke(new BasicStroke(0.5f));
+    /**
+     * draw grid based on the grid size that user specifies
+     * @param image
+     */
+    private void drawGrid(BufferedImage image){
+        Graphics2D g2d = (Graphics2D)image.getGraphics();
+        double interval = (double)image.getHeight() / (double)pnlTools.getGridSize();
+        g2d.setStroke(new BasicStroke(1f));
         g2d.setColor(Color.lightGray);
         for (int i = 1; i < pnlTools.getGridSize(); i++ ){
             g2d.draw(new Line2D.Double(0, interval * i, imagePanel.getWidth(), interval * i));
@@ -231,41 +242,46 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         for (int i = 1; i < pnlTools.getGridSize(); i++ ) {
             g2d.draw(new Line2D.Double(interval * i, 0, interval * i, imagePanel.getHeight()));
         }
+        g2d.dispose();
     }
 
     /**
      * draw all the stored vec shape on canvas
-     * @param g2d graphic object of canvas on which the image is drawn
+     *
      */
-    private void drawShapes(Graphics2D g2d){
+    /**
+     * draw all the stored VecShape on BufferedImage given
+     * @param image BufferedImage on which all VecShapes are drawn
+     */
+    private void drawShapes(BufferedImage image){
+        Graphics2D g2d = (Graphics2D)image.getGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(lineWidth));
 
         for(int i = 0; i < shapes.size(); i++) {
             VecShape shape = shapes.get(i);
             if (shape.getFill()) {
                 g2d.setColor(shape.getFillColour());
-                g2d.fill(shape.getShape(imagePanel.getWidth()));
+                g2d.fill(shape.getShape(image.getWidth()));
             }
             g2d.setColor(shape.getLineColour());
-            g2d.draw(shape.getShape(imagePanel.getWidth()));
+            g2d.draw(shape.getShape(image.getWidth()));
         }
+        g2d.dispose();
     }
     /**
      * clear image on imagePanel, and draw them again
      */
-    private void refreshImage(){
-        Graphics2D g2d = imagePanel.createGraphics();
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    private void refreshImage(BufferedImage image){
         if (pnlTools.getGridMode() && !pnlTools.getIsGridTop()){
-            drawGrid(g2d);
-            drawShapes(g2d);
+            drawGrid(image);
+            drawShapes(image);
         } else if (pnlTools.getGridMode() && pnlTools.getIsGridTop()){
-            drawShapes(g2d);
-            drawGrid(g2d);
+            drawShapes(image);
+            drawGrid(image);
         } else {
-            drawShapes(g2d);
+            drawShapes(image);
         }
-        g2d.dispose();
     }
 
 
@@ -275,8 +291,8 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
     private void createVecGUI(){
         // create menu bar
         manager = new VecFileManager();
-        JMenuBar bar = manager.createJmenuBar();
-        setJMenuBar(bar);
+        setJMenuBar(manager.createJmenuBar());
+
         pnlTools = new ToolPanel();
         pnlColours = new ColorPanel();
         pnlBottom = new JPanel();
@@ -292,8 +308,6 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         int width = getWidth() - (int)(getWidth() * sideToolTabArea * 2);
         int height = getHeight() - manager.getHeight() - bottomHeight;
         imagePanel = new BufferedImage((int)(width * canvasArea), (int)(height * canvasArea), BufferedImage.TYPE_INT_ARGB);
-
-
 
         pnlCanvas = new DrawPlot(imagePanel, lineColour, false, 0, this);
         pnlCanvas.setBackground(canvasBgColor);
