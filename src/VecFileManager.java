@@ -27,13 +27,14 @@ public class VecFileManager extends JMenuBar implements Subject {
     private File vecFile;
     private ArrayList<String> Openlist = new ArrayList();
     private String content = "";
+
     private ArrayList<VecShape> shapesToSave = new ArrayList<>();
 
     private ArrayList<VecShape> shapesToOpen = new ArrayList<>();
 
     private ArrayList<Observer> observers = new ArrayList<>();
 
-
+    private VecConvertor convertor = new VecConvertor(Openlist, content, shapesToSave, shapesToOpen, observers);
     /**
      * The constructor
      */
@@ -111,7 +112,6 @@ public class VecFileManager extends JMenuBar implements Subject {
                     }
                 });
                 if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
-                   VecConvertor convertor = new VecConvertor(Openlist, content, shapesToSave, shapesToOpen, observers);
                     content = convertor.convertToString();
                     vecFile = chooser.getSelectedFile();
                     String path = vecFile.getPath();
@@ -154,7 +154,6 @@ public class VecFileManager extends JMenuBar implements Subject {
                             while ((text = br.readLine()) != null) {
                                 Openlist.add(text);
                             }
-                            VecConvertor convertor = new VecConvertor(Openlist, content, shapesToSave, shapesToOpen, observers);
                             convertor.convertToShape();
                             br.close();
                             reader.close();
