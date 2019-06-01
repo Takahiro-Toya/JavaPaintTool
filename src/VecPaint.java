@@ -223,13 +223,10 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         refreshCanvas();
     }
 
+
     /**
      * draw grid based on the grid size that user specifies
-     * @param g2d graphic object of canvas on which the image is drawn
-     */
-    /**
-     * draw grid based on the grid size that user specifies
-     * @param image
+     * @param image BufferedImage on which the grid is to be drawn
      */
     private void drawGrid(BufferedImage image){
         Graphics2D g2d = (Graphics2D)image.getGraphics();
@@ -245,10 +242,6 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         g2d.dispose();
     }
 
-    /**
-     * draw all the stored vec shape on canvas
-     *
-     */
     /**
      * draw all the stored VecShape on BufferedImage given
      * @param image BufferedImage on which all VecShapes are drawn
