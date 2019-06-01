@@ -222,6 +222,7 @@ public class VecFileManager extends JMenuBar implements Subject {
                 if (choice == JOptionPane.YES_OPTION){
                     shapesToSave.clear();
                     shapesToOpen.clear();
+                    convertor.clearShapes();
                     Openlist.clear();
                     content = "";
                     notifyObservers("ClearBtn");

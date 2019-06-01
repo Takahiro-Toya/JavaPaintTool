@@ -185,6 +185,13 @@ public class VecConvertor {
     public void saveShapes(ArrayList<VecShape> shapes) {
         this.shapesToSave = shapes;
     }
+
+    public void clearShapes(){
+        this.shapesToSave.clear();
+        this.shapesToOpen.clear();
+        Openlist.clear();
+        content = "";
+    }
 }
 
 
