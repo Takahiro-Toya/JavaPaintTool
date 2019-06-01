@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class VecFileManager extends JMenuBar implements Subject {
@@ -25,16 +26,12 @@ public class VecFileManager extends JMenuBar implements Subject {
     }
     // Variables
     private File vecFile;
-    private ArrayList<String> Openlist = new ArrayList();
-    private String content = "";
 
-    private ArrayList<VecShape> shapesToSave = new ArrayList<>();
-
-    private ArrayList<VecShape> shapesToOpen = new ArrayList<>();
 
     private ArrayList<Observer> observers = new ArrayList<>();
 
-    private VecConvertor convertor = new VecConvertor(Openlist, content, shapesToSave, shapesToOpen, observers);
+    private VecConverter converter = new VecConverter();
+
     /**
      * The constructor
      */
@@ -88,95 +85,119 @@ public class VecFileManager extends JMenuBar implements Subject {
     }
 
     /**
-     * Save the current file into the chosen directory
+     * convert VecShape ArrayList to String ArrayList to output .vec file
+     * @param shapes -shapes list to save
+     */
+    public void saveShape(ArrayList<VecShape> shapes){
+        String content = converter.convertToString(shapes);
+        JFileChooser chooser = new JFileChooser();
+        chooser.addChoosableFileFilter(new FileFilter() {
+            // set the default saving file extension to .vec
+            @Override
+            public boolean accept(File f) {
+                if (f.getName().toLowerCase().endsWith(".vec")){
+                    return true;
+                }else{
+                    return f.getName().toLowerCase().endsWith(".vec");
+                }
+            }
+            @Override
+            public String getDescription() {
+                return "VEC Documents (*.vec)";
+            }
+        });
+        if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
+            vecFile = chooser.getSelectedFile();
+            String path = vecFile.getPath();
+            try{
+                if (!path.toLowerCase().endsWith(".vec")){
+                    vecFile = new File(path + ".vec");
+                }
+                FileOutputStream fos = new FileOutputStream(vecFile);
+                fos.close();
+                FileWriter fileWriter = new FileWriter(vecFile);
+                fileWriter.write(content);
+                fileWriter.close();
+
+            }catch (IOException es){
+                es.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Action when save button is clicked
      * @return return the finished listener
      */
-    public ActionListener getSaveListener(){
+    private ActionListener getSaveListener(){
         ActionListener saveListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                chooser.addChoosableFileFilter(new FileFilter() {
-                    // set the default saving file extension to .vec
-                    @Override
-                    public boolean accept(File f) {
-                        if (f.getName().toLowerCase().endsWith(".vec")){
-                            return true;
-                        }else{
-                            return f.getName().toLowerCase().endsWith(".vec");
-                        }
-                    }
-                    @Override
-                    public String getDescription() {
-                        return "VEC Documents (*.vec)";
-                    }
-                });
-                if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
-                    content = convertor.convertToString();
-                    vecFile = chooser.getSelectedFile();
-                    String path = vecFile.getPath();
-                    try{
-                        if (!path.toLowerCase().endsWith(".vec")){
-                            vecFile = new File(path + ".vec");
-                        }
-                        FileOutputStream fos = new FileOutputStream(vecFile);
-                        fos.close();
-                        FileWriter fileWriter = new FileWriter(vecFile);
-                        fileWriter.write(content);
-                        fileWriter.close();
-
-                    }catch (IOException es){
-                        es.printStackTrace();
-                    }
-                }
+                notifyObservers("SaveBtn");
             }
         };
         return saveListener;
     }
 
     /**
-     * Load the content of the chosen file into a string
-     * @return return this finished listener
+     * Action when open button is clicked
+     * @return
      */
-    public ActionListener getOpenListener(){
-        java.awt.event.ActionListener listener = new ActionListener() {
-            JFileChooser chooser = new JFileChooser();
+    private ActionListener getOpenListener(){
+        ActionListener openListener = new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
-                chooser.addChoosableFileFilter(new FileNameExtensionFilter("*.vec", "vec"));
-                if (chooser.showOpenDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
-                    vecFile = chooser.getSelectedFile();
-                    // load this file if is is a .vec file
-                    if (vecFile.getName().toLowerCase().endsWith(".vec")) {
-                        try {
-                            InputStreamReader reader = new InputStreamReader(new FileInputStream(vecFile));
-                            BufferedReader br = new BufferedReader(reader);
-                            String text;
-                            while ((text = br.readLine()) != null) {
-                                Openlist.add(text);
-                            }
-                            convertor.convertToShape();
-                            br.close();
-                            reader.close();
-
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }catch (VecShapeException e2){
-                            JOptionPane.showMessageDialog(null, "This vec file can not be read " +
-                                    "correctly.");
-                            shapesToSave.clear();
-                            shapesToOpen.clear();
-                            Openlist.clear();
-                            content = "";
-                            e2.printStackTrace();
-                        }
-                        // else, show a message that tells the users the forate is not supported
-                    }else{
-                        JOptionPane.showMessageDialog(null, "File format not supported");
-                    }
-                }
+                notifyObservers("OpenBtn");
             }
         };
-        return listener;
+        return openListener;
+    }
+
+    /**
+     * Display a file navigation system (JFileChoose), then pass the opened contents as a string arraylist to VecConverter
+     * VecConverter.converToShape converts this string arrayList to VecShape arrayList
+     * @return return shapes list that is ready to draw on canvas
+     */
+    public ArrayList<VecShape> getOpenedShapes(){
+
+        ArrayList<String> openList = new ArrayList<>();
+
+        ArrayList<VecShape> shapesToOpen = new ArrayList<>();
+
+        JFileChooser chooser = new JFileChooser();
+
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("*.vec", "vec"));
+        if (chooser.showOpenDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
+            vecFile = chooser.getSelectedFile();
+            // load this file if is is a .vec file
+            if (vecFile.getName().toLowerCase().endsWith(".vec")) {
+                try {
+                    InputStreamReader reader = new InputStreamReader(new FileInputStream(vecFile));
+                    BufferedReader br = new BufferedReader(reader);
+                    String text;
+                    while ((text = br.readLine()) != null) {
+                        openList.add(text);
+                    }
+                    shapesToOpen = converter.convertToShape(openList);
+                    br.close();
+                    reader.close();
+
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } catch (VecShapeException e2){
+                    JOptionPane.showMessageDialog(null, "This vec file can not be read " +
+                            "correctly.");
+
+                    openList.clear();
+                    e2.printStackTrace();
+                }
+                // else, show a message that tells the users the forate is not supported
+            }else{
+                JOptionPane.showMessageDialog(null, "File format not supported");
+            }
+        }
+
+        return shapesToOpen;
     }
 
 
@@ -211,7 +232,7 @@ public class VecFileManager extends JMenuBar implements Subject {
     }
 
     /**
-     * Behaviur of when clear button is clicked
+     * Behaviour of when clear button is clicked
      * @return clearListener that notifies observers that clear button is clicked
      */
     private ActionListener clearShape() {
@@ -220,11 +241,6 @@ public class VecFileManager extends JMenuBar implements Subject {
             public void actionPerformed(ActionEvent e) {
                 int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to clear this canvas?", "Clear Warning", JOptionPane.YES_NO_CANCEL_OPTION);
                 if (choice == JOptionPane.YES_OPTION){
-                    shapesToSave.clear();
-                    shapesToOpen.clear();
-                    convertor.clearShapes();
-                    Openlist.clear();
-                    content = "";
                     notifyObservers("ClearBtn");
                 }
             }
@@ -253,14 +269,4 @@ public class VecFileManager extends JMenuBar implements Subject {
             observers.get(i).update(location);
         }
     }
-
-    /**
-     * After read a .vec file, new shapes are created based on file contents and are stored in shapesToOpen.
-     * Call this method to get temporary saved shape array to draw on canvas
-     * @return shapes that is read and to draw on canvas.
-     */
-    public ArrayList<VecShape> getShapesToOpen() {
-        return shapesToOpen;
-    }
-
 }

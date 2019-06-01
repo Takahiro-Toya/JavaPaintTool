@@ -1,45 +1,35 @@
-import VecInterface.Observer;
 import VecShape.VecShape;
 
 import java.awt.*;
 import VecShape.*;
+
 import java.util.ArrayList;
 
-public class VecConvertor {
-
-    private ArrayList<String> Openlist;
-    private String content;
-    private static ArrayList<VecShape> shapesToSave;
-
-    private ArrayList<VecShape> shapesToOpen;
-
-    private ArrayList<Observer> observers;
-
-    public VecConvertor(ArrayList<String> openlist, String content, ArrayList<VecShape> shapesToSave, ArrayList<VecShape> shapesToOpen, ArrayList<Observer> observers) {
-        Openlist = openlist;
-        this.content = content;
-        this.shapesToSave = shapesToSave;
-        this.shapesToOpen = shapesToOpen;
-        this.observers = observers;
-    }
-
-    public VecConvertor() { }
+/**
+ * This class provides some functions to produce .vec file and read a string input to generate VecShape
+ */
+public class VecConverter {
 
     /**
-     * convert the shapes to string and store them into a String called content
-     * @return the content of the converted string
+     * constructor
      */
-    public String convertToString() {
+    public VecConverter() { }
+
+    /**
+     * convert shapes to a sequence of string
+     * @param shapes shapes arrayList to convert to String
+     * @return a sequence of string
+     */
+    public String convertToString(ArrayList<VecShape> shapes) {
+        String content = "";
         boolean isoff = true;
         VecShape temp = null;
         Color currentColour = null;
-        for (Observer o : observers) {
-            o.update("SaveBtn");
-        }
-        for (int a = 0; a < shapesToSave.size(); a++) {
-            VecShape current = shapesToSave.get(a);
+
+        for (int a = 0; a < shapes.size(); a++) {
+            VecShape current = shapes.get(a);
             if (a != 0) {
-                temp = shapesToSave.get(a - 1);
+                temp = shapes.get(a - 1);
             }
             // detect if the line colour has changed
             if (a == 0 || (current.getLineColour() != temp.getLineColour())) {
@@ -79,11 +69,12 @@ public class VecConvertor {
     /**
      * convert the input string to objects
      */
-    public void convertToShape() throws VecShapeException {
+    public ArrayList<VecShape> convertToShape(ArrayList<String> openList) throws VecShapeException {
+        ArrayList<VecShape> shapesToOpen = new ArrayList<>();
         Color fillColour = null;
         Color lineColour = Color.black;
         boolean fill = false;
-        for (String str : Openlist) {
+        for (String str : openList) {
             if (str.startsWith("PEN")) {
                 String string = "";
                 for (int a = str.indexOf('#'); a < str.length(); a++) {
@@ -173,24 +164,7 @@ public class VecConvertor {
             }
         }
 
-        for (Observer o : observers) {
-            o.update("OpenBtn");
-        }
-    }
-
-    /**
-     * register array of VecShape as a save list, call this method from canvas class to pass shape list to file manager
-     * @param shapes shapes to save
-     */
-    public void saveShapes(ArrayList<VecShape> shapes) {
-        this.shapesToSave = shapes;
-    }
-
-    public void clearShapes(){
-        this.shapesToSave.clear();
-        this.shapesToOpen.clear();
-        Openlist.clear();
-        content = "";
+        return shapesToOpen;
     }
 }
 
