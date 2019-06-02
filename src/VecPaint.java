@@ -262,9 +262,11 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         double interval = (double)image.getHeight() / (double)pnlTools.getGridSize();
         g2d.setStroke(new BasicStroke(1f));
         g2d.setColor(Color.lightGray);
+        // horizontal
         for (int i = 1; i < pnlTools.getGridSize(); i++ ){
             g2d.draw(new Line2D.Double(0, interval * i, imagePanel.getWidth(), interval * i));
         }
+        // vertical
         for (int i = 1; i < pnlTools.getGridSize(); i++ ) {
             g2d.draw(new Line2D.Double(interval * i, 0, interval * i, imagePanel.getHeight()));
         }
