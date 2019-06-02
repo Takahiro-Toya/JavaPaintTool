@@ -146,6 +146,25 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
     }
 
     /**
+     * Pop up an option dialog to allow the user choosing the size of the image
+     * @return the size of the image
+     */
+    private int chooseSize(){
+        Object[] options = { "Large", "Medium", "Small"};
+        int size = 0;
+        int response = JOptionPane.showOptionDialog(this, "Please choose the size of the output image", "Size seletion", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE, null, options, options[2]);
+        if (response == 2){
+            size = 1500;
+        }else if(response == 1){
+            size = 3000;
+        }else if (response == 0){
+            size = 4000;
+        }
+        return size;
+    }
+
+    /**
      * One of VecInterface.Observer interface components
      * reflects changes of drawing mode, colour, undo/ clear, save / open
      * @param location -class or component name in which a change is made
@@ -175,17 +194,7 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         } else if (location == "GridEnabler" || location == "GridTop"){
             refreshCanvas();
         } else if (location == "PngExport" || location == "BmpExport" || location == "JpegExport"){
-            Object[] options = { "Large", "Medium", "Small",};
-            int size = 0;
-            int response = JOptionPane.showOptionDialog(this, "Please choose the size of the output image", "Size seletion", JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE, null, options, options[2]);
-            if (response == 2){
-                size = 1500;
-            }else if(response == 1){
-                size = 3000;
-            }else if (response == 0){
-                size = 4000;
-            }
+            int size = chooseSize();
             if (size != 0){
                 if (location == "PngExport") {
                     BufferedImage output = new BufferedImage(size, size, BufferedImage.TYPE_4BYTE_ABGR);
