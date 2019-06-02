@@ -142,6 +142,10 @@ public class VecConverter {
                         shapesToOpen.add(new VecEllipse(esx, esy, eex, eey, lineColour, fillColour, fill));
                         break;
                     case "POLYGON":
+                        if ((file.length - 1)%2!=0){
+                            throw new VecShapeException("Polygon can not be construct correctly, "
+                                    + "check if the .vec file is broken.");
+                        }
                         double[] px = new double[(file.length - 1) / 2];
                         double[] py = new double[(file.length - 1) / 2];
                         int cy = 0;

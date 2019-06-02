@@ -150,12 +150,12 @@ public class VecFileManager extends JMenuBar implements Subject {
      */
     public void exportAsBmp(BufferedImage image){
         JFileChooser chooser = new JFileChooser();
-        chooser.setFileFilter(new FileNameExtensionFilter("*.bmp", "bmp"));
+        chooser.setFileFilter(new FileNameExtensionFilter("*.BMP", "BMP"));
         if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
             String path = chooser.getSelectedFile().getPath();
             try {
-                if (!path.toLowerCase().endsWith(".bmp")) {
-                    File file = new File(path + ".bmp");
+                if (!path.toLowerCase().endsWith(".BMP")) {
+                    File file = new File(path + ".BMP");
                     ImageIO.write(image, "BMP", file);
                 }
             } catch (IOException ex) {
