@@ -150,7 +150,7 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
      * @return the size of the image
      */
     private int chooseSize(){
-        Object[] options = { "Large", "Medium", "Small"};
+        Object[] options = { "Large (4000)", "Medium (3000)", "Small (1500)"};
         int size = 0;
         int response = JOptionPane.showOptionDialog(this, "Please choose the size of the output image", "Size seletion", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE, null, options, options[2]);
@@ -171,7 +171,7 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
      */
     @Override
     public void update(String location){
-        if (location == "VecGUI.ToolPanel" || location == "ColourPanel") {
+        if (location == "ToolPanel" || location == "ColourPanel") {
             currentMode = pnlTools.getCurrentMode();
             lineColour = pnlColours.getPenColour();
             fillColour = pnlColours.getFillColour();

@@ -16,7 +16,7 @@ public class DrawShape extends JPanel {
     private ArrayList<VecCanvas> observers  = new ArrayList<>();
     private Color lineColour;
     private BufferedImage imagePanel;
-    private float lineWidth = 2f;
+    private float lineWidth;
     private Boolean grid;
     private int gridSize;
 
@@ -68,8 +68,8 @@ public class DrawShape extends JPanel {
      * @return adjusted x or y clicked point based on grid size
      */
     protected double adjustPoint(double coordinate){
-        double gridInterval = imagePanel.getWidth() / (double)gridSize;
-        return Math.floor((coordinate + gridInterval / 2) / gridInterval) * gridInterval ;
+        double gridInterval = imagePanel.getWidth() / (double)gridSize; // distance between each grid line
+        return Math.floor((coordinate + gridInterval / 2) / gridInterval) * gridInterval ; // round down
     }
 
     /**

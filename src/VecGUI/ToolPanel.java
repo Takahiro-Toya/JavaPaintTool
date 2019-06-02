@@ -169,7 +169,7 @@ public class ToolPanel extends JPanel implements Subject {
                         default:
                             currentMode = VecShape.Mode.PLOT;
                     }
-                    notifyObservers("VecGUI.ToolPanel");
+                    notifyObservers("ToolPanel");
                 }
             });
             toolBtns.add(btn);
@@ -189,7 +189,7 @@ public class ToolPanel extends JPanel implements Subject {
                 } else {
                     btnFill.setText("Fill On");
                 }
-                notifyObservers("VecGUI.ToolPanel");
+                notifyObservers("ToolPanel");
             }
         });
     }

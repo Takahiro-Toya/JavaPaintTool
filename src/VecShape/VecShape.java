@@ -33,6 +33,7 @@ public abstract class VecShape {
      * @param mode -drawing mode
      */
     public VecShape(double sx, double sy, double ex, double ey, Color lineColor, Color fillColour, boolean fill, Mode mode){
+        // Error checking
         if (lineColor == null){
             throw new VecShapeException(("Must specify line colour."));
         } else if (mode == null){

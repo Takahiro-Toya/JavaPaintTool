@@ -98,7 +98,7 @@ public class DrawPoly extends DrawShape {
          */
         @Override
         public void mousePressed(MouseEvent e) {
-
+            // first edge
             if (edges == 0) {
                 double x = e.getPoint().getX();
                 double y = e.getPoint().getY();
@@ -114,6 +114,7 @@ public class DrawPoly extends DrawShape {
                 tpx = sx;
                 tpy = sy;
                 edges++;
+            // after second edge
             } else {
                 if(e.getClickCount() != 2) { // avoid producing two points (another produced by mouseClicked())
                     double x = e.getPoint().getX();
@@ -170,6 +171,7 @@ public class DrawPoly extends DrawShape {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
+                // convert ArrayList to Array
                 double[] xScaled = new double[xVertices.size()];
                 double[] yScaled = new double[yVertices.size()];
                 for(int i = 0; i < xVertices.size(); i++){

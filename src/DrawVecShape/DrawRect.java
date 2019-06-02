@@ -56,6 +56,7 @@ public class DrawRect extends DrawShape {
         double width = ex - sx;
         double height = ey - sy;
         g2d.setColor(fillColor);
+        // always use top left and bottom right points
         if (width >= 0 && height >= 0) {
             vRect = new VecRectangle(sx / imageWidth, sy / imageHeight, ex / imageWidth,
                     ey / imageHeight, getLineColour(), fillColor, fill);
