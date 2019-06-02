@@ -176,13 +176,13 @@ public class MenuPanel extends JMenuBar implements Subject {
      */
     public void exportAsJpeg(BufferedImage image){
         JFileChooser chooser = new JFileChooser();
-        chooser.setFileFilter(new FileNameExtensionFilter("*.jpg", "jpg"));
+        chooser.setFileFilter(new FileNameExtensionFilter("*.jpeg", "jpeg"));
         if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
             String path = chooser.getSelectedFile().getPath();
             try {
-                if (!path.toLowerCase().endsWith(".jpg")) {
-                    File file = new File(path + ".jpg");
-                    ImageIO.write(image, "jpg", file);
+                if (!path.toLowerCase().endsWith(".jpeg")) {
+                    File file = new File(path + ".jpeg");
+                    ImageIO.write(image, "jpeg", file);
                 }
             } catch (IOException ex) {
 

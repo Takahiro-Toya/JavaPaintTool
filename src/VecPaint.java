@@ -174,15 +174,30 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
             refreshCanvas();
         } else if (location == "GridEnabler" || location == "GridTop"){
             refreshCanvas();
-        } else if (location == "PngExport"){
-            BufferedImage output = new BufferedImage(1500, 1500, BufferedImage.TYPE_4BYTE_ABGR);
-            manager.exportAsPng(changeResolutionForExport(output));
-        } else if (location == "BmpExport"){
-            BufferedImage output = new BufferedImage(4000, 4000, BufferedImage.TYPE_INT_RGB);
-            manager.exportAsBmp(changeResolutionForExport(output));
-        } else if (location == "JpegExport"){
-            BufferedImage output = new BufferedImage(2000, 2000, BufferedImage.TYPE_INT_RGB);
-            manager.exportAsJpeg(changeResolutionForExport(output));
+        } else if (location == "PngExport" || location == "BmpExport" || location == "JpegExport"){
+            Object[] options = { "Large", "Medium", "Small",};
+            int size = 0;
+            int response = JOptionPane.showOptionDialog(this, "Please choose the size of the output image", "Size seletion", JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE, null, options, options[2]);
+            if (response == 2){
+                size = 1500;
+            }else if(response == 1){
+                size = 3000;
+            }else if (response == 0){
+                size = 4000;
+            }
+            if (size != 0){
+                if (location == "PngExport") {
+                    BufferedImage output = new BufferedImage(size, size, BufferedImage.TYPE_4BYTE_ABGR);
+                    manager.exportAsPng(changeResolutionForExport(output));
+                }else if(location == "BmpExport"){
+                    BufferedImage output = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+                    manager.exportAsBmp(changeResolutionForExport(output));
+                }else if (location == "JpegExport"){
+                    BufferedImage output = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+                    manager.exportAsJpeg(changeResolutionForExport(output));
+                }
+            }
         }
     }
 
