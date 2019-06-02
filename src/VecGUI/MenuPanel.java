@@ -1,10 +1,12 @@
-import VecInterface.Observer;
-import VecInterface.Subject;
+package VecGUI;
+
+
+import VecInterface.*;
 import VecShape.*;
+import VecFileManager.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,7 +17,7 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class VecFileManager extends JMenuBar implements Subject {
+public class MenuPanel extends JMenuBar implements Subject {
     /**
      * Enums names of every component of the menu bar
      */
@@ -37,7 +39,7 @@ public class VecFileManager extends JMenuBar implements Subject {
     /**
      * The constructor
      */
-    public VecFileManager(){
+    public MenuPanel(){
         super();
     }
 
@@ -254,8 +256,8 @@ public class VecFileManager extends JMenuBar implements Subject {
     }
 
     /**
-     * Display a file navigation system (JFileChoose), then pass the opened contents as a string arraylist to VecConverter
-     * VecConverter.converToShape converts this string arrayList to VecShape arrayList
+     * Display a file navigation system (JFileChoose), then pass the opened contents as a string arraylist to MenuPanel.VecConverter
+     * MenuPanel.VecConverter.converToShape converts this string arrayList to VecShape arrayList
      * @return return shapes list that is ready to draw on canvas
      */
     public ArrayList<VecShape> getOpenedShapes(){
@@ -349,7 +351,7 @@ public class VecFileManager extends JMenuBar implements Subject {
     }
 
     /**
-     * attach observer that wants to changes in this GUI component
+     * attach observer that wants to changes in this VecGUI component
      * basically, in this assignment, this observer is the canvas
      * @param observer new observer to be registered
      */

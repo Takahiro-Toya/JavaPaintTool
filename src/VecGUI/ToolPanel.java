@@ -1,3 +1,5 @@
+package VecGUI;
+
 import VecInterface.Observer;
 import VecInterface.Subject;
 import VecShape.VecShape;
@@ -11,7 +13,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 /**
- * Defines tool picker GUI components
+ * Defines tool picker VecGUI components
  */
 public class ToolPanel extends JPanel implements Subject {
 
@@ -167,7 +169,7 @@ public class ToolPanel extends JPanel implements Subject {
                         default:
                             currentMode = VecShape.Mode.PLOT;
                     }
-                    notifyObservers("ToolPanel");
+                    notifyObservers("VecGUI.ToolPanel");
                 }
             });
             toolBtns.add(btn);
@@ -187,7 +189,7 @@ public class ToolPanel extends JPanel implements Subject {
                 } else {
                     btnFill.setText("Fill On");
                 }
-                notifyObservers("ToolPanel");
+                notifyObservers("VecGUI.ToolPanel");
             }
         });
     }

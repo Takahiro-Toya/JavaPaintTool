@@ -22,14 +22,15 @@ public class DrawLine extends DrawShape {
     /**
      * constructor
      * @param imagePanel BufferedImage -on which the image is drawn
+     * @param lineWidth line width
      * @param penColour Color -colour of line
      * @param grid - set true if grid is on
      * @param gridSize - grid size that divides the canvas: e.g gridSize = 2 means the grid divides canvas into two horizontally and vertically
      * @param canvasObserver -VecInterface.Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (rectangle)
      */
-    public DrawLine(BufferedImage imagePanel, Color penColour, boolean grid, int gridSize, VecCanvas canvasObserver){
-        super(imagePanel, penColour, canvasObserver, grid, gridSize);
+    public DrawLine(BufferedImage imagePanel, float lineWidth, Color penColour, boolean grid, int gridSize, VecCanvas canvasObserver){
+        super(imagePanel, lineWidth, penColour, canvasObserver, grid, gridSize);
         LineMouseListener mouse = new LineMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);

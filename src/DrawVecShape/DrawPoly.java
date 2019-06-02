@@ -35,6 +35,7 @@ public class DrawPoly extends DrawShape {
     /**
      * Constructor
      * @param imagePanel BufferedImage -on which the image is drawn
+     * @param lineWidth line width
      * @param penColour Color -colour of line
      * @param fillColour Color -fill colour
      * @param fill boolean -true if image needs to be filled
@@ -43,8 +44,8 @@ public class DrawPoly extends DrawShape {
      * @param canvasObserver VecInterface.Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (polygon)
      */
-    public DrawPoly (BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, VecCanvas canvasObserver){
-        super(imagePanel, penColour, canvasObserver, grid, gridSize);
+    public DrawPoly (BufferedImage imagePanel, float lineWidth, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, VecCanvas canvasObserver){
+        super(imagePanel, lineWidth, penColour, canvasObserver, grid, gridSize);
         PolyMouseListener mouse = new PolyMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);

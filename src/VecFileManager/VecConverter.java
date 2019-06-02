@@ -1,3 +1,5 @@
+package VecFileManager;
+
 import VecShape.VecShape;
 
 import java.awt.*;
