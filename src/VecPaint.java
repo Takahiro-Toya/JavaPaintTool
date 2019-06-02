@@ -175,7 +175,6 @@ public class VecPaint extends JFrame implements Observer, VecCanvas {
         } else if (location == "GridEnabler" || location == "GridTop"){
             refreshCanvas();
         } else if (location == "PngExport"){
-            J
             BufferedImage output = new BufferedImage(1500, 1500, BufferedImage.TYPE_4BYTE_ABGR);
             manager.exportAsPng(changeResolutionForExport(output));
         } else if (location == "BmpExport"){
