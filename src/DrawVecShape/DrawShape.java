@@ -17,22 +17,24 @@ public class DrawShape extends JPanel {
     private Color lineColour;
     private BufferedImage imagePanel;
     private float lineWidth = 2f;
-    private Boolean grid = false;
-    private int gridSize = 0;
+    private Boolean grid;
+    private int gridSize;
 
     /**
      /**
      * constructor
      * @param imagePanel -BufferedImage in which an object is drawn
      * @param lineColour -plot colour
+     * @param lineWidth -line width
      * @param canvasObserver VecInterface.Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (rectangle)
      * @param grid - set true if grid is on
      * @param gridSize - grid size that divides the canvas: e.g gridSize = 2 means the grid divides canvas into two horizontally and vertically
      */
-    public DrawShape(BufferedImage imagePanel, Color lineColour, VecCanvas canvasObserver, boolean grid, int gridSize){
+    public DrawShape(BufferedImage imagePanel, float lineWidth, Color lineColour, VecCanvas canvasObserver, boolean grid, int gridSize){
         this.imagePanel = imagePanel;
         this.lineColour = lineColour;
+        this.lineWidth = lineWidth;
         this.grid = grid;
         this.gridSize = gridSize;
         this.observers.add(canvasObserver);

@@ -1,3 +1,5 @@
+package VecGUI;
+
 import VecInterface.Observer;
 import VecInterface.Subject;
 
@@ -8,7 +10,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 /**
- * Defines Color picker GUI component
+ * Defines Color picker VecGUI component
  */
 public class ColorPanel extends JPanel implements Subject {
 

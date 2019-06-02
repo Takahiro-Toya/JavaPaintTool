@@ -1,3 +1,5 @@
+package VecGUI;
+
 import VecShape.VecShape;
 
 import javax.swing.*;

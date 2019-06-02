@@ -25,6 +25,7 @@ public class DrawRect extends DrawShape {
     /**
      * constructor
      * @param imagePanel BufferedImage -on which the image is drawn
+     * @param lineWidth -line width
      * @param penColour Color -colour of line
      * @param fillColour Color -fill colour
      * @param fill boolean -true if image needs to be filled
@@ -33,8 +34,8 @@ public class DrawRect extends DrawShape {
      * @param canvasObserver VecInterface.Observer -class that wants to receive a drawn object information.
      *                    Usually, a class that has a canvas to draw this object (rectangle)
      */
-    public DrawRect(BufferedImage imagePanel, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, VecCanvas canvasObserver){
-        super(imagePanel, penColour, canvasObserver, grid, gridSize);
+    public DrawRect(BufferedImage imagePanel, float lineWidth, Color penColour, Color fillColour, boolean fill, boolean grid, int gridSize, VecCanvas canvasObserver){
+        super(imagePanel, lineWidth, penColour, canvasObserver, grid, gridSize);
         RectMouseListener mouse = new RectMouseListener();
         this.addMouseListener(mouse);
         this.addMouseMotionListener(mouse);
