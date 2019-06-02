@@ -77,9 +77,12 @@ public class VecConverter {
         Color fillColour = null;
         Color lineColour = Color.black;
         boolean fill = false;
+        // for each line in openlist
         for (String str : openList) {
+            // if it starts with pen
             if (str.startsWith("PEN")) {
                 String string = "";
+                // start from the index of '#', convert the hex format colour to rgb color
                 for (int a = str.indexOf('#'); a < str.length(); a++) {
                     string += str.charAt(a);
                 }
@@ -142,6 +145,7 @@ public class VecConverter {
                         shapesToOpen.add(new VecEllipse(esx, esy, eex, eey, lineColour, fillColour, fill));
                         break;
                     case "POLYGON":
+                        // if some parameters are missing
                         if ((file.length - 1)%2!=0){
                             throw new VecShapeException("Polygon can not be construct correctly, "
                                     + "check if the .vec file is broken.");

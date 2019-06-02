@@ -46,16 +46,18 @@ public class VecFileManager extends JMenuBar implements Subject {
      * @return return the completed menu bar
      */
     public JMenuBar createJmenuBar(){
+        // Create a menubar
         JMenuBar bar = new JMenuBar();
-
+        // Create shortcuts for functions
         KeyStroke ksSave = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
         KeyStroke ksOpen = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
         KeyStroke ksUndo = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
         KeyStroke ksRedo = KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK);
         KeyStroke ksClear = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK);
+        // Create two Jmenu
         JMenu fileMenu = new JMenu(MenuNames.File.name);
         JMenu editMenu = new JMenu(MenuNames.Edit.name);
-
+        // Create JmenuItmes
         JMenuItem saveManager = new JMenuItem(MenuNames.Save.name);
         JMenuItem openManager = new JMenuItem(MenuNames.Open.name);
         JMenuItem undoManager = new JMenuItem(MenuNames.Undo.name);
@@ -64,13 +66,13 @@ public class VecFileManager extends JMenuBar implements Subject {
         JMenuItem pngManager = new JMenuItem(MenuNames.Png.name);
         JMenuItem bmpManager = new JMenuItem(MenuNames.Bmp.name);
         JMenuItem jpegManager = new JMenuItem(MenuNames.Jpeg.name);
-
+        // Set shortcuts
         saveManager.setAccelerator(ksSave);
         openManager.setAccelerator(ksOpen);
         undoManager.setAccelerator(ksUndo);
         redoManager.setAccelerator(ksRedo);
         clearManager.setAccelerator(ksClear);
-
+        // Add listeners
         saveManager.addActionListener(createSaveListener());
         openManager.addActionListener(createOpenListener());
         undoManager.addActionListener(createUndoListener());
@@ -79,7 +81,7 @@ public class VecFileManager extends JMenuBar implements Subject {
         pngManager.addActionListener(createPngListener());
         bmpManager.addActionListener(createBmpListener());
         jpegManager.addActionListener(createJpegListener());
-
+        // Place items into the parent containers
         fileMenu.add(saveManager);
         fileMenu.add(openManager);
         fileMenu.add(pngManager);
@@ -88,7 +90,7 @@ public class VecFileManager extends JMenuBar implements Subject {
         editMenu.add(undoManager);
         editMenu.add(redoManager);
         editMenu.add(clearManager);
-
+        // Place Menus into the parent containers
         bar.add(fileMenu);
         bar.add(editMenu);
 
@@ -107,6 +109,7 @@ public class VecFileManager extends JMenuBar implements Subject {
             vecFile = chooser.getSelectedFile();
             String path = vecFile.getPath();
             try{
+                // add one if the file doesn't have .vec extenstion
                 if (!path.toLowerCase().endsWith(".vec")){
                     vecFile = new File(path + ".vec");
                 }
@@ -151,6 +154,7 @@ public class VecFileManager extends JMenuBar implements Subject {
     public void exportAsBmp(BufferedImage image){
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(new FileNameExtensionFilter("*.BMP", "BMP"));
+
         if (chooser.showSaveDialog(new Label()) == JFileChooser.APPROVE_OPTION) {
             String path = chooser.getSelectedFile().getPath();
             try {
